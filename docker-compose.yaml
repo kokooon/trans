@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+
+  # Frontend written in React
+  frontend:
+    container_name: pong-frontend
+    image: pong-front:latest
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ${PWD}/frontend/src:/app/src:ro
+      - ${PWD}/frontend/public:/app/public:ro
+    restart: always
+
+  # Backend written in NestJS
+  backend:
+    container_name: pong-backend
+    image: pong-back:latest
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=pong
+    volumes:
+      - ${PWD}/backend/src:/app/src
+    networks:
+      - pong-data
+    restart: always
+
+  # Database using PostgreSQL
+  database:
+    container_name: pong-database
+    image: postgres:latest
+    expose:
+      - "5432"
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=pong
+    networks:
+      - pong-data
+    restart: always
+
+networks:
+
+  pong-data:
+    driver: bridge
+    name: pong-data
