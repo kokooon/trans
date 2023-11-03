@@ -12,9 +12,9 @@ RUN npm install
 
 # STEP 3: Retrieve configurations
 # COPY ./.eslintrc.js .
-COPY ./tsconfig.json .
+COPY ./test/ .
 # COPY ./nest-cli.json .
-EXPOSE 3001
+EXPOSE 3000
 
 # STEP 4: Start the application
 CMD ["npm", "run", "start:dev"]

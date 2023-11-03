@@ -20,7 +20,7 @@ services:
     image: pong-back:latest
     build: ./backend
     ports:
-      - "3001:3001"
+      - "3001:3000"
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
