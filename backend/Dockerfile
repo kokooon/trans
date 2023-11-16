@@ -9,6 +9,8 @@ COPY ./package.json .
 
 RUN npm cache clean --force
 RUN npm install
+RUN npm update
+RUN npm install typescript@latest
 
 # STEP 3: Retrieve configurations
 # COPY ./.eslintrc.js .
