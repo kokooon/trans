@@ -11,6 +11,8 @@ RUN npm cache clean --force
 RUN npm install
 RUN npm update
 RUN npm install typescript@latest
+RUN npm install @nestjs/typeorm typeorm pg
+
 
 # STEP 3: Retrieve configurations
 # COPY ./.eslintrc.js .
