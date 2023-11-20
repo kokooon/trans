@@ -25,7 +25,7 @@ interface FormData {
 	const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 	  e.preventDefault();
 	  try {
-		const response = await fetch('http://localhost:3001/register', {
+		const response = await fetch('http://localhost:3001/users', {
 		  method: 'POST',
 		  headers: {
 			'Content-Type': 'application/json',
@@ -34,9 +34,10 @@ interface FormData {
 		});
   
 		if (response.ok) {
-		  console.log('Données envoyées avec succès !');
+			console.log('Données envoyées avec succès !');
 		} else {
-		  console.error('Échec de l\'envoi des données.');
+			const errorData = await response.json();
+			console.error('Échec de l\'envoi des données:', errorData.message);
 		}
 	  } catch (error) {
 		console.error('Erreur lors de l\'envoi des données :', error);

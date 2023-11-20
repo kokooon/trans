@@ -1,3 +1,4 @@
+//user.controller.ts
 import { Controller, Get, Post, Body, BadRequestException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
@@ -24,7 +25,6 @@ export class UserController {
       if (!createUserDto.username || !createUserDto.email) {
         throw new BadRequestException('Username and email are required.');
       }
-
       return this.userService.add_user(createUserDto.username, createUserDto.email);
     } catch (error) {
       throw new BadRequestException('Invalid request body.');
