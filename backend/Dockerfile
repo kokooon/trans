@@ -7,6 +7,7 @@ RUN mkdir -p ${APP_DIR}
 WORKDIR ${APP_DIR}
 COPY ./package.json .
 
+# RUN rm -rf node_modules
 RUN npm cache clean --force
 RUN npm install
 RUN npm update
@@ -20,5 +21,9 @@ COPY ./test/ .
 # COPY ./nest-cli.json .
 EXPOSE 3000
 
-# STEP 4: Start the application
+# STEP 4: Run migrations
+#RUN npm run typeorm migration:generate -- -d ./ormconfig.ts
+#RUN npm run typeorm migration:run
+
+# STEP 5: Start the application
 CMD ["npm", "run", "start:dev"]

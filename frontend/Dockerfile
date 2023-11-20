@@ -8,6 +8,7 @@ WORKDIR ${APP_DIR}
 COPY package.json .
 RUN npm cache clean --force
 RUN npm install
+RUN npm install typescript @types/react @types/react-dom
 
 EXPOSE 3000
 
