@@ -7,7 +7,7 @@ RUN mkdir -p ${APP_DIR}
 WORKDIR ${APP_DIR}
 COPY ./package.json .
 COPY ./package-lock.json .
-COPY ./node_modules/ .
+# COPY ./node_modules/ .
 
 # RUN npm cache clean --force
 RUN npm install
