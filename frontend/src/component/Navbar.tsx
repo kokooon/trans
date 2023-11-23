@@ -1,16 +1,13 @@
-// Navbar.tsx
 import React from 'react';
+import '../styles/index.css';
 
-const Navbar: React.FC = () => {
+export const Navbar: React.FC = () => {
   return (
-    <nav>
-      <ul>
-        <li>Accueil</li>
-        <li>À propos</li>
-        <li>Contact</li>
+    <nav className="navbar">
+      <ul className="nav-list">
+        <button className="nav-button">Login</button>
       </ul>
     </nav>
   );
 };
 
-export default Navbar;

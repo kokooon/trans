@@ -1,6 +1,6 @@
 //app.js
 import React, { useState, ChangeEvent, FormEvent } from 'react';
-
+import {Navbar} from './component/Navbar.tsx';
 import './styles/index.css';
 
 interface FormData {
@@ -46,6 +46,7 @@ const App: React.FC = () => {
 
   return (
     <React.StrictMode>
+      <Navbar></Navbar>
       <form onSubmit={handleSubmit}>
         <label>
           Nom d'utilisateur:
