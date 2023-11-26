@@ -1,16 +1,14 @@
-//app.js
-import React from 'react';
-import {Navbar} from './component/Navbar/Navbar.tsx';
-import { UseForm } from './component/UseForm/UseForm.tsx';
-import './styles/index.css';
+import { BrowserRouter as Router } from 'react-router-dom';
 
-const App: React.FC = () => {
-  return (
-    <div>
-      <Navbar></Navbar>
-      <UseForm />
-    </div>
-  )
-};
+import Layout from '@/lib/layout';
+import Routings from '@/lib/router/Routings';
+
+const App = () => (
+  <Router>
+    <Layout>
+      <Routings />
+    </Layout>
+  </Router>
+);
 
 export default App;

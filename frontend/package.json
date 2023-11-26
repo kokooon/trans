@@ -1,38 +1,68 @@
 {
-	"name": "pong-front",
-	"version": "0.1.0",
-	"private": true,
-	"dependencies": {
-	  "@testing-library/jest-dom": "^5.17.0",
-	  "@testing-library/react": "^13.4.0",
-	  "@testing-library/user-event": "^13.5.0",
-	  "react": "^18.2.0",
-	  "react-dom": "^18.2.0",
-	  "react-scripts": "5.0.1",
-	  "web-vitals": "^2.1.4"
-	},
-	"scripts": {
-	  "start": "react-scripts start",
-	  "build": "react-scripts build",
-	  "test": "react-scripts test",
-	  "eject": "react-scripts eject"
-	},
-	"eslintConfig": {
-	  "extends": [
-		"react-app",
-		"react-app/jest"
-	  ]
-	},
-	"browserslist": {
-	  "production": [
-		">0.2%",
-		"not dead",
-		"not op_mini all"
-	  ],
-	  "development": [
-		"last 1 chrome version",
-		"last 1 firefox version",
-		"last 1 safari version"
-	  ]
-	}
+  "name": "vite-react-tailwind-starter",
+  "version": "0.1.0",
+  "private": true,
+  "author": "sozonome",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "pnpm type-check && vite build",
+    "build:turbo": "npx turbo build",
+    "serve": "vite preview",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix && pnpm format",
+    "type-check": "tsc",
+    "check:turbo": "npx turbo lint type-check",
+    "format": "prettier --write src",
+    "up-interactive": "pnpm up -i",
+    "up-latest": "pnpm up-interactive -L",
+    "release": "standard-version",
+    "push-release": "git push --follow-tags origin main",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@fontsource/plus-jakarta-sans": "^5.0.17",
+    "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@vitejs/plugin-react": "^4.2.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "lucide-react": "^0.292.0",
+    "million": "2.6.4",
+    "next-themes": "^0.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-helmet": "^6.1.0",
+    "react-router-dom": "^6.19.0",
+    "tailwind-merge": "^2.0.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^18.4.2",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/node": "^20.9.0",
+    "@types/react": "18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@types/react-helmet": "^6.1.9",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "autoprefixer": "^10.4.16",
+    "commitlint": "^18.4.2",
+    "eslint": "^8.53.0",
+    "eslint-config-sznm": "^2.0.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.1.0",
+    "postcss": "^8.4.31",
+    "prettier": "^3.1.0",
+    "rollup-plugin-visualizer": "^5.9.2",
+    "standard-version": "^9.5.0",
+    "tailwindcss": "^3.3.5",
+    "typescript": "5.2.2",
+    "vite": "^5.0.2",
+    "vite-plugin-checker": "^0.6.2",
+    "vite-tsconfig-paths": "^4.2.1"
+  },
+  "engines": {
+    "node": ">=16.x.x",
+    "pnpm": ">=8"
+  }
 }

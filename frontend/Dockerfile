@@ -1,19 +1,24 @@
-# STEP 1: Pull base image and defines variables
-FROM node:lts-alpine
-ARG APP_DIR=/app
+# Use the official Node.js 14 image as the base image
+FROM node:16
 
-# STEP 2: Install dependencies
-RUN mkdir -p ${APP_DIR}
-WORKDIR ${APP_DIR}
-COPY ./package.json .
-COPY ./package-lock.json .
-# COPY ./node_modules/ .
+# Set the working directory inside the container
+WORKDIR /app
 
-# RUN npm cache clean --force
-RUN npm install
+# Copy the package.json and package-lock.json files to the container
+COPY package.json .
+COPY pnpm-lock.yaml .
 
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Install project dependencies
+RUN pnpm install
+
+# Copy the rest of the application code to the container
+COPY . .
+
+# Expose the port that your Vite application will run on
 EXPOSE 3000
 
-# STEP 3: Start the application
-CMD ["npm", "start"]
-
+# Command to start the application
+CMD ["pnpm", "dev", "--host"]
