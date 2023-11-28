@@ -1,5 +1,5 @@
 // user.controller.ts
-import { Controller, Get, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, BadRequestException, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,6 +12,12 @@ export class UserController {
   @Get()
   async findAll(): Promise<User[]> {
     return this.userService.findAll();
+  }
+
+  @Get('check')
+  async checkPseudo(@Query('pseudo') pseudo: string): Promise<{ exists: boolean }> {
+    const existingUser = await this.userService.findByPseudo(pseudo);
+    return { exists: !!existingUser };
   }
 
   @Post()

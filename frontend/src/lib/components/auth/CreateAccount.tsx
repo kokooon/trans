@@ -16,6 +16,7 @@ export function CreateAccount() {
   const [pseudo, setPseudo] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleCreateAccount = async () => {
     try {
@@ -31,6 +32,7 @@ export function CreateAccount() {
 
       if (checkData.exists) {
         setError('Le pseudo existe déjà. Choisissez un autre pseudo.');
+        setSuccess(null);
         return;
       }
 
@@ -44,11 +46,12 @@ export function CreateAccount() {
       });
 
       if (createResponse.ok) {
-        console.log('Compte créé avec succès !');
+        setSuccess('Compte créé avec succès !');
         setError(null);
       } else {
         console.error('Erreur lors de la création du compte');
         setError('Erreur lors de la création du compte. Veuillez réessayer.');
+        setSuccess(null);
       }
     } catch (error) {
       console.error('Erreur :', error);
@@ -133,6 +136,11 @@ export function CreateAccount() {
       <CardFooter>
         <Button className="w-full" onClick={handleLogin}>Se connecter</Button>
       </CardFooter>
+      {success && (
+        <div className="text-green-500 mt-4">
+          {success}
+        </div>
+      )}
       {error && (
         <div className="text-red-500 mt-4">
           {error}

@@ -9,8 +9,8 @@ COPY ./package.json .
 
 # RUN rm -rf node_modules
 RUN npm cache clean --force
-RUN npm install
-RUN npm update
+RUN npm install -g npm@10.2.4
+# RUN npm update
 RUN npm install typescript@latest
 RUN npm install @nestjs/typeorm typeorm pg
 
