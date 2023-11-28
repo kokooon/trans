@@ -1,4 +1,4 @@
- import { useState } from 'react';
+import { useState } from 'react';
 import { Icons } from "@/lib/components/ui/icone";
 import { Button } from "@/lib/components/ui/button";
 import {
@@ -15,11 +15,27 @@ import { Label } from "@/lib/components/ui/label";
 export function CreateAccount() {
   const [pseudo, setPseudo] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const handleCreateAccount = async () => {
     try {
-      // Remplacez 'VOTRE_POINT_ENDPOINT_API' par votre point d'API réel
-      const response = await fetch('http://localhost:3001/users', {
+      // Vérifier si le pseudo existe déjà dans la base de données
+      const checkResponse = await fetch(`http://localhost:3001/users/check?pseudo=${pseudo}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const checkData = await checkResponse.json();
+
+      if (checkData.exists) {
+        setError('Le pseudo existe déjà. Choisissez un autre pseudo.');
+        return;
+      }
+
+      // Le pseudo n'existe pas, créer le compte
+      const createResponse = await fetch('http://localhost:3001/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,15 +43,42 @@ export function CreateAccount() {
         body: JSON.stringify({ pseudo, password }),
       });
 
-      if (response.ok) {
-        // Gérer le succès, par exemple, afficher un message de réussite ou rediriger
+      if (createResponse.ok) {
         console.log('Compte créé avec succès !');
+        setError(null);
       } else {
-        // Gérer les erreurs, par exemple, afficher un message d'erreur
         console.error('Erreur lors de la création du compte');
+        setError('Erreur lors de la création du compte. Veuillez réessayer.');
       }
     } catch (error) {
       console.error('Erreur :', error);
+      setError('Une erreur inattendue s\'est produite. Veuillez réessayer.');
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      // Vérifier si le pseudo et le mot de passe correspondent
+      const response = await fetch(`http://localhost:3001/users/check-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pseudo, password }),
+      });
+
+      const data = await response.json();
+
+      if (data.valid) {
+        console.log('Connexion réussie !');
+        setError(null);
+      } else {
+        console.error('Pseudo ou mot de passe incorrect');
+        setError('Pseudo ou mot de passe incorrect. Veuillez réessayer.');
+      }
+    } catch (error) {
+      console.error('Erreur :', error);
+      setError('Une erreur inattendue s\'est produite. Veuillez réessayer.');
     }
   };
 
@@ -88,8 +131,13 @@ export function CreateAccount() {
         </Button>
       </CardFooter>
       <CardFooter>
-        <Button className="w-full" onClick={handleCreateAccount}>Se connecter</Button>
+        <Button className="w-full" onClick={handleLogin}>Se connecter</Button>
       </CardFooter>
+      {error && (
+        <div className="text-red-500 mt-4">
+          {error}
+        </div>
+      )}
     </Card>
   );
 }
