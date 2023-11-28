@@ -17,14 +17,14 @@ export class UserService {
     return this.userRepository.find();
   }
 
-  async add_user(username: string, email: string): Promise<User> {
-    const existingUser = await this.userRepository.findOne({ where: { username } } as FindOneOptions<User>);
+  async add_user(pseudo: string, password: string): Promise<User> {
+    const existingUser = await this.userRepository.findOne({ where: { pseudo } } as FindOneOptions<User>);
     if (existingUser) {
       throw new BadRequestException('Username already exists.');
     }
     let user = new User;
-    user.username = username;
-    user.email = email;
+    user.pseudo = pseudo;
+    user.password = password;
 
     return this.userRepository.save(user); // ASYNC
   }

@@ -22,10 +22,10 @@ export class UserController {
   @Post()
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     try {
-      if (!createUserDto.username || !createUserDto.email) {
+      if (!createUserDto.pseudo || !createUserDto.password) {
         throw new BadRequestException('Username and email are required.');
       }
-      return this.userService.add_user(createUserDto.username, createUserDto.email);
+      return this.userService.add_user(createUserDto.pseudo, createUserDto.password);
     } catch (error) {
       throw new BadRequestException('Invalid request body.');
     }
