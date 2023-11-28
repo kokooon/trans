@@ -1,5 +1,5 @@
 // import { Button } from '@/lib/components/ui/button';
-import { CardForm } from '@/lib/components/auth/CardForm';
+import { CreateAccount } from "@/lib/components/auth/CreateAccount";
 
 // import CTASection from './components/CTASection';
 // import SomeText from './components/SomeText';
@@ -7,7 +7,7 @@ import { CardForm } from '@/lib/components/auth/CardForm';
 const Home = () => {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-8 text-center">
-      <CardForm></CardForm>
+      <CreateAccount/>
     </div>
   );
 };
