@@ -49,13 +49,13 @@ export function CreateAccount() {
         setSuccess('Compte créé avec succès !');
         setError(null);
       } else {
-        console.error('Erreur lors de la création du compte');
         setError('Erreur lors de la création du compte. Veuillez réessayer.');
         setSuccess(null);
       }
     } catch (error) {
       console.error('Erreur :', error);
       setError('Une erreur inattendue s\'est produite. Veuillez réessayer.');
+      setSuccess(null);
     }
   };
 
@@ -73,15 +73,16 @@ export function CreateAccount() {
       const data = await response.json();
 
       if (data.valid) {
-        console.log('Connexion réussie !');
+        setSuccess('Connexion réussie !');
         setError(null);
       } else {
-        console.error('Pseudo ou mot de passe incorrect');
         setError('Pseudo ou mot de passe incorrect. Veuillez réessayer.');
+        setSuccess(null);
       }
     } catch (error) {
       console.error('Erreur :', error);
       setError('Une erreur inattendue s\'est produite. Veuillez réessayer.');
+      setSuccess(null);
     }
   };
 

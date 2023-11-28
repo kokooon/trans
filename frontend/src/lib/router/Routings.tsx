@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import RequireAuth from '@/lib/components/auth/RequireAuth';
 import Page404 from '@/lib/pages/404';
 import Home from '@/lib/pages/home';
+import Login from '../pages/login';
 
 const Routings = () => {
   return (
@@ -11,6 +12,7 @@ const Routings = () => {
       <Routes>
         {/* Routes publiques */}
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
 
         {/* Routes privées */}
         <Route

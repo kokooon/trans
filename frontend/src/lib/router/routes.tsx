@@ -21,6 +21,7 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from '@/lib/layout';
 import Page404 from '@/lib/pages/404'; // Importez votre composant Page404
 import Home from '@/lib/pages/home';
+import Login from '../pages/login';
 
 const AppRoutes = () => {
   return (
@@ -30,6 +31,7 @@ const AppRoutes = () => {
         element={
           <Layout>
             <Route index element={<Home />} />
+            <Route index element={<Login />} />
           </Layout>
         }
       />
