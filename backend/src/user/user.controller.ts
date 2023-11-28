@@ -1,8 +1,9 @@
-//user.controller.ts
+// user.controller.ts
 import { Controller, Get, Post, Body, BadRequestException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('users')
 export class UserController {
@@ -13,19 +14,37 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  // BODY
-  // post/get/.. ({username: "Jackie", email:"a@b.c"})
-
-  // REQUEST (REQ)
-  // post/get/.. -> (body: {...}, headers: {...}, cookies: {...}, protocole: ..., <...>)
-
   @Post()
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     try {
       if (!createUserDto.pseudo || !createUserDto.password) {
-        throw new BadRequestException('Username and email are required.');
+        throw new BadRequestException('Pseudo and password are required.');
       }
+      
+      // Vérifier si le pseudo existe déjà
+      const existingUser = await this.userService.findByPseudo(createUserDto.pseudo);
+      
+      if (existingUser) {
+        throw new BadRequestException('Pseudo already exists. Choose another pseudo.');
+      }
+
       return this.userService.add_user(createUserDto.pseudo, createUserDto.password);
+    } catch (error) {
+      throw new BadRequestException('Invalid request body.');
+    }
+  }
+
+  @Post('check-login')
+  async checkLogin(@Body() loginUserDto: LoginUserDto): Promise<{ valid: boolean }> {
+    try {
+      if (!loginUserDto.pseudo || !loginUserDto.password) {
+        throw new BadRequestException('Pseudo and password are required.');
+      }
+
+      // Vérifier si le pseudo et le mot de passe correspondent
+      const isValid = await this.userService.checkLogin(loginUserDto.pseudo, loginUserDto.password);
+
+      return { valid: isValid };
     } catch (error) {
       throw new BadRequestException('Invalid request body.');
     }
