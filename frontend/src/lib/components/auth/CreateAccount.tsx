@@ -11,12 +11,16 @@ import {
 } from "@/lib/components/ui/card";
 import { Input } from "@/lib/components/ui/input";
 import { Label } from "@/lib/components/ui/label";
+import { useCookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 
 export function CreateAccount() {
   const [pseudo, setPseudo] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [cookies, setCookie] = useCookies(['userToken']);
+  const navigate = useNavigate();
 
   const handleCreateAccount = async () => {
     try {
@@ -69,12 +73,14 @@ export function CreateAccount() {
         },
         body: JSON.stringify({ pseudo, password }),
       });
-
+      console.log(cookies.userToken);
       const data = await response.json();
 
       if (data.valid) {
         setSuccess('Connexion réussie !');
+        setCookie('userToken', '532523532532', { path: '/' });
         setError(null);
+        navigate('/');
       } else {
         setError('Pseudo ou mot de passe incorrect. Veuillez réessayer.');
         setSuccess(null);
