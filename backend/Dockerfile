@@ -13,6 +13,9 @@ RUN npm install -g npm@10.2.4
 # RUN npm update
 RUN npm install typescript@latest
 RUN npm install @nestjs/typeorm typeorm pg
+RUN npm install --save @nestjs/config
+RUN npm install passport-42
+
 
 
 # STEP 3: Retrieve configurations
