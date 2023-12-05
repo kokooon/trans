@@ -10,7 +10,7 @@ export class AuthService {
       let user = await this.userService.findByFortyTwoId(fortytwoId);
   
       if (!user) {
-        //user = await this.userService.add_user(fortytwoId, profile.login);
+        user = await this.userService.add_user(fortytwoId, profile.login);
         // You might want to include other fields from the profile in the creation process
       }
   

@@ -5,12 +5,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { UserModule } from '../user/user.module';
-
+import { MyConfigModule } from 'src/config/myconfig.module';
 
 @Module({
-    imports: [UserModule],
-    providers: [FortyTwoStrategy, AuthService, UserService],
+    imports: [UserModule, MyConfigModule],
+    providers: [FortyTwoStrategy, AuthService],
     controllers: [AuthController],
 })
 export class Auth42Module {}
-

@@ -5,6 +5,7 @@ import { User } from '../entities/user.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { MyConfigModule } from '../config/myconfig.module';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Module({
   imports: [

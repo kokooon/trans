@@ -12,7 +12,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    //private readonly myConfigService: MyConfigService,
+    private readonly myConfigService: MyConfigService,
   ) {}
 
   async findAll(): Promise<User[]> {
