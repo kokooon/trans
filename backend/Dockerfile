@@ -5,22 +5,17 @@ ARG APP_DIR=/app
 # STEP 2: Install dependencies
 RUN mkdir -p ${APP_DIR}
 WORKDIR ${APP_DIR}
-COPY ./package.json .
 
 # RUN rm -rf node_modules
-RUN npm cache clean --force
-RUN npm install -g npm@10.2.4
-# RUN npm update
-RUN npm install typescript@latest
-RUN npm install @nestjs/typeorm typeorm pg
-RUN npm install --save @nestjs/config
-RUN npm install passport-42
+# RUN npm cache clean --force
+# RUN npm install -g npm@10.2.4
+# # RUN npm update
+# RUN npm install -g @nestjs/cli
+# RUN npm install typescript@latest
+# RUN npm install @nestjs/typeorm typeorm pg
+# RUN npm install --save @nestjs/config
+# RUN npm install @nestjs/passport passport-42
 
-
-
-# STEP 3: Retrieve configurations
-# COPY ./.eslintrc.js .
-COPY ./test/ .
 # COPY ./nest-cli.json .
 EXPOSE 3000
 
@@ -29,4 +24,4 @@ EXPOSE 3000
 #RUN npm run typeorm migration:run
 
 # STEP 5: Start the application
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:dev", "--", "--exit-code"]

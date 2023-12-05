@@ -28,7 +28,7 @@ services:
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=pong
     volumes:
-      - ${PWD}/backend/src:/app/src
+      - ${PWD}/backend:/app
     networks:
       - pong-data
     restart: always

@@ -7,8 +7,13 @@ import { UserService } from './user.service';
 import { MyConfigModule } from '../config/myconfig.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(postgresConfig), TypeOrmModule.forFeature([User]), MyConfigModule],
+  imports: [
+    TypeOrmModule.forRoot(postgresConfig), 
+    TypeOrmModule.forFeature([User]), 
+    MyConfigModule
+  ],
   controllers: [UserController],
   providers: [UserService],
+  exports: [UserService],
 })
 export class UserModule {}

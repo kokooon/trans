@@ -11,4 +11,6 @@ export class User {
   @Column()
   password: string;
 
+  @Column({ nullable: true }) // or however you want to define this column
+  fortytwoId: string;
 }

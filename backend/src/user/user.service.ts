@@ -12,7 +12,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly myConfigService: MyConfigService,
+    //private readonly myConfigService: MyConfigService,
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -21,6 +21,10 @@ export class UserService {
 
   async findByPseudo(pseudo: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { pseudo } } as FindOneOptions<User>);
+  }
+
+  async findByFortyTwoId(fortytwoId: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { fortytwoId: fortytwoId } });
   }
 
   async checkLogin(pseudo: string, password: string): Promise<boolean> {
@@ -42,10 +46,10 @@ export class UserService {
     return this.userRepository.save(user);
   }
   
-  async exampleMethodUsingEnvVars(): Promise<void> {
-    const apiKey = this.myConfigService.get_env().apiKey;
-    const publicapiKey = this.myConfigService.get_env().publicapiKey;
-    console.log(apiKey);
-  }
+  // async exampleMethodUsingEnvVars(): Promise<void> {
+  //   const apiKey = this.myConfigService.get_env().apiKey;
+  //   const publicapiKey = this.myConfigService.get_env().publicapiKey;
+  //   console.log(apiKey);
+  // }
   
 }
