@@ -5,7 +5,7 @@ const APP_NAME = 'vite-react-tailwind-starter';
 const Meta = () => {
   return (
     <Helmet>
-      <title>Vite React Tailwind Starter</title>
+      <title> Pong </title>
       <meta name="description" content="Vite React Tailwind Starter Template" />
 
       <meta name="application-name" content={APP_NAME} />
@@ -16,7 +16,7 @@ const Meta = () => {
       <meta name="mobile-web-app-capable" content="yes" />
       <meta name="theme-color" content="#FFFFFF" />
 
-      <link rel="shortcut icon" href="/assets/favicon.svg" />
+      <link rel="shortcut icon" href="/assets/pong.svg" />
       <link rel="manifest" href="/manifest.json" />
     </Helmet>
   );
