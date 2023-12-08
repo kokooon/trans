@@ -1,17 +1,16 @@
+//user.module.ts
+
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import postgresConfig from '../../ormconfig';
 import { User } from '../entities/user.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { MyConfigModule } from '../config/myconfig.module';
-import { InjectRepository } from '@nestjs/typeorm';
+import { MyConfigModule } from 'src/config/myconfig.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(postgresConfig), 
     TypeOrmModule.forFeature([User]), 
-    MyConfigModule
+    MyConfigModule,
   ],
   controllers: [UserController],
   providers: [UserService],

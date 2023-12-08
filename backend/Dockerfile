@@ -6,14 +6,14 @@ ARG APP_DIR=/app
 RUN mkdir -p ${APP_DIR}
 WORKDIR ${APP_DIR}
 
-COPY package.json .
+#COPY package.json .
 # COPY package-lock.json .
 # COPY . .
 # RUN rm -rf node_modules
 # RUN npm cache clean --force
 # RUN npm update
 # RUN npm upgrade
-RUN npm install
+#RUN npm install
 # RUN npm install -g npm@10.2.4
 # RUN npm update
 # RUN npm install -g @nestjs/cli
