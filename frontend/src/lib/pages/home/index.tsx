@@ -8,6 +8,7 @@ const Home = () => {
 
   useEffect(() => {
     if (!cookies.userToken) {
+      console.log("le cookie n existe pas")
       navigate('/login');
     }
   }, [cookies.userToken, navigate]);

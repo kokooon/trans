@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Icons } from "@/lib/components/ui/icone";
 import { Button } from "@/lib/components/ui/button";
 import {
   Card,
@@ -102,10 +101,9 @@ export function CreateAccount() {
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="flex justify-center">
-          <Button variant="outline" className="">
-            <Icons.gitHub className="mr-2 h-4 w-4" />
+        <a href={'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-98088ec7c5a8476034256f4a4b1d02b3d6d8c2f7fac969cccb5641cb4a6349b4&redirect_uri=http%3A%2F%2F127.0.0.1%3A3001%2Fauth%2F42%2Fcallback&response_type=code'}>
             42 Auth
-          </Button>
+          </a>
         </div>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">

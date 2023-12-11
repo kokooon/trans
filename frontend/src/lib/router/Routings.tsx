@@ -18,9 +18,8 @@ const Routings = () => {
         <Route
           path="/private"
           element={
-            <RequireAuth redirectTo="/login">
-              {/* Composant de la page privée */}
-              <div>Contenu de la page privée</div>
+            <RequireAuth redirectTo="/">
+              <Route path="/" element={<Home />} />
             </RequireAuth>
           }
         />

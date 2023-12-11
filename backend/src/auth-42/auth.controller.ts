@@ -17,7 +17,8 @@ export class AuthController {
     // Ce point de terminaison sera appelé après l'authentification 42
     //console.log("test1")
     //console.log("res",res)
+    res.cookie('userToken', '532523532532', { httpOnly: false, path: '/' });
     // Vous pouvez ajouter ici une logique personnalisée si nécessaire
-    res.redirect('/'); // Redirigez l'utilisateur vers la page principale après l'authentification
+    res.redirect('http://127.0.0.1:3000/private'); // Redirigez l'utilisateur vers la page principale après l'authentification
   }
 }
