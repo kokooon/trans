@@ -37,6 +37,7 @@ export class UserService {
     let user = new User();
     user.id = profile.id;
     user.pseudo = profile.username;
+    user.email = profile.emails[0].value;
     user.password = "1234";
     return this.userRepository.save(user);
   }
