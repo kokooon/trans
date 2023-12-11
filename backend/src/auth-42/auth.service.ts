@@ -6,11 +6,13 @@ import { UserService } from '../user/user.service';
 export class AuthService {
     constructor(private readonly userService: UserService) {}
 
-    async findOrCreateUser(fortytwoId: string, profile: any): Promise<any> {
-      let user = await this.userService.findByFortyTwoId(fortytwoId);
+    async findOrCreateUser(profile: any): Promise<any> {
+      //console.log("coucou");
+      let user = await this.userService.findByFortyTwoId(profile);
   
       if (!user) {
-        user = await this.userService.add_user(fortytwoId, profile.login);
+        //console.log("pas de user");
+        user = await this.userService.add_user_42(profile);
         // You might want to include other fields from the profile in the creation process
       }
   

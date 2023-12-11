@@ -23,13 +23,22 @@ export class UserService {
     return this.userRepository.findOne({ where: { pseudo } } as FindOneOptions<User>);
   }
 
-  async findByFortyTwoId(fortytwoId: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { fortytwoId: fortytwoId } });
+  async findByFortyTwoId(profile: any): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { pseudo: profile.username } });
   }
 
   async checkLogin(pseudo: string, password: string): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { pseudo, password } } as FindOneOptions<User>);
     return !!user;
+  }
+
+  async add_user_42(profile: any)
+  {
+    let user = new User();
+    user.id = profile.id;
+    user.pseudo = profile.username;
+    user.password = "1234";
+    return this.userRepository.save(user);
   }
 
   async add_user(pseudo: string, password: string): Promise<User> {
