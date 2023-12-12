@@ -22,6 +22,9 @@ import Layout from '@/lib/layout';
 import Page404 from '@/lib/pages/404'; // Importez votre composant Page404
 import Home from '@/lib/pages/home';
 import Login from '../pages/login';
+import Profile from '../pages/profile';
+import Game from '../pages/game';
+import Settings from '../pages/settings/settings';
 
 const AppRoutes = () => {
   return (
@@ -32,6 +35,9 @@ const AppRoutes = () => {
           <Layout>
             <Route index element={<Home />} />
             <Route index element={<Login />} />
+            <Route index element={<Profile />} />
+            <Route index element={<Game />} />
+            <Route index element={<Settings />} />
           </Layout>
         }
       />

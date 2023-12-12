@@ -5,6 +5,9 @@ import RequireAuth from '@/lib/components/auth/RequireAuth';
 import Page404 from '@/lib/pages/404';
 import Home from '@/lib/pages/home';
 import Login from '../pages/login';
+import Profile from '../pages/profile';
+import Settings from '../pages/settings/settings';
+import Game from '../pages/game';
 
 const Routings = () => {
   return (
@@ -13,6 +16,9 @@ const Routings = () => {
         {/* Routes publiques */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/game" element={<Game />} />
 
         {/* Routes privées */}
         <Route
