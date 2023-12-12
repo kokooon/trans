@@ -9,7 +9,6 @@ const Login = () => {
 
   useEffect(() => {
     if (cookies.userToken) {
-      console.log('coucou');
       navigate('/');
     }
   }, [cookies.userToken, navigate]);
