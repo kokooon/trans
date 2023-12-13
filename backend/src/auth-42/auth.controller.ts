@@ -5,8 +5,9 @@ import { AuthGuard } from '@nestjs/passport';
 export class AuthController {
   @Get('42')
   @UseGuards(AuthGuard('42'))
-  async fortyTwoLogin() {
+  async fortyTwoLogin(@Req() req, @Res() res) {
     console.log('Reached /auth/42 endpoint');
+    res.redirect('http://127.0.0.1:3000/private');
     // Ce point de terminaison redirigera l'utilisateur vers la stratégie 42 pour l'authentification
   }
 

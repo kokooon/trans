@@ -92,6 +92,28 @@ export function CreateAccount() {
     }
   };
 
+  // const handleLoginClick = async () => {
+  //   try {
+  //     const response = await fetch('http://127.0.0.1:3001/auth/42', {
+  //       method: 'GET',
+  //       // Ajoutez des en-têtes ou des paramètres de requête si nécessaire
+  //     });
+
+  //     if (response.ok) {
+  //       // La requête a réussi, effectuez des actions supplémentaires si nécessaire
+  //       console.log('Login success!');
+  //     } else {
+  //       // La requête a échoué, gérez les erreurs
+  //       console.error('Login failed:', response.status, response.statusText);
+  //     }
+  //   } catch (error) {
+  //     // Gérez les erreurs liées à la requête
+  //     console.error('Error during login:', error);
+  //   }
+  // }
+
+  'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-98088ec7c5a8476034256f4a4b1d02b3d6d8c2f7fac969cccb5641cb4a6349b4&redirect_uri=http%3A%2F%2F127.0.0.1%3A3001%2Fauth%2F42%2Fcallback&response_type=code'
+
   return (
     <Card>
       <CardHeader className="space-y-1">
@@ -102,7 +124,7 @@ export function CreateAccount() {
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="flex justify-center">
-        <Button variant="outline" onClick={() => window.location.href = 'http://127.0.0.1:3001/auth/42'}>
+        <Button variant="outline" onClick={() => window.location.href = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-98088ec7c5a8476034256f4a4b1d02b3d6d8c2f7fac969cccb5641cb4a6349b4&redirect_uri=http%3A%2F%2F127.0.0.1%3A3001%2Fauth%2F42%2Fcallback&response_type=code'}>
             <img src='../../../../assets/Final-sigle-seul.svg' className="mr-2 w-10 h-10" />
           </Button>
         </div>
