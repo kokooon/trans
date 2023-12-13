@@ -1,3 +1,4 @@
+import { UserNav } from '@/lib/components/ui/user-nav';
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +15,7 @@ const Profile = () => {
     }, [cookies.userToken, navigate]);
     return (
         <div>
-            <p>ceci est la page du profile !</p>
+            <UserNav/>
         </div>
     )
 }

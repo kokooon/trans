@@ -20,7 +20,7 @@ import { useNavigate } from 'react-router-dom';
   
 
 
-export function UserNav() {
+function UserAv() {
 
     const [, , removeCookie] = useCookies(['userToken']);
     const navigate = useNavigate();
@@ -49,6 +49,9 @@ export function UserNav() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => navigate('/')}>
+            Home
+          </DropdownMenuItem>
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => navigate('/profile')}>
               Profile
@@ -63,5 +66,14 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+    )
+  }
+  export function UserNav() {
+    return (
+      <div className="flex items-start justify-between p-4">
+      <div className="ml-auto">
+        <UserAv />
+      </div>
+    </div>
     )
   }

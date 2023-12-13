@@ -16,10 +16,8 @@ const Home = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex items-start justify-between p-4">
-        <div className="ml-auto">
+      <div>
           <UserNav />
-        </div>
       </div>
       <div className="flex flex-col items-center justify-center flex-1">
         <Button variant="outline" className="osef" onClick={() => navigate('/game')}>

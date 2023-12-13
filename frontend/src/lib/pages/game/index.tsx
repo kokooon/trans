@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
+import { UserNav } from '@/lib/components/ui/user-nav';
     
 const Game = () => {
     const [cookies, ,] = useCookies(['userToken']);
@@ -13,9 +14,9 @@ const Game = () => {
     }, [cookies.userToken, navigate]);
 
     return (
-        <div>
-            <p>ceci est la page du jeu !</p>
-        </div>
+      <div>
+          <UserNav />
+      </div>
     )
 }
 
