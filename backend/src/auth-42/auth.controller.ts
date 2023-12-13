@@ -13,12 +13,22 @@ export class AuthController {
   @Get('42/callback')
   @UseGuards(AuthGuard('42'))
   async fortyTwoLoginCallback(@Req() req, @Res() res) {
-    // console.log('Reached /auth/42/callback endpoint');
-    // Ce point de terminaison sera appelé après l'authentification 42
-    //console.log("test1")
-    //console.log("res",res)
-    res.cookie('userToken', '532523532532', { httpOnly: false, path: '/' });
-    // Vous pouvez ajouter ici une logique personnalisée si nécessaire
-    res.redirect('http://127.0.0.1:3000/private'); // Redirigez l'utilisateur vers la page principale après l'authentification
+    try {
+      const user = req.user; // Assuming user information is available in the request object
+  
+      if (!user || !user.pseudo) {
+        throw new Error('Invalid user data');
+      }
+  
+      // Storing only the pseudo in the cookie
+      res.cookie('userPseudo', user.pseudo, { httpOnly: false, path: '/' });
+      res.cookie('userToken', '532523532532', { httpOnly: false, path: '/' });
+  
+      // Redirect the user to the desired page
+      res.redirect('http://127.0.0.1:3000/private');
+    } catch (error) {
+      console.error('Error processing user details:', error);
+      res.status(500).send('Internal Server Error');
+    }
   }
 }

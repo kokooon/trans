@@ -16,4 +16,7 @@ export class User {
 
   @Column({ nullable: true })
   fortytwoId: string;
+
+  @Column({ type: 'text', nullable: true })
+  avatar: string;
 }

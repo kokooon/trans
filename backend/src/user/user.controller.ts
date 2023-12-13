@@ -1,5 +1,5 @@
 // user.controller.ts
-import { Controller, Get, Post, Body, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, BadRequestException, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -12,6 +12,24 @@ export class UserController {
   @Get()
   async findAll(): Promise<User[]> {
     return this.userService.findAll();
+  }
+
+  @Get(':pseudo')
+  async findByPseudo(@Param('pseudo') pseudo: string) {
+    return this.userService.findByPseudo(pseudo);
+  }
+
+  @Get(':pseudo/avatar') // Nouvelle route pour obtenir l'avatar
+  async getAvatar(@Param('pseudo') pseudo: string) {
+    const base64Avatar = await this.userService.getAvatar(pseudo);
+
+    if (base64Avatar) {
+      // Si l'avatar est disponible, renvoyez-le en réponse
+      return { avatar: base64Avatar };
+    } else {
+      // Si l'avatar n'est pas disponible, renvoyez une réponse appropriée
+      return { message: 'Avatar not found' };
+    }
   }
 
   @Get('check')

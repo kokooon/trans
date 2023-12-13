@@ -5,6 +5,7 @@ import { Repository, FindOneOptions } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { BadRequestException } from '@nestjs/common';
 import { MyConfigService } from '../config/myconfig.service';
+import * as axios from 'axios';
 
 
 @Injectable()
@@ -14,6 +15,35 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     private readonly myConfigService: MyConfigService,
   ) {}
+
+  async convertImageToBase64(imageUrl: string): Promise<string> {
+    const response = await axios.default.get(imageUrl, { responseType: 'arraybuffer' });
+    const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+    return base64Image;
+  }
+
+  async getAvatar(pseudo: string): Promise<string | undefined> {
+    const user = await this.userRepository.findOne({ where: { pseudo } });
+
+    // TROP VOLUMINEUX
+    // if (user && user.avatar) {
+    //   // Si l'utilisateur existe et a un avatar
+    //   try {
+    //     // Convertir l'URL de l'avatar en base64
+    //     const base64Avatar = await this.convertImageToBase64(user.avatar); TROP VOLUMINEUX
+    //     return base64Avatar;
+    //   } catch (error) {
+    //     console.error('Error converting avatar to base64:', error);
+    //     return undefined;
+    //   }
+    // }
+    if (user && user.avatar) {
+      // Si l'utilisateur existe et a un avatar
+      return user.avatar;
+    }
+
+    return undefined;
+  }
 
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
@@ -39,6 +69,11 @@ export class UserService {
     user.pseudo = profile.username;
     user.email = profile.emails[0].value;
     user.password = "1234";
+    // if (profile._json.image && profile._json.image.link) {
+    //   const base64Image = await this.convertImageToBase64(profile._json.image.link);
+    //   user.avatar = base64Image;
+    // } TROP VOLUMINEUX
+    user.avatar = profile._json.image.link;
     return this.userRepository.save(user);
   }
 
