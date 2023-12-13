@@ -25,7 +25,7 @@ const Routings = () => {
           path="/private"
           element={
             <RequireAuth redirectTo="/">
-              <Route path="/" element={<Home />} />
+              {/* <Route path="/" element={<Home />} /> */}
             </RequireAuth>
           }
         />
