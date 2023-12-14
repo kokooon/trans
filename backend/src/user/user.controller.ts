@@ -52,7 +52,7 @@ export class UserController {
         throw new BadRequestException('Pseudo already exists. Choose another pseudo.');
       }
 
-      return this.userService.add_user(createUserDto.pseudo, createUserDto.password);
+      return this.userService.add_user(createUserDto.pseudo, createUserDto.password, createUserDto.email, createUserDto.avatar);
     } catch (error) {
       throw new BadRequestException('Invalid request body.');
     }

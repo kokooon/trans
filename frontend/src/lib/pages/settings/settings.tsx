@@ -21,7 +21,7 @@ const Settings = () => {
       </div>
         <div>
             <Avatar className="h-50 w-50">
-              <AvatarImage src="https://cdn.intra.42.fr/users/92731bef5d53f8af1ed11fd026274345/gmarzull.jpg" alt="@shadcn"/>
+              <AvatarImage src="https://cdn.pixabay.com/photo/2015/05/13/13/53/skull-765477_640.jpg" alt="@shadcn"/>
               <AvatarFallback>SC</AvatarFallback>
             </Avatar>
         </div>

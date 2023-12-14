@@ -25,7 +25,7 @@ export function CreateAccount() {
   const handleCreateAccount = async () => {
     try {
       // Vérifier si le pseudo existe déjà dans la base de données
-      const checkResponse = await fetch(`http://localhost:3001/users/check?pseudo=${pseudo}`, {
+      /*const checkResponse = await fetch(`http://localhost:3001/users/check?pseudo=${pseudo}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -38,15 +38,17 @@ export function CreateAccount() {
         setError('Le pseudo existe déjà. Choisissez un autre pseudo.');
         setSuccess(null);
         return;
-      }
+      }*/
 
       // Le pseudo n'existe pas, créer le compte
+      const avatar = "https://cdn.intra.42.fr/users/92731bef5d53f8af1ed11fd026274345/gmarzull.jpg";
+      const email = "test@gmail.com";
       const createResponse = await fetch('http://localhost:3001/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ pseudo, password }),
+        body: JSON.stringify({ pseudo, password, email, avatar}),
       });
 
       if (createResponse.ok) {

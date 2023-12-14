@@ -77,7 +77,7 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async add_user(pseudo: string, password: string): Promise<User> {
+  async add_user(pseudo: string, password: string, email: string, avatar: string): Promise<User> {
     const existingUser = await this.findByPseudo(pseudo);
 
     if (existingUser) {
@@ -87,7 +87,8 @@ export class UserService {
     let user = new User();
     user.pseudo = pseudo;
     user.password = password;
-
+    user.email = email;
+    user.avatar = avatar; 
     return this.userRepository.save(user);
   }
   

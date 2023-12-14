@@ -52,7 +52,7 @@ async function fetchAvatarByPseudo(pseudo: string) {
 
 function UserAv() {
 
-    const [, , removeCookie] = useCookies(['userToken']);
+    const [, , removeCookie] = useCookies(['userToken', 'userPseudo']);
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
@@ -73,6 +73,7 @@ function UserAv() {
 
     const handleLogout = () => {
         removeCookie('userToken');
+        removeCookie('userPseudo');
         navigate('/login');
       };
 
