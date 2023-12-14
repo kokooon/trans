@@ -17,38 +17,7 @@ import {
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-   
-async function fetchUserDetailsByPseudo(pseudo: string) {
-  try {
-    const response = await fetch(`http://127.0.0.1:3001/users/${pseudo}`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch user details');
-    }
-
-    const userData = await response.json();
-    return userData;
-  } catch (error) {
-    console.error('Error fetching user details:', error);
-    return null;
-  }
-}
-
-async function fetchAvatarByPseudo(pseudo: string) {
-  try {
-    const response = await fetch(`http://127.0.0.1:3001/users/${pseudo}/avatar`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch user avatar');
-    }
-
-    const avatarData = await response.json();
-    return avatarData.avatar;
-  } catch (error) {
-    console.error('Error fetching user avatar:', error);
-    return null;
-  }
-}
+import { fetchUserDetailsByPseudo, fetchAvatarByPseudo } from "@/lib/components/utils/UtilsFetch";
 
 function UserAv() {
 
@@ -78,7 +47,7 @@ function UserAv() {
 
     return (
       <DropdownMenu>
-        <div>
+        {/* <div>
           {user ? (
             <>
             <p>Username: {user.pseudo}</p>
@@ -87,7 +56,7 @@ function UserAv() {
             ) : (
             <p>User unknown</p>
             )}
-        </div>
+        </div> */}
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
