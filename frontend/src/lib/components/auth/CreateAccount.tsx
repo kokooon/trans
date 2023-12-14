@@ -19,7 +19,7 @@ export function CreateAccount() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [cookies, setCookie] = useCookies(['userToken']);
+  const [, setCookies] = useCookies(['userToken', 'userPseudo']);
   const navigate = useNavigate();
 
   const handleCreateAccount = async () => {
@@ -73,12 +73,12 @@ export function CreateAccount() {
         },
         body: JSON.stringify({ pseudo, password }),
       });
-      console.log(cookies.userToken);
       const data = await response.json();
 
       if (data.valid) {
         setSuccess('Connexion réussie !');
-        setCookie('userToken', '532523532532', { path: '/' });
+        setCookies('userToken', '532523532532', { path: '/' });
+        setCookies('userPseudo', pseudo, { path: '/' });
         setError(null);
         navigate('/');
       } else {
