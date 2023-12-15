@@ -66,7 +66,8 @@ export class UserService {
   {
     let user = new User();
     user.id = profile.id;
-    user.pseudo = profile.username;
+    user.pseudo = "ChooseUsername";
+    user.pseudo42 = profile.username;
     user.email = profile.emails[0].value;
     user.password = "1234";
     // if (profile._json.image && profile._json.image.link) {
@@ -86,6 +87,7 @@ export class UserService {
 
     let user = new User();
     user.pseudo = pseudo;
+    user.pseudo42 = pseudo;
     user.password = password;
     user.email = email;
     user.avatar = avatar; 

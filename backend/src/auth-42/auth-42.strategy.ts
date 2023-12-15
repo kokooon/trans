@@ -4,7 +4,6 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
 import { AuthService } from './auth.service';
 import { MyConfigService } from 'src/config/myconfig.service';
-import { User42 } from './auth.interface';
 
 
 @Injectable()

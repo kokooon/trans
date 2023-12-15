@@ -9,6 +9,9 @@ export class User {
   pseudo: string;
 
   @Column()
+  pseudo42: string;
+  
+  @Column()
   password: string;
 
   @Column({ nullable: true })
