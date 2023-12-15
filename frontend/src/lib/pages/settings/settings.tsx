@@ -1,5 +1,5 @@
 // import {Avatar, AvatarFallback, AvatarImage } from "@/lib/components/ui/avatar"
-// import { UserNav } from "@/lib/components/ui/user-nav";
+import { UserNav } from "@/lib/components/ui/user-nav";
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
@@ -48,10 +48,12 @@ const Settings = () => {
   };
   
     return (
+        <div>
+        <UserNav/>
       <div className="flex flex-col items-center p-4">
       {/* Photo de profil */}
-      <div className="mb-4 cursor-pointer" onClick={handleProfilePictureClick}>
-          <img src={avatar || 'placeholder_url'} alt="Profile" className="rounded-full w-24 h-24" />
+      <div className="mb-4 cursor-pointer profile-pic-container mb-4 cursor-pointer hover:scale-110 transition-transform duration-300" onClick={handleProfilePictureClick}>
+          <img src={avatar || 'placeholder_url'} alt="Profile" className="rounded-full w-28 h-28" />
       </div>
 
       {/* Changement de nom */}
@@ -61,7 +63,7 @@ const Settings = () => {
               value={username} 
               onChange={handleNameChange} 
               className="border rounded p-2 mr-2"
-              placeholder="Change your name" 
+              placeholder="Username" 
           />
           <button onClick={handleNameSubmit} className="bg-blue-500 text-white rounded p-2">
               Update
@@ -80,6 +82,7 @@ const Settings = () => {
           </label>
           <span className="ml-2">{is2FAEnabled ? '2FA Enabled' : '2FA Disabled'}</span>
       </div>
+  </div>
   </div>
 );
 }
