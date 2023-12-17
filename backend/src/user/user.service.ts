@@ -54,7 +54,7 @@ export class UserService {
   }
 
   async findByFortyTwoId(profile: any): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { pseudo: profile.username } });
+    return this.userRepository.findOne({ where: { pseudo42: profile.username } });
   }
 
   async checkLogin(pseudo: string, password: string): Promise<boolean> {
@@ -65,7 +65,7 @@ export class UserService {
   async add_user_42(profile: any)
   {
     let user = new User();
-    user.id = profile.id;
+    user.fortytwoId = profile.id;
     user.pseudo = "ChooseUsername";
     user.pseudo42 = profile.username;
     user.email = profile.emails[0].value;
