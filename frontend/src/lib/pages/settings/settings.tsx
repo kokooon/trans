@@ -1,17 +1,15 @@
-// import {Avatar, AvatarFallback, AvatarImage } from "@/lib/components/ui/avatar"
 import { UserNav } from "@/lib/components/ui/user-nav";
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserDataAndAvatar, isTokenValid } from "@/lib/components/utils/UtilsFetch";
-// import { Input } from "@/lib/components/ui/input";
 
 const Settings = () => {
     const [cookies, ,] = useCookies(['userToken', 'userPseudo']);
     const navigate = useNavigate();
     const [, setUser] = useState<User | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
-    const [username, setUsername] = useState<string>(''); // Pour le nom de l'utilisateur
+    const [username, setUsername] = useState<string>(''); 
     const [is2FAEnabled, setIs2FAEnabled] = useState<boolean>(false);
     const [showNotification, setShowNotification] = useState<boolean>(false);
 
@@ -31,73 +29,89 @@ const Settings = () => {
         }
     }, [cookies.userToken, navigate]);
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            // Traiter le fichier ici
+        }
+    };
+
     const handleProfilePictureClick = () => {
-      // Logique pour changer la photo de profil
-  };
+        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+        if (fileInput) {
+            fileInput.click();
+        }
+    };
 
-  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setUsername(event.target.value);
-  };
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setUsername(event.target.value);
+    };
 
-  const handleNameSubmit = () => {
-      // Logique pour mettre à jour le nom de l'utilisateur
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 3000);
-  };
+    const handleNameSubmit = () => {
+        // Logique pour mettre à jour le nom de l'utilisateur
+        setShowNotification(true);
+        setTimeout(() => setShowNotification(false), 3000);
+    };
 
-  const toggle2FA = () => {
-      setIs2FAEnabled(!is2FAEnabled);
-      // Logique supplémentaire pour gérer le 2FA
-  };
-  
+    const toggle2FA = () => {
+        setIs2FAEnabled(!is2FAEnabled);
+        // Logique supplémentaire pour gérer le 2FA
+    };
+
     return (
         <div>
-        <UserNav/>
-      <div className="flex flex-col items-center p-4">
-      {/* Photo de profil */}
-      <div className="w-full flex justify-center">
-      <div className="mb-4 cursor-pointer profile-pic-container mb-4 cursor-pointer hover:scale-110 transition-transform duration-300" onClick={handleProfilePictureClick}>
-          <img src={avatar || 'placeholder_url'} alt="Profile" className="rounded-full w-28 h-28" />
-      </div>
-        </div>
+            <UserNav/>
+            <div className="flex flex-col items-center p-4">
+                {/* Photo de profil */}
+                <div className="w-full flex justify-center">
+                    <div className="mb-4 cursor-pointer profile-pic-container hover:scale-110 transition-transform duration-300" onClick={handleProfilePictureClick}>
+                        <img src={avatar || 'placeholder_url'} alt="Profile" className="rounded-full w-28 h-28" />
+                        <input 
+                            type="file" 
+                            id="fileInput" 
+                            style={{ display: 'none' }} 
+                            onChange={handleFileChange}
+                        />
+                    </div>
+                </div>
 
-      <div className="flex flex-col items-center gap-4">
-      {/* Changement de nom */}
-      <div className="mb-4">
-          <input 
-              type="text" 
-              value={username} 
-              onChange={handleNameChange} 
-              className="border rounded p-2 mr-2"
-              placeholder="Username" 
-          />
-          <button onClick={handleNameSubmit} className="bg-blue-500 text-white rounded p-2">
-              Update
-          </button>
-          <div className={`fixed bottom-5 left-5 bg-green-500 text-white py-2 px-4 rounded opacity-75 flex items-start justify-between ${showNotification ? 'block' : 'hidden'}`}>
-          <span>Username updated successfully!</span>
-            <div className="w-full bg-gray-400 absolute top-0 left-0 h-1">
-                <div className="bg-gray-800 h-1 w-0 progress-bar"> </div>
+                {/* Changement de nom */}
+                <div className="flex flex-col items-center gap-4">
+                    <div className="mb-4">
+                        <input 
+                            type="text" 
+                            value={username} 
+                            onChange={handleNameChange} 
+                            className="border rounded p-2 mr-2"
+                            placeholder="Username" 
+                        />
+                        <button onClick={handleNameSubmit} className="bg-blue-500 text-white rounded p-2">
+                            Update
+                        </button>
+                        <div className={`fixed bottom-5 left-5 bg-green-500 text-white py-2 px-4 rounded opacity-75 flex items-start justify-between ${showNotification ? 'block' : 'hidden'}`}>
+                            <span>Username updated successfully!</span>
+                            <div className="w-full bg-gray-400 absolute top-0 left-0 h-1">
+                                <div className="bg-gray-800 h-1 w-0 progress-bar"> </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Switch pour 2FA */}
+                    <div className="flex items-center">
+                        <label className="switch">
+                            <input 
+                                type="checkbox" 
+                                checked={is2FAEnabled} 
+                                onChange={toggle2FA} 
+                            />
+                            <span className="slider round"></span>
+                        </label>
+                        <span className="ml-2">{is2FAEnabled ? '2FA Enabled' : '2FA Disabled'}</span>
+                    </div>
+                </div>
             </div>
         </div>
-        </div>
-
-      {/* Switch pour 2FA */}
-      <div className="flex items-center">
-          <label className="switch">
-              <input 
-                  type="checkbox" 
-                  checked={is2FAEnabled} 
-                  onChange={toggle2FA} 
-              />
-              <span className="slider round"></span>
-          </label>
-          <span className="ml-2">{is2FAEnabled ? '2FA Enabled' : '2FA Disabled'}</span>
-      </div>
-  </div>
-  </div>
-  </div>
-);
+    );
 }
 
 export default Settings;
