@@ -17,9 +17,11 @@ import {
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
+import { fetchUserDetails } from '../utils/UtilsFetch';
+import { fetchAvatarByPseudo } from '../utils/UtilsFetch';
 //import { User } from './../user.model.tsx';
 
-async function fetchUserDetails() {
+/*async function fetchUserDetails() {
   try {
       const response = await fetch(`http://127.0.0.1:3001/users/cookie`, {
         method: 'GET',
@@ -56,11 +58,11 @@ async function fetchAvatarByPseudo(pseudo: string) {
     console.error('Error fetching user avatar:', error);
     return null;
   }
-}
+}*/
 
 function UserAv() {
 
-    const [, , removeCookie] = useCookies(['userToken', 'userPseudo']);
+    const [, , removeCookie] = useCookies(['userToken', 'userPseudo', 'jwt']);
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
@@ -87,6 +89,7 @@ function UserAv() {
     const handleLogout = () => {
         removeCookie('userToken');
         removeCookie('userPseudo');
+        //removeCookie('jwt'); MARCHE PAS
         navigate('/login');
       };
 
@@ -95,8 +98,8 @@ function UserAv() {
         <div>
           {user ? (
             <>
-            <p>Username: {user.pseudo42}</p>
-            <p>Email: {user.email}</p>
+            <p>Username: {user[0].pseudo42}</p>
+            <p>Email: {user[0].email}</p>
             </>
             ) : (
             <p>User unknown</p>
@@ -106,8 +109,8 @@ function UserAv() {
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
             {/* Utiliser l'avatar récupéré */}
-            <AvatarImage src={avatar || 'placeholder_url'} alt={user?.pseudo || 'Unknown User'} />
-            <AvatarFallback>{user?.pseudo?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+            <AvatarImage src={avatar || 'placeholder_url'} alt={user?.pseudo42 || 'Unknown User'} />
+            <AvatarFallback>{user?.pseudo42?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
           </Avatar>
           </Button>
         </DropdownMenuTrigger>
@@ -115,7 +118,7 @@ function UserAv() {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">
-                {user && user.pseudo ? user.pseudo : 'Unknown User'}
+                {user && user[0].pseudo42 ? user[0].pseudo42 : 'Unknown User'}
               </p>
             </div>
           </DropdownMenuLabel>
