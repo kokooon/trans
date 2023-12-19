@@ -36,7 +36,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     try
     {
       const user = await this.authService.findOrCreateUser(profile);
-    return(user);
+      return (user);
     }
     catch (error) {
       console.error('Error in validate method:', error);

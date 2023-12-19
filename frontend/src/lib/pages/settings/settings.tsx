@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserDataAndAvatar, isTokenValid } from "@/lib/components/utils/UtilsFetch";
+//import { User } from './user.model.tsx';
 
 const Settings = () => {
     const [cookies, ,] = useCookies(['userToken', 'userPseudo']);
     const navigate = useNavigate();
-    const [, setUser] = useState<User | null>(null);
+    const [, setUser] = useState<any | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
 
     useEffect(() => {

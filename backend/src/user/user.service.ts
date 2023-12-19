@@ -1,5 +1,5 @@
 // user.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions } from 'typeorm';
 import { User } from '../entities/user.entity';
@@ -57,26 +57,34 @@ export class UserService {
     return this.userRepository.findOne({ where: { pseudo42: profile.username } });
   }
 
+  async findById(userId: number): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { id: userId } });
+  }
+
   async checkLogin(pseudo: string, password: string): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { pseudo, password } } as FindOneOptions<User>);
     return !!user;
   }
 
-  async add_user_42(profile: any)
-  {
-    let user = new User();
-    user.fortytwoId = profile.id;
-    user.pseudo = "ChooseUsername";
-    user.pseudo42 = profile.username;
-    user.email = profile.emails[0].value;
-    user.password = "1234";
-    // if (profile._json.image && profile._json.image.link) {
-    //   const base64Image = await this.convertImageToBase64(profile._json.image.link);
-    //   user.avatar = base64Image;
-    // } TROP VOLUMINEUX
-    user.avatar = profile._json.image.link;
-    return this.userRepository.save(user);
-  }
+  async add_user_42(profile: any) {
+    try {
+        let user = new User();
+        user.fortytwoId = profile.id;
+        user.pseudo = profile.username;
+        user.pseudo42 = profile.username;
+        user.email = profile.emails[0].value;
+        user.password = "1234";
+        user.avatar = profile._json.image.link;
+
+        // Enregistrez l'utilisateur dans la base de données
+        const savedUser = await this.userRepository.save(user);
+
+        return savedUser;
+    } catch (error) {
+        console.error('Erreur lors de l\'ajout de l\'utilisateur :', error);
+        throw new Error('Erreur lors de l\'ajout de l\'utilisateur');
+    }
+}
 
   async add_user(pseudo: string, password: string, email: string, avatar: string): Promise<User> {
     const existingUser = await this.findByPseudo(pseudo);

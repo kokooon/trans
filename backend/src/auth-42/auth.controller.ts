@@ -1,8 +1,10 @@
 import { Controller, Get, UseGuards, Req, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
   @Get('42')
   @UseGuards(AuthGuard('42'))
   async fortyTwoLogin(@Req() req, @Res() res) {
@@ -13,15 +15,16 @@ export class AuthController {
 
   @Get('42/callback')
   @UseGuards(AuthGuard('42'))
-  async fortyTwoLoginCallback(@Req() req, @Res() res) {
+  async fortyTwoLoginCallback(@Req() req, @Res() res: any) {
     try {
-      const user = req.user; // Assuming user information is available in the request object
+      const user = req.user;
   
       if (!user || !user.pseudo) {
         throw new Error('Invalid user data');
       }
-  
-      // Storing only the pseudo in the cookie
+      const jwtToken = this.authService.getJwtToken();
+
+      res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
       res.cookie('userPseudo', user.pseudo, { httpOnly: false, path: '/' });
       res.cookie('userToken', '532523532532', { httpOnly: false, path: '/' });
   

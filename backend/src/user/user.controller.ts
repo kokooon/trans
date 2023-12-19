@@ -1,13 +1,39 @@
 // user.controller.ts
-import { Controller, Get, Param, Post, Body, BadRequestException, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, BadRequestException, Query, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { AuthService } from '../auth-42/auth.service';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
+
+  @Get('cookie')
+  async findbyId(@Req() req): Promise<User[]> {
+    try {
+      const jwtCookie = req.cookies.jwt;
+      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+      const userId = parseInt(decodedData.userId, 10);
+      if (!isNaN(userId)) {
+        const User = await this.userService.findById(userId);
+        return [User];
+      } else {
+        // Gérer le cas où userId n'est pas une chaîne représentant un nombre valide
+        throw new BadRequestException('Invalid userId');
+      }
+      //const user = await this.userService.findById(decodedData.userId);
+
+      //return [user]; // Assurez-vous d'ajuster cela en fonction de votre structure de code exacte
+    } catch (error) {
+      console.error('Error processing JWT cookie:', error);
+      throw new BadRequestException('Invalid JWT token');
+    }
+  }
 
   @Get()
   async findAll(): Promise<User[]> {

@@ -1,17 +1,41 @@
 // import { useState, useEffect } from 'react';
 // import { useCookies } from 'react-cookie';
 // import { useNavigate } from 'react-router-dom';
+import { User } from '../user.model.tsx';
 
-export async function fetchUserDetailsByPseudo(pseudo: string) {
-  try {
-    const response = await fetch(`http://127.0.0.1:3001/users/${pseudo}`);
+// export async function fetchUserDetailsByPseudo(pseudo: string) {
+//   try {
+//     const response = await fetch(`http://127.0.0.1:3001/users/${pseudo}`);
     
-    if (!response.ok) {
-      throw new Error('Failed to fetch user details');
-    }
+//     if (!response.ok) {
+//       throw new Error('Failed to fetch user details');
+//     }
 
-    const userData = await response.json();
-    return userData;
+//     const userData = await response.json();
+//     return userData;
+//   } catch (error) {
+//     console.error('Error fetching user details:', error);
+//     return null;
+//   }
+// }
+
+export async function fetchUserDetails() {
+  try {
+      const response = await fetch(`http://127.0.0.1:3001/users/cookie`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch user details');
+      }
+  
+      const userData = await response.json();
+      return userData;
+
   } catch (error) {
     console.error('Error fetching user details:', error);
     return null;
@@ -36,7 +60,10 @@ export async function fetchAvatarByPseudo(pseudo: string) {
 
 export async function fetchUserDataAndAvatar(pseudo: string): Promise<{ userData: User | null, avatarData: string | null }> {
     try {
-      const userData = await fetchUserDetailsByPseudo(pseudo);
+      const userData = await fetchUserDetails();
+      //USER N' ARRIVE PAS A SE SET, J'AI RAJOUTER L IMPORT DE USER INTERFACE (et dans /pages/settings aussi)
+      console.log("le userData: ", userData);
+      //PQUOI QUAND J AFFICHE LES LOGS JE LES AI 2 FOIS ???
       const avatarData = await fetchAvatarByPseudo(pseudo);
       return { userData, avatarData };
     } catch (error) {

@@ -6,6 +6,7 @@ import { User } from '../entities/user.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { MyConfigModule } from 'src/config/myconfig.module';
+import { AuthService } from 'src/auth-42/auth.service';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { MyConfigModule } from 'src/config/myconfig.module';
     MyConfigModule,
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, AuthService],
   exports: [UserService],
 })
 export class UserModule {}

@@ -17,17 +17,25 @@ import {
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-   
-async function fetchUserDetailsByPseudo(pseudo: string) {
-  try {
-    const response = await fetch(`http://127.0.0.1:3001/users/${pseudo}`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch user details');
-    }
+//import { User } from './../user.model.tsx';
 
-    const userData = await response.json();
-    return userData;
+async function fetchUserDetails() {
+  try {
+      const response = await fetch(`http://127.0.0.1:3001/users/cookie`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch user details');
+      }
+  
+      const userData = await response.json();
+      return userData;
+
   } catch (error) {
     console.error('Error fetching user details:', error);
     return null;
@@ -54,15 +62,20 @@ function UserAv() {
 
     const [, , removeCookie] = useCookies(['userToken', 'userPseudo']);
     const navigate = useNavigate();
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<any | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
     const [cookies] = useCookies(['userPseudo']);
     const pseudo = cookies.userPseudo || '';
 
     useEffect(() => {
     const fetchData = async () => {
-      const userData = await fetchUserDetailsByPseudo(pseudo.toString());
+      const userData = await fetchUserDetails();
+      //console.log(userData);
+      //PQUOI QUAND J AFFICHE LES LOGS JE LES AI 2 FOIS ???
       setUser(userData);
+      console.log(user); 
+      //JE N ARRIVE PAS A SET USER IL EST VIDE
+      //USER N' ARRIVE PAS A SE SET, J'AI RAJOUTER L IMPORT DE USER INTERFACE (et dans /pages/settings aussi)
 
       const avatarData = await fetchAvatarByPseudo(pseudo.toString());
       setAvatar(avatarData);
@@ -82,7 +95,7 @@ function UserAv() {
         <div>
           {user ? (
             <>
-            <p>Username: {user.pseudo}</p>
+            <p>Username: {user.pseudo42}</p>
             <p>Email: {user.email}</p>
             </>
             ) : (

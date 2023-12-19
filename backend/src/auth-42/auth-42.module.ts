@@ -11,5 +11,6 @@ import { MyConfigModule } from 'src/config/myconfig.module';
     imports: [UserModule, MyConfigModule],
     providers: [FortyTwoStrategy, AuthService],
     controllers: [AuthController],
+    exports: [AuthService]
 })
 export class Auth42Module {}
