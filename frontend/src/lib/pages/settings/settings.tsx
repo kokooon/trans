@@ -13,6 +13,7 @@ const Settings = () => {
     const [username, setUsername] = useState<string>(''); 
     const [is2FAEnabled, setIs2FAEnabled] = useState<boolean>(false);
     const [showNotification, setShowNotification] = useState<boolean>(false);
+    const [sizeNotification, setSizeNotification] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,6 +34,12 @@ const Settings = () => {
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                setSizeNotification(true);
+                setTimeout(() => setSizeNotification(false), 3000);
+                return;
+            }
+    
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', 'ft_trans');
@@ -50,9 +57,12 @@ const Settings = () => {
                 setTimeout(() => setShowNotification(false), 3000);
             } catch (error) {
                 console.error('Error uploading image:', error);
+                setShowNotification(true);
+                setTimeout(() => setShowNotification(false), 3000);
             }
         }
     };
+    
     
 
     const handleProfilePictureClick = () => {
@@ -92,6 +102,12 @@ const Settings = () => {
                             onChange={handleFileChange}
                         />
                     </div>
+                    <div className={`fixed bottom-5 left-5 bg-red-500 text-white py-2 px-4 rounded opacity-75 flex items-start justify-between ${sizeNotification ? 'block' : 'hidden'}`}>
+                            <span>Error with the file upload</span>
+                            <div className="w-full bg-gray-400 absolute top-0 left-0 h-1">
+                                <div className="bg-gray-800 h-1 w-0 progress-bar"> </div>
+                            </div>
+                        </div>
                 </div>
 
                 {/* Changement de nom */}
