@@ -8,8 +8,8 @@ import { fetchUserDetails, isTokenValid } from "@/lib/components/utils/UtilsFetc
 const Settings = () => {
     const [cookies, ,] = useCookies(['userToken', 'userPseudo']);
     const navigate = useNavigate();
-    const [, setUser] = useState<any | null>(null);
-    const [avatar, setAvatar] = useState<string | null>(null);
+    const [user, setUser] = useState<any | null>(null);
+   //const [avatar, setAvatar] = useState<string | null>(null);
     const [username, setUsername] = useState<string>(''); 
     const [is2FAEnabled, setIs2FAEnabled] = useState<boolean>(false);
     const [showNotification, setShowNotification] = useState<boolean>(false);
@@ -23,13 +23,14 @@ const Settings = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const userData = await fetchUserDetails();
+            const result = await fetchUserDetails();
+            const userData = result ? result.userData : null;
             setUser(userData);
 
         };
 
         fetchData();
-    }, );
+    }, [cookies.userToken]);
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -52,7 +53,7 @@ const Settings = () => {
     
                 const data = await response.json();
                 console.log(data.secure_url);
-                setAvatar(data.secure_url);
+                //setAvatar(data.secure_url);
                 setShowNotification(true);
                 setTimeout(() => setShowNotification(false), 3000);
             } catch (error) {
@@ -94,7 +95,7 @@ const Settings = () => {
                 {/* Photo de profil */}
                 <div className="w-full flex justify-center">
                     <div className="mb-4 cursor-pointer profile-pic-container hover:scale-110 transition-transform duration-300" onClick={handleProfilePictureClick}>
-                        <img src={avatar || 'placeholder_url'} alt="Profile" className="rounded-full w-28 h-28" />
+                    <img src={user && user.userData ? user.userData.avatar || 'placeholder_url' : 'placeholder_url'} alt="Profile" className="rounded-full w-28 h-28" />
                         <input 
                             type="file" 
                             id="fileInput" 
