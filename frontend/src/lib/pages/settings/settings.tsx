@@ -1,12 +1,12 @@
 import { UserNav } from "@/lib/components/ui/user-nav";
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
+//import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails, isTokenValid } from "@/lib/components/utils/UtilsFetch";
 //import { User } from "./user.model";
 
 const Settings = () => {
-    const [cookies, ,] = useCookies(['userToken', 'userPseudo']);
+    //const [cookies, ,] = useCookies(['userToken', 'userPseudo']);
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
    //const [avatar, setAvatar] = useState<string | null>(null);
@@ -16,10 +16,14 @@ const Settings = () => {
     const [sizeNotification, setSizeNotification] = useState<boolean>(false);
 
     useEffect(() => {
-        if (!isTokenValid()) {
+        const checkToken = async () => {
+          if (!(await isTokenValid())) {
             navigate('/login');
-        }
-    }, [cookies.userToken, navigate]);
+          }
+        };
+      
+        checkToken();
+      }, [navigate]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -30,7 +34,7 @@ const Settings = () => {
         };
 
         fetchData();
-    }, [cookies.userToken]);
+    }, []);
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
