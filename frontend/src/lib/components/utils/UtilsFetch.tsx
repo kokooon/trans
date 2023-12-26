@@ -58,7 +58,24 @@ export async function fetchUserDetails() {
 //   }
 // }
 
-  export function isTokenValid(token: string | undefined): boolean {
-    return !!token; // Vous pourriez avoir une logique plus complexe ici
-  }
+  export async function isTokenValid():Promise<boolean> {
+    try {
+      const response = await fetch(`http://127.0.0.1:3001/users/check`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (response.ok) {
+        return true;
+      } 
+      else
+        return false;
+    } 
+    catch (error) {
+      console.error('Error fetching user details:', error);
+      return false;
+    }
+}
   

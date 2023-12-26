@@ -58,11 +58,36 @@ export class UserController {
     }
   }
 
+  // @Get('check')
+  // async checkPseudo(@Query('pseudo') pseudo: string): Promise<{ exists: boolean }> {
+  //   const existingUser = await this.userService.findByPseudo(pseudo);
+  //   return { exists: !!existingUser };
+  // }
   @Get('check')
-  async checkPseudo(@Query('pseudo') pseudo: string): Promise<{ exists: boolean }> {
-    const existingUser = await this.userService.findByPseudo(pseudo);
-    return { exists: !!existingUser };
+  async checkId(@Req() req): Promise<Boolean> {
+    try {
+      const jwtCookie = req.cookies.jwt;
+      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+      const userId = parseInt(decodedData.userId, 10);
+      if (!isNaN(userId)) {
+        const user = await this.userService.checkById(userId);
+        if (user)
+          return true;
+      } else {
+        // Gérer le cas où userId n'est pas une chaîne représentant un nombre valide
+        console.error('Invalid userId:', decodedData.userId);
+        return false;
+      }
+      //const user = await this.userService.findById(decodedData.userId);
+
+      //return [user]; // Assurez-vous d'ajuster cela en fonction de votre structure de code exacte
+    } catch (error) {
+      console.error('Error processing JWT cookie:', error);
+      return false;
+    }
   }
+
+
 
   @Post()
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {

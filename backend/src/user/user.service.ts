@@ -61,6 +61,11 @@ export class UserService {
     return this.userRepository.findOne({ where: { id: userId } });
   }
 
+  async checkById(userId: number): Promise<Boolean | undefined> {
+    if (this.userRepository.findOne({ where: { id: userId } }))
+      return true;
+  }
+
   async checkLogin(pseudo: string, password: string): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { pseudo, password } } as FindOneOptions<User>);
     return !!user;

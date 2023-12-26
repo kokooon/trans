@@ -16,7 +16,7 @@ const Settings = () => {
     const [sizeNotification, setSizeNotification] = useState<boolean>(false);
 
     useEffect(() => {
-        if (!isTokenValid(cookies.userToken)) {
+        if (!isTokenValid()) {
             navigate('/login');
         }
     }, [cookies.userToken, navigate]);
