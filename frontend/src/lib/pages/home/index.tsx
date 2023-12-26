@@ -1,18 +1,22 @@
 import { useEffect } from 'react';
-import { useCookies } from 'react-cookie';
+//import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/lib/components/ui/button";
 import { UserNav } from '@/lib/components/ui/user-nav';
+import { isTokenValid } from '@/lib/components/utils/UtilsFetch';
 
 const Home = () => {
-  const [cookies, ,] = useCookies(['userToken']);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!cookies.userToken) {
-      navigate('/login');
-    }
-  }, [cookies.userToken, navigate]);
+    const checkToken = async () => {
+      if (!(await isTokenValid())) {
+        navigate('/login');
+      }
+    };
+  
+    checkToken();
+  }, [navigate]);
 
   return (
     <div className="flex flex-col min-h-screen">
