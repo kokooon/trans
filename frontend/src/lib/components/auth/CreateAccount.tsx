@@ -11,7 +11,7 @@ import {
 } from "@/lib/components/ui/card";
 import { Input } from "@/lib/components/ui/input";
 import { Label } from "@/lib/components/ui/label";
-import { useCookies } from 'react-cookie';
+//import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 
 export function CreateAccount() {
@@ -19,7 +19,7 @@ export function CreateAccount() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [, setCookies] = useCookies(['userToken', 'userPseudo']);
+  //const [, setCookies] = useCookies(['userToken', 'userPseudo']);
   const navigate = useNavigate();
 
   const handleCreateAccount = async () => {
@@ -79,8 +79,8 @@ export function CreateAccount() {
 
       if (data.valid) {
         setSuccess('Connexion réussie !');
-        setCookies('userToken', '532523532532', { path: '/' });
-        setCookies('userPseudo', pseudo, { path: '/' });
+        // setCookies('userToken', '532523532532', { path: '/' });
+        // setCookies('userPseudo', pseudo, { path: '/' });
         setError(null);
         navigate('/');
       } else {
