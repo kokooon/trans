@@ -2,13 +2,13 @@ import { UserNav } from "@/lib/components/ui/user-nav";
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserDataAndAvatar, isTokenValid } from "@/lib/components/utils/UtilsFetch";
-import { User } from "./user.model";
+import { fetchUserDetails, isTokenValid } from "@/lib/components/utils/UtilsFetch";
+//import { User } from "./user.model";
 
 const Settings = () => {
     const [cookies, ,] = useCookies(['userToken', 'userPseudo']);
     const navigate = useNavigate();
-    const [, setUser] = useState<User | null>(null);
+    const [, setUser] = useState<any | null>(null);
     const [avatar, setAvatar] = useState<string | null>(null);
     const [username, setUsername] = useState<string>(''); 
     const [is2FAEnabled, setIs2FAEnabled] = useState<boolean>(false);
@@ -16,20 +16,20 @@ const Settings = () => {
     const [sizeNotification, setSizeNotification] = useState<boolean>(false);
 
     useEffect(() => {
-        const fetchData = async () => {
-            const { userData, avatarData } = await fetchUserDataAndAvatar(cookies.userPseudo || '');
-            setUser(userData);
-            setAvatar(avatarData);
-        };
-
-        fetchData();
-    }, [cookies.userPseudo]);
-
-    useEffect(() => {
         if (!isTokenValid(cookies.userToken)) {
             navigate('/login');
         }
     }, [cookies.userToken, navigate]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const userData = await fetchUserDetails();
+            setUser(userData);
+
+        };
+
+        fetchData();
+    }, );
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
