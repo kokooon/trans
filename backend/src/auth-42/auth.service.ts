@@ -44,10 +44,12 @@ export class AuthService {
 
     async verifyJwtCookie(cookie: string): Promise<any> {
       try {
+        //console.log(cookie);
         const decodedData = jwt.verify(cookie, this.myConfigService.get_env().jwt_secret);
         return decodedData;
       } catch (error) {
-        console.error('Error verifying JWT token:', error);
+        //console.error('Error verifying JWT token:', error);
+        return (null);
         throw new Error('Failed to verify JWT token');
       }
     }

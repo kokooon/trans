@@ -67,10 +67,13 @@ export async function fetchUserDetails() {
         },
         credentials: 'include',
       });
+      console.log("response = ", response);
+      if (response.bodyUsed === false)
+        return false;
       return response.ok;  // Vérifiez si la requête a réussi
     } 
     catch (error) {
-      console.error('Error fetching user details:', error);
+      //console.error('Error fetching user details:', error);
       return false;
     }
 }

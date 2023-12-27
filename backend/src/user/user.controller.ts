@@ -18,6 +18,8 @@ export class UserController {
     try {
       const jwtCookie = req.cookies.jwt;
       const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+      if (decodedData === null)
+        return null;
       const userId = parseInt(decodedData.userId, 10);
       if (!isNaN(userId)) {
         const User = await this.userService.findById(userId);
@@ -68,6 +70,8 @@ export class UserController {
     try {
       const jwtCookie = req.cookies.jwt;
       const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+      if (decodedData === null)
+        return false;
       const userId = parseInt(decodedData.userId, 10);
       if (!isNaN(userId)) {
         const user = await this.userService.checkById(userId);
@@ -75,14 +79,14 @@ export class UserController {
           return true;
       } else {
         // Gérer le cas où userId n'est pas une chaîne représentant un nombre valide
-        console.error('Invalid userId:', decodedData.userId);
+        //console.error('Invalid userId:', decodedData.userId);
         return false;
       }
       //const user = await this.userService.findById(decodedData.userId);
 
       //return [user]; // Assurez-vous d'ajuster cela en fonction de votre structure de code exacte
     } catch (error) {
-      console.error('Error processing JWT cookie:', error);
+      //console.error('Error processing JWT cookie:', error);
       return false;
     }
   }

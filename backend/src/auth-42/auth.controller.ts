@@ -25,11 +25,9 @@ export class AuthController {
       const jwtToken = this.authService.getJwtToken();
 
       res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
-      res.cookie('userPseudo', user.pseudo, { httpOnly: false, path: '/' });
-      res.cookie('userToken', '532523532532', { httpOnly: false, path: '/' });
   
       // Redirect the user to the desired page
-      res.redirect('http://127.0.0.1:3000/private');
+      res.redirect('http://127.0.0.1:3000/');
     } catch (error) {
       console.error('Error processing user details:', error);
       res.status(500).send('Internal Server Error');

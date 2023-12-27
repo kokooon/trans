@@ -10,6 +10,8 @@ const Home = () => {
 
   useEffect(() => {
     const checkToken = async () => {
+      const value = await isTokenValid();
+      console.log("Value = ", value);
       if (!(await isTokenValid())) {
         navigate('/login');
       }
