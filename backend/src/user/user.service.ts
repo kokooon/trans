@@ -45,6 +45,20 @@ export class UserService {
     return undefined;
   }
 
+
+  async updatePseudo(userId: number, newPseudo: string): Promise<void> {
+  
+    const user = await this.findById(userId);
+
+    if (user) {
+      user.pseudo = newPseudo;
+      await this.userRepository.save(user);
+    } else {
+      // Handle the case where the user with the given ID is not found
+      throw new BadRequestException('User not found');
+    }
+  }
+
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }

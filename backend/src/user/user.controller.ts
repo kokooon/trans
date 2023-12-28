@@ -5,6 +5,8 @@ import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from '../auth-42/auth.service';
+import { ChangePseudoDto } from './dto/change-pseudo.dto';
+import { Request, Response } from 'express';
 
 @Controller('users')
 export class UserController {
@@ -46,7 +48,6 @@ export class UserController {
   async checkId(@Req() req, @Res() res) {
     try {
       const jwtCookie = req.cookies.jwt;
-      console.log('JWT Cookie:', jwtCookie);
       if (!jwtCookie || jwtCookie === undefined)
       {
         res.status(404).send("no token");
@@ -58,7 +59,7 @@ export class UserController {
         res.status(404).send("no token");
         return;
       }
-      
+
       const userId = parseInt(decodedData.userId, 10);
   
       if (!isNaN(userId)) {
@@ -140,6 +141,36 @@ export class UserController {
   //   }
   // }
 
+  @Post('changePseudo')
+  async changePseudo(@Body() changePseudoDto: ChangePseudoDto, @Req() req: Request, @Res() res: Response) {
+    try {
+      const jwtCookie = req.cookies.jwt;
+
+      if (!jwtCookie || jwtCookie === undefined) {
+        return res.status(404).send('no token');
+      }
+
+      // Extract userId from the JWT token
+      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+      if (!decodedData || !decodedData.userId) {
+        return res.status(404).send('invalid token');
+      }
+
+      const userId = parseInt(decodedData.userId, 10);
+      if (isNaN(userId)) {
+        return res.status(404).send('invalid userId');
+      }
+
+      await this.userService.updatePseudo(userId, changePseudoDto.newPseudo);
+      return res.status(200).json({ status: 'success' });
+    } catch (error) {
+      console.error('Error changing pseudo:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Failed to change pseudo',
+      });
+    }
+  }
 
 
   @Post()

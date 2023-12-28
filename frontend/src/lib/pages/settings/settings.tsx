@@ -131,7 +131,7 @@ const Settings = () => {
                             value={username} 
                             onChange={handleNameChange} 
                             className="border rounded p-2 mr-2"
-                            placeholder="Username" 
+                            placeholder={user ? user.pseudo : ''}
                         />
                         <button onClick={handleNameSubmit} className="bg-blue-500 text-white rounded p-2">
                             Update
