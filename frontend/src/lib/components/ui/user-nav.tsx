@@ -43,7 +43,7 @@ function UserAv() {
     };
 
     fetchData();
-  }, );
+  }, []);
 
     const handleLogout = () => {
         //removeCookie('jwt'); MARCHE PAS
@@ -55,7 +55,7 @@ function UserAv() {
         <div>
           {user ? (
             <>
-            <p>Username: {user[0].pseudo42}</p>
+            <p>Username: {user[0].pseudo}</p>
             <p>Email: {user[0].email}</p>
             </>
             ) : (

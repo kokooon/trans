@@ -10,7 +10,7 @@ const Settings = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
    //const [avatar, setAvatar] = useState<string | null>(null);
-    const [username, setUsername] = useState<string>(''); 
+    const [username, ] = useState<string>(''); 
     const [is2FAEnabled, setIs2FAEnabled] = useState<boolean>(false);
     const [showNotification, setShowNotification] = useState<boolean>(false);
     const [sizeNotification, setSizeNotification] = useState<boolean>(false);
@@ -45,7 +45,7 @@ const Settings = () => {
         fetchData();
       }, []);
       
-    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
@@ -59,23 +59,39 @@ const Settings = () => {
             formData.append('upload_preset', 'ft_trans');
     
             try {
-                const response = await fetch(`https://api.cloudinary.com/v1_1/dqyyh88tq/image/upload`, {
+                // Upload image to Cloudinary
+                const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/dqyyh88tq/image/upload`, {
                     method: 'POST',
                     body: formData
                 });
     
-                const data = await response.json();
+                const data = await uploadResponse.json();
                 console.log(data.secure_url);
-                //setAvatar(data.secure_url);
+    
+                // Post the secure URL to your backend
+                const backendResponse = await fetch('http://127.0.0.1:3001/user/newAvatar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ avatarUrl: data.secure_url }),
+                });
+    
+                if (!backendResponse.ok) {
+                    throw new Error('Network response was not ok');
+                }
+    
+                // Handle successful upload and backend response here
                 setShowNotification(true);
                 setTimeout(() => setShowNotification(false), 3000);
             } catch (error) {
-                console.error('Error uploading image:', error);
+                console.error('Error:', error);
                 setShowNotification(true);
                 setTimeout(() => setShowNotification(false), 3000);
             }
         }
     };
+    
     
 
     const handleProfilePictureClick = () => {
@@ -86,8 +102,37 @@ const Settings = () => {
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setUsername(event.target.value);
+        handleChangePseudo(event);
     };
+    
+    const handleChangePseudo = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        try {
+            console.log(username)
+            // Envoyer le nouveau pseudo au backend
+            const response = await fetch('http://127.0.0.1:3001/users/changePseudo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
+                },
+                credentials: 'include', // Inclure les cookies avec la requête
+                body: JSON.stringify({ newPseudo: event.target.value }),
+            });
+    
+            if (!response.ok) {
+                throw new Error('La réponse du réseau n’était pas correcte');
+            }
+    
+            // Gérer ici la mise à jour réussie du pseudo
+            // Vous pourriez vouloir afficher une notification ou mettre à jour l'interface utilisateur
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour du pseudo :', error);
+            // Gérer l'erreur ici, comme afficher une notification à l'utilisateur
+        }
+    };
+    
+    
+    
 
     const handleNameSubmit = () => {
         // Logique pour mettre à jour le nom de l'utilisateur
@@ -131,7 +176,7 @@ const Settings = () => {
                             value={username} 
                             onChange={handleNameChange} 
                             className="border rounded p-2 mr-2"
-                            placeholder={user ? user.pseudo : ''}
+                            placeholder="Username" 
                         />
                         <button onClick={handleNameSubmit} className="bg-blue-500 text-white rounded p-2">
                             Update

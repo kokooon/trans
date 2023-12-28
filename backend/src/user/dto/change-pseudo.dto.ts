@@ -1,3 +1,3 @@
 export class ChangePseudoDto {
-    readonly newPseudo: string;
+     newPseudo: string;
   }
