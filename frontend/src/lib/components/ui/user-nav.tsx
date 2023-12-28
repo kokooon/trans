@@ -15,7 +15,7 @@ import {
   } from "@/lib/components/ui/dropdown-menu"
 //   import { useEffect } from 'react';
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
+//import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails } from '../utils/UtilsFetch';
 //import { fetchAvatarByPseudo } from '../utils/UtilsFetch';
@@ -23,12 +23,10 @@ import { fetchUserDetails } from '../utils/UtilsFetch';
 
 function UserAv() {
 
-    const [, , removeCookie] = useCookies(['userToken', 'userPseudo', 'jwt']);
+//    const [, , removeCookie] = useCookies(['jwt']);
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
     //const [avatar, setAvatar] = useState<string | null>(null);
-    const [cookies] = useCookies(['userPseudo']);
-    const pseudo = cookies.userPseudo || '';
 
     useEffect(() => {
     const fetchData = async () => {
@@ -45,11 +43,9 @@ function UserAv() {
     };
 
     fetchData();
-  }, [pseudo]);
+  }, );
 
     const handleLogout = () => {
-        removeCookie('userToken');
-        removeCookie('userPseudo');
         //removeCookie('jwt'); MARCHE PAS
         navigate('/login');
       };
@@ -70,7 +66,7 @@ function UserAv() {
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
             {/* Utiliser l'avatar récupéré */}
-            <AvatarImage src={user && user[0] ? user[0].avatar || 'placeholder_url' : 'placeholder_url'} alt={user && user[0] ? user[0].pseudo42 || 'Unknown User' : 'Unknown User'} />
+            <AvatarImage src={user && user[0] ? user[0].avatar || 'placeholder_url' : 'placeholder_url'} alt={user && user[0] ? user[0].pseudo || 'Unknown User' : 'Unknown User'} />
 
             <AvatarFallback>{user?.pseudo42?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
           </Avatar>

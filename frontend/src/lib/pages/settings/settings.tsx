@@ -27,17 +27,24 @@ const Settings = () => {
         checkToken();
       }, [navigate]);
 
-    useEffect(() => {
+      useEffect(() => {
         const fetchData = async () => {
+          try {
             const result = await fetchUserDetails();
-            const userData = result ? result.userData : null;
-            setUser(userData);
-
+            if (result && result.length > 0)
+            {            
+                const userData = result[0];
+                setUser(userData);
+            }
+          } catch (error) {
+            console.error('Error fetching user details:', error);
+            //setError('Failed to fetch user details');
+          }
         };
-
+      
         fetchData();
-    }, []);
-
+      }, []);
+      
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
@@ -70,7 +77,6 @@ const Settings = () => {
         }
     };
     
-    
 
     const handleProfilePictureClick = () => {
         const fileInput = document.getElementById('fileInput') as HTMLInputElement;
@@ -101,7 +107,7 @@ const Settings = () => {
                 {/* Photo de profil */}
                 <div className="w-full flex justify-center">
                     <div className="mb-4 cursor-pointer profile-pic-container hover:scale-110 transition-transform duration-300" onClick={handleProfilePictureClick}>
-                    <img src={user && user.userData ? user.userData.avatar || 'placeholder_url' : 'placeholder_url'} alt="Profile" className="rounded-full w-28 h-28" />
+                    <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} alt="Profile" className="rounded-full w-28 h-28" />
                         <input 
                             type="file" 
                             id="fileInput" 
