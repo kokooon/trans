@@ -61,10 +61,12 @@ export class UserService {
     return this.userRepository.findOne({ where: { id: userId } });
   }
 
-  async checkById(userId: number): Promise<Boolean | undefined> {
-    if (this.userRepository.findOne({ where: { id: userId } }))
-      return true;
-  }
+  async checkById(userId: number): Promise<boolean> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+  
+    // If the user is found, return true; otherwise, return false
+    return !!user; // Convert to boolean
+  }  
 
   async checkLogin(pseudo: string, password: string): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { pseudo, password } } as FindOneOptions<User>);
@@ -107,6 +109,11 @@ export class UserService {
     return this.userRepository.save(user);
   }
   
+  async checkId(jwtCookie: string): Promise<Boolean> {
+    if (!jwtCookie)
+      return false;
+    return true;
+  }
   // async exampleMethodUsingEnvVars(): Promise<void> {
   //   const apiKey = this.myConfigService.get_env().apiKey;
   //   const publicapiKey = this.myConfigService.get_env().publicapiKey;

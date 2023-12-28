@@ -50,7 +50,7 @@ export class AuthService {
       } catch (error) {
         //console.error('Error verifying JWT token:', error);
         return (null);
-        throw new Error('Failed to verify JWT token');
+        //throw new Error('Failed to verify JWT token');
       }
     }
 }

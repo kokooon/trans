@@ -11,8 +11,10 @@ const Profile = () => {
   
     useEffect(() => {
       const checkToken = async () => {
-        if ((await !(isTokenValid()))) {
-          navigate('/');
+        const isValid = await isTokenValid();
+  
+        if (isValid === false) {
+          navigate('/login');
         }
       };
     

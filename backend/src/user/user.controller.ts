@@ -1,5 +1,5 @@
 // user.controller.ts
-import { Controller, Get, Param, Post, Body, BadRequestException, Query, Req } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, BadRequestException, Query, Req, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from '../entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -42,6 +42,44 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('check')
+  async checkId(@Req() req, @Res() res) {
+    try {
+      const jwtCookie = req.cookies.jwt;
+      console.log('JWT Cookie:', jwtCookie);
+      if (!jwtCookie || jwtCookie === undefined)
+      {
+        res.status(404).send("no token");
+        return;
+      }
+      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+
+      if (!decodedData) {
+        res.status(404).send("no token");
+        return;
+      }
+      
+      const userId = parseInt(decodedData.userId, 10);
+  
+      if (!isNaN(userId)) {
+        const user = await this.userService.checkById(userId);
+  
+        if (user) {
+          res.status(200).send();
+        } else {
+          res.status(404).send("no token");
+        }
+      } else {
+        // Gérer le cas où userId n'est pas une chaîne représentant un nombre valide
+        res.status(404).send("no token");
+      }
+    } catch (error) {
+      console.error('Error processing JWT cookie:', error);
+      res.status(500).json({ isValid: false });
+    }
+  }
+
+
   @Get(':pseudo')
   async findByPseudo(@Param('pseudo') pseudo: string) {
     return this.userService.findByPseudo(pseudo);
@@ -65,31 +103,42 @@ export class UserController {
   //   const existingUser = await this.userService.findByPseudo(pseudo);
   //   return { exists: !!existingUser };
   // }
-  @Get('check')
-  async checkId(@Req() req): Promise<Boolean> {
-    try {
-      const jwtCookie = req.cookies.jwt;
-      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-      if (decodedData === null)
-        return false;
-      const userId = parseInt(decodedData.userId, 10);
-      if (!isNaN(userId)) {
-        const user = await this.userService.checkById(userId);
-        if (user)
-          return true;
-      } else {
-        // Gérer le cas où userId n'est pas une chaîne représentant un nombre valide
-        //console.error('Invalid userId:', decodedData.userId);
-        return false;
-      }
-      //const user = await this.userService.findById(decodedData.userId);
+  // @Get('check')
+  // async checkId(@Req() req, @Res() res) {
+  //   try {
+  //     const jwtCookie = req.cookies.jwt;
+  //     console.log('JWT Cookie:', jwtCookie);
+  //     if (!jwtCookie || jwtCookie === undefined)
+  //     {
+  //       res.status(404).send("no token");
+  //       return;
+  //     }
+  //     const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
 
-      //return [user]; // Assurez-vous d'ajuster cela en fonction de votre structure de code exacte
-    } catch (error) {
-      //console.error('Error processing JWT cookie:', error);
-      return false;
-    }
-  }
+  //     if (!decodedData) {
+  //       res.status(404).send("no token");
+  //       return;
+  //     }
+      
+  //     const userId = parseInt(decodedData.userId, 10);
+  
+  //     if (!isNaN(userId)) {
+  //       const user = await this.userService.checkById(userId);
+  
+  //       if (user) {
+  //         res.status(200).send();
+  //       } else {
+  //         res.status(404).send("no token");
+  //       }
+  //     } else {
+  //       // Gérer le cas où userId n'est pas une chaîne représentant un nombre valide
+  //       res.status(404).send("no token");
+  //     }
+  //   } catch (error) {
+  //     console.error('Error processing JWT cookie:', error);
+  //     res.status(500).json({ isValid: false });
+  //   }
+  // }
 
 
 

@@ -5,12 +5,13 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  //const [cookies] = useCookies(['userToken']);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkToken = async () => {
-      if ((await isTokenValid())) {
+      const isValid = await isTokenValid();
+
+      if (isValid) {
         navigate('/');
       }
     };
