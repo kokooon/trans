@@ -47,6 +47,7 @@ const Settings = () => {
       
       const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
+        console.log("avatar = ", file);
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
                 setSizeNotification(true);
@@ -66,14 +67,15 @@ const Settings = () => {
                 });
     
                 const data = await uploadResponse.json();
-                console.log(data.secure_url);
+                console.log("data = ", data.secure_url);
     
                 // Post the secure URL to your backend
-                const backendResponse = await fetch('http://127.0.0.1:3001/user/newAvatar', {
+                const backendResponse = await fetch('http://127.0.0.1:3001/users/changeAvatar', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
+                    credentials: 'include',
                     body: JSON.stringify({ avatarUrl: data.secure_url }),
                 });
     

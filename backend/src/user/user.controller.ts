@@ -15,6 +15,41 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+
+  @Post('changeAvatar')
+  async changeAvatar(@Req() req, @Res() res) {
+    try {
+      const jwtCookie = req.cookies.jwt;
+      console.log("jwtCookie =", jwtCookie);
+      if (!jwtCookie || jwtCookie === undefined) {
+          return res.status(500).send('no token');
+      }
+      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+        console.log(decodedData);
+        if (!decodedData || !decodedData.userId) {
+            return res.status(500).send('invalid token');
+        }
+        const userId = parseInt(decodedData.userId, 10);
+        if (isNaN(userId)) {
+            return res.status(500).send('invalid userId');
+        }
+        console.log("user id = ", userId);
+        // Extract newPseudo from the request body
+        const newAvatar = req.body.avatarUrl;
+        if (!newAvatar) {
+            return res.status(400).send('no new pseudo provided');
+        }
+        await this.userService.updateAvatar(userId, newAvatar);
+        return res.status(200).json({ status: 'success' });
+    } catch (error) {
+        console.error('Error changing pseudo:', error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Failed to change pseudo',
+        });
+    }
+  }
+
   @Post('changePseudo')
   async changePseudo(@Req() req, @Res() res) {
     try {
@@ -137,50 +172,6 @@ export class UserController {
       return { message: 'Avatar not found' };
     }
   }
-
-  // @Get('check')
-  // async checkPseudo(@Query('pseudo') pseudo: string): Promise<{ exists: boolean }> {
-  //   const existingUser = await this.userService.findByPseudo(pseudo);
-  //   return { exists: !!existingUser };
-  // }
-  // @Get('check')
-  // async checkId(@Req() req, @Res() res) {
-  //   try {
-  //     const jwtCookie = req.cookies.jwt;
-  //     console.log('JWT Cookie:', jwtCookie);
-  //     if (!jwtCookie || jwtCookie === undefined)
-  //     {
-  //       res.status(404).send("no token");
-  //       return;
-  //     }
-  //     const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-
-  //     if (!decodedData) {
-  //       res.status(404).send("no token");
-  //       return;
-  //     }
-      
-  //     const userId = parseInt(decodedData.userId, 10);
-  
-  //     if (!isNaN(userId)) {
-  //       const user = await this.userService.checkById(userId);
-  
-  //       if (user) {
-  //         res.status(200).send();
-  //       } else {
-  //         res.status(404).send("no token");
-  //       }
-  //     } else {
-  //       // Gérer le cas où userId n'est pas une chaîne représentant un nombre valide
-  //       res.status(404).send("no token");
-  //     }
-  //   } catch (error) {
-  //     console.error('Error processing JWT cookie:', error);
-  //     res.status(500).json({ isValid: false });
-  //   }
-  // }
-
-
 
   @Post()
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {
