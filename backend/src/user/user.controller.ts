@@ -50,6 +50,24 @@ export class UserController {
     }
   }
 
+  @Post('logout')
+  async logout(@Req() req, @Res() res) {
+    try {
+      res.clearCookie('jwt');
+
+      // Additional logic for invalidating the user session
+      // (e.g., updating a database record or removing session data)
+
+      return res.status(200).json({ status: 'success', message: 'Logout successful' });
+    } catch (error) {
+      console.error('Error during logout:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Failed to logout',
+      });
+    }
+  }
+
   @Post('changePseudo')
   async changePseudo(@Req() req, @Res() res) {
     try {

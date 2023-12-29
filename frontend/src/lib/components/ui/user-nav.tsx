@@ -45,10 +45,22 @@ function UserAv() {
     fetchData();
   }, []);
 
-    const handleLogout = () => {
-        //removeCookie('jwt'); MARCHE PAS
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:3001/users/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+  
+      if (response.ok) {
         navigate('/login');
-      };
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
 
     return (
       <DropdownMenu>
