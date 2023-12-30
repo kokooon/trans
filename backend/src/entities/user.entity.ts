@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()
 export class User {
@@ -22,4 +22,18 @@ export class User {
 
   @Column({ type: 'text', nullable: true })
   avatar: string;
+
+  @Column('simple-array', { nullable: true })
+  friendRequest: number[];
+
+  @Column('simple-array', { nullable: true })
+  friendNotifications: number[];
+
+  @Column('simple-array', { nullable: true })
+  friends: number[];
+
+  @Column('simple-array', { nullable: true })
+  banlist: number[];
+
+  //Channels
 }

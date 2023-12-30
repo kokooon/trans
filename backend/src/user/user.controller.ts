@@ -104,8 +104,45 @@ export class UserController {
             message: 'Failed to change pseudo',
         });
     }
-}
+  }
 
+  @Post('addFriend')
+  async addFriend(@Req() req, @Res() res) {
+    try {
+        const jwtCookie = req.cookies.jwt;
+        console.log("jwtCookie =", jwtCookie);
+        if (!jwtCookie || jwtCookie === undefined) {
+            return res.status(500).send('no token');
+        }
+
+        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+        console.log(decodedData);
+        if (!decodedData || !decodedData.userId) {
+            return res.status(500).send('invalid token');
+        }
+
+        const userId = parseInt(decodedData.userId, 10);
+        if (isNaN(userId)) {
+            return res.status(500).send('invalid userId');
+        }
+    
+        const addFriend = req.body.addFriend;
+        if (!addFriend)
+          return res.status(400).send('no new pseudo provided');
+        const FriendId = await this.userService.findIdByPseudo(addFriend);
+        if (!FriendId)
+        return res.status(400).send('no friend');
+
+        await this.userService.AddFriends(userId, FriendId);
+        return res.status(200).json({ status: 'success' });
+    } catch (error) {
+        console.error('Error changing pseudo:', error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Failed to change pseudo',
+        });
+    }
+  }
 
   @Get('cookie')
   async findbyId(@Req() req): Promise<User[]> {

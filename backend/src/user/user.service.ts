@@ -58,6 +58,23 @@ export class UserService {
     }
   }
   
+  async AddFriends(userId: number, id: number): Promise<void> {
+    const user = await this.findById(userId);
+  
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    const friendIdsAsNumbers = user.friendRequest.map(Number);
+    if (!friendIdsAsNumbers.includes(id) && user.id !== id) {
+      user.friendRequest.push(id);
+      await this.userRepository.save(user);
+    }
+    else {
+      console.log(`L'ID ${id} est déjà présent dans la liste d'amis.`);
+    }
+}
+
   async updatePseudo(userId: number, newPseudo: string): Promise<void> {
     const user = await this.findById(userId);
 
@@ -85,6 +102,11 @@ export class UserService {
 
   async findByPseudo(pseudo: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { pseudo } } as FindOneOptions<User>);
+  }
+
+  async findIdByPseudo(pseudo: string): Promise<number | undefined> {
+    const user = await this.userRepository.findOne({ where: { pseudo } } as FindOneOptions<User>);
+    return user.id;
   }
 
   async findByFortyTwoId(profile: any): Promise<User | undefined> {
@@ -116,6 +138,9 @@ export class UserService {
         user.email = profile.emails[0].value;
         user.password = "1234";
         user.avatar = profile._json.image.link;
+        user.friends = [];
+        user.friendRequest = [];
+
 
         // Enregistrez l'utilisateur dans la base de données
         const savedUser = await this.userRepository.save(user);
