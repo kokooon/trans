@@ -59,17 +59,25 @@ export class UserService {
   }
   
   async updatePseudo(userId: number, newPseudo: string): Promise<void> {
-  
     const user = await this.findById(userId);
 
-    if (user) {
-      user.pseudo = newPseudo;
-      await this.userRepository.save(user);
-    } else {
-      // Handle the case where the user with the given ID is not found
-      throw new BadRequestException('User not found');
+    if (!user) {
+        // Handle the case where the user with the given ID is not found
+        throw new BadRequestException('User not found');
     }
-  }
+
+    // Vérifie si le nouveau pseudo est déjà utilisé par un autre utilisateur
+    const isPseudoTaken = await this.userRepository.findOne({ where: { pseudo: newPseudo } });
+
+    if (isPseudoTaken && isPseudoTaken.id !== userId) {
+        // Le pseudo est déjà pris par un autre utilisateur
+        throw new BadRequestException('Pseudo is already taken');
+    }
+
+    // Si le pseudo n'est pas pris ou s'il est pris par l'utilisateur actuel, procédez à la mise à jour
+    user.pseudo = newPseudo;
+    await this.userRepository.save(user);
+}
 
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
