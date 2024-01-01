@@ -34,11 +34,13 @@
     "lucide-react": "^0.292.0",
     "million": "2.6.4",
     "next-themes": "^0.2.1",
+    "qrcode": "^1.5.3",
     "react": "^18.2.0",
     "react-cookie": "^6.1.1",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.19.0",
+    "speakeasy": "^2.0.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7"
   },
