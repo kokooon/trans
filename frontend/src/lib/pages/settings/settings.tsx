@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails, isTokenValid } from "@/lib/components/utils/UtilsFetch";
 //import { User } from "./user.model";
 // import speakeasy from 'speakeasy'; 
+import { toggle2FA } from "@/lib/components/auth/2fa/2fa";
 
 const Settings = () => {
     //const [cookies, ,] = useCookies(['userToken', 'userPseudo']);
@@ -133,9 +134,6 @@ const Settings = () => {
             // Gérer l'erreur ici, comme afficher une notification à l'utilisateur
         }
     };
-    
-    
-    
 
     const handleNameSubmit = () => {
         // Logique pour mettre à jour le nom de l'utilisateur
@@ -143,28 +141,9 @@ const Settings = () => {
         setTimeout(() => setShowNotification(false), 3000);
     };
 
-    const toggle2FA = async () => {
-        try {
-            // Effectuez une requête HTTP vers votre backend pour mettre à jour is2FAEnabled
-            const response = await fetch('http://127.0.0.1:3001/users/update-2fa', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({ is2FAEnabled: !is2FAEnabled }), // Inversez la valeur actuelle
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            // Mettez à jour l'état local is2FAEnabled
-            setIs2FAEnabled(!is2FAEnabled);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
+    const toggle2FAHandler = () => {
+        toggle2FA(is2FAEnabled, setIs2FAEnabled);
+      };
 
     return (
         <div>
@@ -216,7 +195,7 @@ const Settings = () => {
                             <input 
                                 type="checkbox" 
                                 checked={is2FAEnabled} 
-                                onChange={toggle2FA} 
+                                onChange={toggle2FAHandler} 
                             />
                             <span className="slider round"></span>
                         </label>
