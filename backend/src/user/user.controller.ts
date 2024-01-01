@@ -263,4 +263,40 @@ export class UserController {
       throw new BadRequestException('Invalid request body.');
     }
   }
+
+  @Post('update-2fa') // Nouvelle route pour la mise à jour du 2FA
+  async update2FA(@Req() req: Request, @Res() res: Response) {
+    try {
+      const jwtCookie = req.cookies.jwt;
+      if (!jwtCookie || jwtCookie === undefined) {
+        return res.status(500).send('no token');
+      }
+
+      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+      if (!decodedData || !decodedData.userId) {
+        return res.status(500).send('invalid token');
+      }
+
+      const userId = parseInt(decodedData.userId, 10);
+      if (isNaN(userId)) {
+        return res.status(500).send('invalid userId');
+      }
+
+      const is2FAEnabled = req.body.is2FAEnabled;
+      if (is2FAEnabled === undefined) {
+        return res.status(400).send('is2FAEnabled not provided');
+      }
+
+      // Mettez à jour le champ is2FAEnabled dans la base de données pour l'utilisateur
+      await this.userService.update2FA(userId, is2FAEnabled);
+
+      return res.status(200).json({ status: 'success' });
+    } catch (error) {
+      console.error('Error updating 2FA:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Failed to update 2FA',
+      });
+    }
+  }
 }

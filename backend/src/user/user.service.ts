@@ -178,5 +178,22 @@ export class UserService {
   //   const publicapiKey = this.myConfigService.get_env().publicapiKey;
   //   console.log(apiKey);
   // }
+
+  async update2FA(userId: number, is2FAEnabled: boolean): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new Error(`User with ID ${userId} not found`);
+      }
+
+      user.is2FAEnabled = is2FAEnabled;
+
+      await this.userRepository.save(user);
+    } catch (error) {
+      throw new Error(`Failed to update 2FA: ${error.message}`);
+    }
+  }
+
   
 }

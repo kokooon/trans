@@ -23,6 +23,9 @@ export class User {
   @Column({ type: 'text', nullable: true })
   avatar: string;
 
+  @Column({ default: false })
+  is2FAEnabled: boolean;
+
   @Column('simple-array', { nullable: true })
   friendRequest: number[];
 
@@ -34,6 +37,7 @@ export class User {
 
   @Column('simple-array', { nullable: true })
   banlist: number[];
+
 
   //Channels
 }

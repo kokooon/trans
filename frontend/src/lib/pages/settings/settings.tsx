@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails, isTokenValid } from "@/lib/components/utils/UtilsFetch";
 //import { User } from "./user.model";
+// import speakeasy from 'speakeasy'; 
 
 const Settings = () => {
     //const [cookies, ,] = useCookies(['userToken', 'userPseudo']);
@@ -142,9 +143,27 @@ const Settings = () => {
         setTimeout(() => setShowNotification(false), 3000);
     };
 
-    const toggle2FA = () => {
-        setIs2FAEnabled(!is2FAEnabled);
-        // Logique supplémentaire pour gérer le 2FA
+    const toggle2FA = async () => {
+        try {
+            // Effectuez une requête HTTP vers votre backend pour mettre à jour is2FAEnabled
+            const response = await fetch('http://127.0.0.1:3001/users/update-2fa', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ is2FAEnabled: !is2FAEnabled }), // Inversez la valeur actuelle
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            // Mettez à jour l'état local is2FAEnabled
+            setIs2FAEnabled(!is2FAEnabled);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     return (
