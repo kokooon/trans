@@ -159,7 +159,7 @@ export class UserService {
         user.friends = [];
         user.friendRequest = [];
         user.friendNotifications = [];
-
+        user.History = [];
 
         // Enregistrez l'utilisateur dans la base de données
         const savedUser = await this.userRepository.save(user);

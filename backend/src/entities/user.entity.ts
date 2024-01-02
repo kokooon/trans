@@ -38,6 +38,8 @@ export class User {
   @Column('simple-array', { nullable: true })
   banlist: number[];
 
+  @Column('simple-array', { nullable: true })
+  History: string[];
 
   //Channels
 }
