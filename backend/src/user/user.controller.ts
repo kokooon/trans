@@ -128,7 +128,7 @@ export class UserController {
     
         const addFriend = req.body.addFriend;
         if (!addFriend)
-          return res.status(400).send('no new pseudo provided');
+          return res.status(400).send('no valide friend name');
         const FriendId = await this.userService.findIdByPseudo(addFriend);
         if (!FriendId)
         return res.status(400).send('no friend');
@@ -136,10 +136,10 @@ export class UserController {
         await this.userService.AddFriends(userId, FriendId);
         return res.status(200).json({ status: 'success' });
     } catch (error) {
-        console.error('Error changing pseudo:', error);
+        console.error('Error adding friend:', error);
         return res.status(500).json({
             status: 'error',
-            message: 'Failed to change pseudo',
+            message: 'Failed to add friend',
         });
     }
   }

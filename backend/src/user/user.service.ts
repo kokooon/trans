@@ -58,21 +58,39 @@ export class UserService {
     }
   }
   
-  async AddFriends(userId: number, id: number): Promise<void> {
+  async SetNotifications(userId: number, FriendRequestid: number): Promise<void>{
+    const userN = await this.findById(FriendRequestid);
+
+    if (!userN) {
+      throw new BadRequestException('User not found');
+    }
+    const friendNotificationsAsNumbers = userN.friendNotifications.map(Number);
+    if (!friendNotificationsAsNumbers.includes(userId) && userId !== FriendRequestid)
+    {
+      userN.friendNotifications.push(userId);
+      await this.userRepository.save(userN);
+    }
+    else {
+      console.log(`L'ID ${userId} est déjà présent dans la liste de notifications.`);
+    }
+  }
+
+  async AddFriends(userId: number, FriendRequestid: number): Promise<void> {
     const user = await this.findById(userId);
-  
+
     if (!user) {
       throw new BadRequestException('User not found');
     }
 
     const friendIdsAsNumbers = user.friendRequest.map(Number);
-    if (!friendIdsAsNumbers.includes(id) && user.id !== id) {
-      user.friendRequest.push(id);
+    if (!friendIdsAsNumbers.includes(FriendRequestid) && user.id !== FriendRequestid) {
+      user.friendRequest.push(FriendRequestid);
       await this.userRepository.save(user);
     }
     else {
-      console.log(`L'ID ${id} est déjà présent dans la liste d'amis.`);
+      console.log(`L'ID ${FriendRequestid} est déjà présent dans la liste d'amis.`);
     }
+    this.SetNotifications(userId, FriendRequestid);
 }
 
   async updatePseudo(userId: number, newPseudo: string): Promise<void> {
@@ -140,6 +158,7 @@ export class UserService {
         user.avatar = profile._json.image.link;
         user.friends = [];
         user.friendRequest = [];
+        user.friendNotifications = [];
 
 
         // Enregistrez l'utilisateur dans la base de données
