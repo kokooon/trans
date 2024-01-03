@@ -31,15 +31,7 @@ function UserAv() {
     useEffect(() => {
     const fetchData = async () => {
       const userData = await fetchUserDetails();
-      //console.log(userData);
-      //PQUOI QUAND J AFFICHE LES LOGS JE LES AI 2 FOIS ???
       setUser(userData);
-      //console.log(user); 
-      //JE N ARRIVE PAS A SET USER IL EST VIDE
-      //USER N' ARRIVE PAS A SE SET, J'AI RAJOUTER L IMPORT DE USER INTERFACE (et dans /pages/settings aussi)
-
-      // const avatarData = await fetchAvatarByPseudo(pseudo.toString());
-      // setAvatar(avatarData);
     };
 
     fetchData();
@@ -99,6 +91,9 @@ function UserAv() {
           <DropdownMenuGroup>
             <DropdownMenuItem onClick={() => navigate('/profile')}>
               Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate('/social')}>
+              Social
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate('/settings')}>
               Settings

@@ -6,6 +6,7 @@ import Home from '@/lib/pages/home';
 import Login from '../pages/login';
 import Profile from '../pages/profile';
 import Settings from '../pages/settings/settings';
+import Social from '../pages/social/social';
 
 const Routings = () => {
   return (
@@ -16,7 +17,7 @@ const Routings = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
-
+        <Route path="/social" element={<Social />} />
         {/* Route 404 */}
         <Route path="*" element={<Page404 />} />
       </Routes>

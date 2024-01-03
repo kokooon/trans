@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/lib/components/ui/button";
 import { UserNav } from '@/lib/components/ui/user-nav';
 import { isTokenValid } from '@/lib/components/utils/UtilsFetch';
-//import { AddFriends } from '@/lib/components/ui/AddFriends';
+import { AddFriends } from '@/lib/components/ui/AddFriends';
 //import { Chat } from '@/lib/components/Chat/chat';
+//import { Chat2 } from '@/lib/components/Chat/chat2';
 
 
 const Home = () => {
@@ -27,7 +28,7 @@ const Home = () => {
     <div className="flex flex-col min-h-screen">
       <div>
           <UserNav />
-          {/*<AddFriends />*/}
+          <AddFriends />
       </div>
       <div className="flex flex-col items-center justify-center flex-1">
         <Button variant="outline" className="osef" onClick={() => navigate('/game')}>
