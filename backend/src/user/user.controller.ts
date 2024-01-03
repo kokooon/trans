@@ -144,17 +144,17 @@ export class UserController {
     }
   }
 
-  @Get('friends/:userId') // Définissez le paramètre dans l'URL comme ":userId"
+/*  @Get('friends/:userId') // Définissez le paramètre dans l'URL comme ":userId"
   async findAvatarById(@Param('userId') userId: number): Promise<User> {
     const user = await this.userService.findById(userId);
     return user;
-  }
+  }*/
 
-/*}  @Get('friends/:userId') // Définissez le paramètre dans l'URL comme ":userId"
+  @Get('friends/:userId') // Définissez le paramètre dans l'URL comme ":userId"
   async findPseudoById(@Param('userId') userId: number): Promise<string> {
     const user = await this.userService.findById(userId);
     return user.pseudo;
-  }*/
+  }
 
   @Get('cookie')
   async findbyId(@Req() req): Promise<User[]> {
