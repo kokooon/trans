@@ -68,6 +68,79 @@ export class UserController {
     }
   }
 
+  @Post('RefuseFriend')
+  async RefuseFriend(@Req() req, @Res() res) {
+    try {
+        const jwtCookie = req.cookies.jwt;
+        if (!jwtCookie || jwtCookie === undefined) {
+            return res.status(500).send('no token');
+        }
+        // Extract userId from the JWT token
+        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+        console.log(decodedData);
+        if (!decodedData || !decodedData.userId) {
+            return res.status(500).send('invalid token');
+        }
+        const userId = parseInt(decodedData.userId, 10);
+        if (isNaN(userId)) {
+            return res.status(500).send('invalid userId');
+        }
+        // Extract newPseudo from the request body
+        const RequestPseudo = req.body.friendPseudo;
+        if (!RequestPseudo) {
+            return res.status(400).send('no new pseudo provided');
+        }
+
+        await this.userService.RefuseFriend(userId, RequestPseudo);
+        return res.status(200).json({ status: 'success' });
+    } catch (error) {
+        console.error('Error changing pseudo:', error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Failed to change pseudo',
+        });
+    }
+  }
+
+  @Post('AcceptFriend')
+  async AcceptFriend(@Req() req, @Res() res) {
+    try {
+        const jwtCookie = req.cookies.jwt;
+        console.log("jwtCookie =", jwtCookie);
+        if (!jwtCookie || jwtCookie === undefined) {
+            return res.status(500).send('no token');
+        }
+
+        // Extract userId from the JWT token
+        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+        console.log(decodedData);
+        if (!decodedData || !decodedData.userId) {
+            return res.status(500).send('invalid token');
+        }
+
+        const userId = parseInt(decodedData.userId, 10);
+        if (isNaN(userId)) {
+            return res.status(500).send('invalid userId');
+        }
+        console.log("user id = ", userId);
+        // Extract newPseudo from the request body
+        const NewFriendPseudo = req.body.friendPseudo;
+        if (!NewFriendPseudo) {
+            return res.status(400).send('no new pseudo provided');
+        }
+
+        await this.userService.updateFriend(userId, NewFriendPseudo);
+        return res.status(200).json({ status: 'success' });
+    } catch (error) {
+        console.error('Error changing pseudo:', error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Failed to change pseudo',
+        });
+    }
+  }
+
+
   @Post('changePseudo')
   async changePseudo(@Req() req, @Res() res) {
     try {
@@ -106,8 +179,8 @@ export class UserController {
     }
   }
 
-  @Post('addFriend')
-  async addFriend(@Req() req, @Res() res) {
+  @Post('FriendRequest')
+  async FriendRequest(@Req() req, @Res() res) {
     try {
         const jwtCookie = req.cookies.jwt;
         console.log("jwtCookie =", jwtCookie);
@@ -133,7 +206,7 @@ export class UserController {
         if (!FriendId)
         return res.status(400).send('no friend');
 
-        await this.userService.AddFriends(userId, FriendId);
+        await this.userService.AddInFriendRequest(userId, FriendId);
         return res.status(200).json({ status: 'success' });
     } catch (error) {
         console.error('Error adding friend:', error);

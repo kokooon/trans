@@ -75,7 +75,7 @@ export class UserService {
     }
   }
 
-  async AddFriends(userId: number, FriendRequestid: number): Promise<void> {
+  async AddInFriendRequest(userId: number, FriendRequestid: number): Promise<void> {
     const user = await this.findById(userId);
 
     if (!user) {
@@ -92,6 +92,48 @@ export class UserService {
     }
     this.SetNotifications(userId, FriendRequestid);
 }
+
+  async RefuseFriend(userId: number, Friendtwo: string): Promise<void>{
+    const user = await this.findById(userId);
+    const usertwo = await this.findByPseudo(Friendtwo);
+
+    if (!user || !usertwo) {
+      // Handle the case where the user with the given ID is not found
+      throw new BadRequestException('User not found');
+    }
+    user.friendNotifications = user.friendNotifications.filter(id => Number(id) !== usertwo.id);
+    usertwo.friendRequest = user.friendNotifications.filter(id => Number(id) !== user.id)
+
+    await this.userRepository.save(user);
+    await this.userRepository.save(usertwo);
+  }
+
+  async updateFriend(userId: number, Friendtwo: string): Promise<void>{
+    const user = await this.findById(userId);
+    const usertwo = await this.findByPseudo(Friendtwo);
+    if (!user || !usertwo) {
+      // Handle the case where the user with the given ID is not found
+      throw new BadRequestException('User not found');
+  }
+  const friendsAsNumbers = user.friends.map(Number);
+  const friendsAsNumberstwo = usertwo.friends.map(Number);
+  if (!friendsAsNumbers.includes(usertwo.id) && !friendsAsNumberstwo.includes(user.id)){
+    user.friends.push(usertwo.id);
+    usertwo.friends.push(user.id);
+  }
+  else{
+    console.log('Already Friend');
+  }
+  usertwo.friendRequest = usertwo.friendRequest.filter(id => Number(id) !== user.id);
+  user.friendRequest = user.friendRequest.filter(id => Number(id) !== usertwo.id);
+
+  usertwo.friendNotifications = usertwo.friendNotifications.filter(id => Number(id) !== user.id);
+  user.friendNotifications = user.friendNotifications.filter(id => Number(id) !== usertwo.id);
+
+  await this.userRepository.save(user);
+  await this.userRepository.save(usertwo);
+  }
+
 
   async updatePseudo(userId: number, newPseudo: string): Promise<void> {
     const user = await this.findById(userId);

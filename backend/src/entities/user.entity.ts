@@ -41,5 +41,7 @@ export class User {
   @Column('simple-array', { nullable: true })
   History: string[];
 
+  @Column('simple-array', { nullable: true })
+  channels: string[];
   //Channels
 }
