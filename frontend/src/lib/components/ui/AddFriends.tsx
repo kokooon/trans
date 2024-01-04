@@ -1,13 +1,13 @@
 //import { Button } from "@/lib/components/ui/button"
-import { useEffect, useState } from 'react';
+//import { useEffect, useState } from 'react';
 //import { useCookies } from 'react-cookie';
 //import { useNavigate } from 'react-router-dom';
-import { fetchUserDetails } from '../utils/UtilsFetch';
+//import { fetchUserDetails } from '../utils/UtilsFetch';
 //import { fetchUserDetailsByPseudo } from '../utils/UtilsFetch';
 //import { User } from './../user.model.tsx';
 
 
-function AddFriend() {
+{/*function AddFriend() {
     const [friendpseudo, setFriendPseudo] = useState<string>('');
     const [, setUser] = useState<any | null>(null);
   
@@ -27,7 +27,7 @@ function AddFriend() {
       fetchData();
     }, []);
   
-    const handleAddSubmit = async () => {
+    const handleadd = async () => {
       try {
         // Envoyer le nouveau pseudo au backend
         const response = await fetch('http://127.0.0.1:3001/users/FriendRequest', {
@@ -78,4 +78,4 @@ export function AddFriends() {
       </div>
     </div>
     )
-}
+}*/}

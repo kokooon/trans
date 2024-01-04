@@ -102,6 +102,43 @@ export class UserController {
     }
   }
 
+  @Post('Block')
+  async blockUser(@Req() req, @Res() res) {
+    try {
+        const jwtCookie = req.cookies.jwt;
+        console.log("jwtCookie =", jwtCookie);
+        if (!jwtCookie || jwtCookie === undefined) {
+            return res.status(500).send('no token');
+        }
+
+        // Extract userId from the JWT token
+        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+        console.log(decodedData);
+        if (!decodedData || !decodedData.userId) {
+            return res.status(500).send('invalid token');
+        }
+
+        const userId = parseInt(decodedData.userId, 10);
+        if (isNaN(userId)) {
+            return res.status(500).send('invalid userId');
+        }
+        // Extract newPseudo from the request body
+        const pseudo = req.body.blockpseudo;
+        if (!pseudo) {
+            return res.status(400).send('no pseudo provided');
+        }
+
+        await this.userService.blockUser(userId, pseudo);
+        return res.status(200).json({ status: 'success' });
+    } catch (error) {
+        console.error('Error blocking user:', error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Failed to block user',
+        });
+    }
+  }
+
   @Post('AcceptFriend')
   async AcceptFriend(@Req() req, @Res() res) {
     try {

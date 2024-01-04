@@ -12,6 +12,8 @@ const social = () => {
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
+    const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
+    const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
 
     useEffect(() => {
         const fetchData = async () => {
@@ -21,6 +23,54 @@ const social = () => {
         fetchData();
     }, []);
 
+    const handleadd = async () => {
+        try {
+          // Envoyer le nouveau pseudo au backend
+          const response = await fetch('http://127.0.0.1:3001/users/FriendRequest', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ addFriend: addInput }),
+          });
+    
+          if (!response.ok) {
+            throw new Error('La réponse du réseau n’était pas correcte');
+          }
+    
+          // Gérer ici la mise à jour réussie du pseudo
+          // Vous pourriez vouloir afficher une notification ou mettre à jour l'interface utilisateur
+        } catch (error) {
+          console.error('Erreur lors de la mise à jour du pseudo :', error);
+          // Gérer l'erreur ici, comme afficher une notification à l'utilisateur
+        }
+      };
+
+    const handleBlock  = async () => {
+        // Logique de blocage ici
+        console.log("Blocage de:", blockInput);
+        try {
+            // Envoyer le nouveau pseudo au backend
+            const response = await fetch('http://127.0.0.1:3001/users/Block', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
+                },
+                credentials: 'include', // Inclure les cookies avec la requête
+                body: JSON.stringify({ blockpseudo: blockInput }),
+            });
+            if (!response.ok) {
+                throw new Error('La réponse du réseau n’était pas correcte');
+            }
+            // Gérer ici la mise à jour réussie du friend
+        } catch (error) {
+            console.error('Erreur lors du blockage :', error);
+        }
+        // Réinitialiser l'entrée de texte
+        setBlockInput('');
+    };
 
     const handleAccept = async (friend: string) => {
         console.log("Accepted friend:", friend);
@@ -96,6 +146,17 @@ const social = () => {
         }
     };
 
+    const getChannel = async () => {
+        setCurrentView('Channel');
+        const List = []; // Créez une nouvelle liste pour les amis
+        for (let i = 0; i < user[0].channels; i++) {
+            const channel = user[0].channels[i];
+            List.push(channel);
+            }
+            // Mettez à jour FriendsLists avec la liste complète des amis
+            setLists([...List]);
+        }
+
     const getBlock  = async () => {
         setCurrentView('Blocked');
         try {
@@ -152,11 +213,35 @@ const social = () => {
     return (
         <div>
             <UserNav />
-            <div style={{ display: 'flex', justifyContent: 'start', gap: '100px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'start', gap: '30px', marginBottom: '20px' }}>
                 {/* Boutons */}
                 <Button variant="outline" className="osef" onClick={getNotifications}><p>Notifications</p></Button>
                 <Button variant="outline" className="osef" onClick={getFriends}><p>Friends</p></Button>
                 <Button variant="outline" className="osef" onClick={getBlock}><p>Blocked</p></Button>
+                <Button variant="outline" className="osef" onClick={getChannel}><p>Channel</p></Button>
+
+                <div style={{ display: 'flex', gap: '5px' }}>
+                <input
+                    type="text"
+                    value={blockInput}
+                    onChange={(e) => setBlockInput(e.target.value)}
+                    placeholder="Enter user ID to block"
+                />
+                <Button variant="outline" className="osef" onClick={handleBlock}>
+                    <p>Block</p>
+                </Button>
+            </div>
+            <div style={{ display: 'flex', gap: '5px' }}>
+                <input
+                    type="text"
+                    value={addInput}
+                    onChange={(e) => setaddInput(e.target.value)}
+                    placeholder="Enter user pseudo"
+                />
+
+                {/* Bouton Block */}
+                <Button variant="outline" className="osef" onClick={handleadd}><p>Add</p></Button>
+            </div>
             </div>
     
             {/* Render Lists */}
@@ -188,6 +273,5 @@ const social = () => {
             </ul>
         </div>
     );
-    
 }
 export default social;

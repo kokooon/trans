@@ -108,6 +108,17 @@ export class UserService {
     await this.userRepository.save(usertwo);
   }
 
+  async blockUser(userId: number, Friendtwo: string): Promise<void>{
+    const user = await this.findById(userId);
+    const usertwo = await this.findByPseudo(Friendtwo);
+    if (!user || !usertwo) {
+      // Handle the case where the user with the given ID is not found
+      throw new BadRequestException('User not found');
+    }
+    user.banlist.push(usertwo.id);
+    await this.userRepository.save(user);
+  }
+
   async updateFriend(userId: number, Friendtwo: string): Promise<void>{
     const user = await this.findById(userId);
     const usertwo = await this.findByPseudo(Friendtwo);
@@ -202,7 +213,8 @@ export class UserService {
         user.friendRequest = [];
         user.friendNotifications = [];
         user.History = [];
-
+        user.banlist = [];
+        user.channels = [];
         // Enregistrez l'utilisateur dans la base de données
         const savedUser = await this.userRepository.save(user);
 

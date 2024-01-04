@@ -5,7 +5,7 @@ import { Button } from "@/lib/components/ui/button";
 import { UserNav } from '@/lib/components/ui/user-nav';
 import { isTokenValid } from '@/lib/components/utils/UtilsFetch';
 //import { AddFriends } from '@/lib/components/ui/AddFriends';
-import { Chat } from '@/lib/components/Chat/chat';
+//import { Chat } from '@/lib/components/Chat/chat';
 //import { Chat2 } from '@/lib/components/Chat/chat2';
 
 
@@ -35,9 +35,9 @@ const Home = () => {
           <p>Play !</p>
         </Button>
         </div>
-        <div >
+        {/*<div >
         <Chat />
-        </div>
+        </div>*/}
         {/* Le reste du contenu de votre page d'accueil */}
     </div>
   );
