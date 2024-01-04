@@ -1,0 +1,19 @@
+.layout {
+    width: 1366px;
+    height: 768px;
+    display: grid;
+    grid: "sidebar body" 1fr / 30% 3fr;
+    gap: 8px;
+}
+
+.sidebar {
+    grid-area: sidebar;
+    overflow-y: auto; /* Ajoute un défilement vertical si nécessaire */
+    padding: 10px; /* Ajouter un peu de padding pour l'esthétique */
+}
+
+
+.body {
+    grid-area: body;
+    /* Styles supplémentaires pour le corps principal si nécessaire */
+}

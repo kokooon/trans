@@ -7,6 +7,7 @@ import { Button } from "@/lib/components/ui/button";
 import { UserNav } from '@/lib/components/ui/user-nav';
 //import { useCookies } from 'react-cookie';
 //import { useNavigate } from 'react-router-dom';
+import "../../styles/social.css"
 
 const social = () => {
     const [currentView, setCurrentView] = useState('Notifications');
@@ -72,52 +73,52 @@ const social = () => {
         setBlockInput('');
     };
 
-    const handleAccept = async (friend: string) => {
-        console.log("Accepted friend:", friend);
-        //POST ajouter l'id dans la colonne friends
-        //retirer l'id des notifs
-        try {
-            // Envoyer le nouveau pseudo au backend
-            const response = await fetch('http://127.0.0.1:3001/users/AcceptFriend', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
-                },
-                credentials: 'include', // Inclure les cookies avec la requête
-                body: JSON.stringify({ friendPseudo: friend }),
-            });
-            if (!response.ok) {
-                throw new Error('La réponse du réseau n’était pas correcte');
-            }
-            // Gérer ici la mise à jour réussie du friend
-        } catch (error) {
-            console.error('Erreur lors de l\'ajout du friend :', error);
-        }
-    }
+    // const handleAccept = async (friend: string) => {
+    //     console.log("Accepted friend:", friend);
+    //     //POST ajouter l'id dans la colonne friends
+    //     //retirer l'id des notifs
+    //     try {
+    //         // Envoyer le nouveau pseudo au backend
+    //         const response = await fetch('http://127.0.0.1:3001/users/AcceptFriend', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
+    //             },
+    //             credentials: 'include', // Inclure les cookies avec la requête
+    //             body: JSON.stringify({ friendPseudo: friend }),
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error('La réponse du réseau n’était pas correcte');
+    //         }
+    //         // Gérer ici la mise à jour réussie du friend
+    //     } catch (error) {
+    //         console.error('Erreur lors de l\'ajout du friend :', error);
+    //     }
+    // }
     
-    const handleDecline = async (friend: string) => {
-        console.log("Declined friend:", friend);
-        //POST retirer l'id des notifs et request
-        try {
-            // Envoyer le nouveau pseudo au backend
-            const response = await fetch('http://127.0.0.1:3001/users/RefuseFriend', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
-                },
-                credentials: 'include', // Inclure les cookies avec la requête
-                body: JSON.stringify({ friendPseudo: friend }),
-            });
-            if (!response.ok) {
-                throw new Error('La réponse du réseau n’était pas correcte');
-            }
-            // Gérer ici la mise à jour réussie du friend
-        } catch (error) {
-            console.error('Erreur lors de l\'ajout du friend :', error);
-        }
-    }
+    // const handleDecline = async (friend: string) => {
+    //     console.log("Declined friend:", friend);
+    //     //POST retirer l'id des notifs et request
+    //     try {
+    //         // Envoyer le nouveau pseudo au backend
+    //         const response = await fetch('http://127.0.0.1:3001/users/RefuseFriend', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
+    //             },
+    //             credentials: 'include', // Inclure les cookies avec la requête
+    //             body: JSON.stringify({ friendPseudo: friend }),
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error('La réponse du réseau n’était pas correcte');
+    //         }
+    //         // Gérer ici la mise à jour réussie du friend
+    //     } catch (error) {
+    //         console.error('Erreur lors de l\'ajout du friend :', error);
+    //     }
+    // }
 
     const getFriends  = async () => {
         setCurrentView('Friends');
@@ -212,66 +213,56 @@ const social = () => {
 
     return (
         <div>
-            <UserNav />
-            <div style={{ display: 'flex', justifyContent: 'start', gap: '30px', marginBottom: '20px' }}>
-                {/* Boutons */}
-                <Button variant="outline" className="osef" onClick={getNotifications}><p>Notifications</p></Button>
-                <Button variant="outline" className="osef" onClick={getFriends}><p>Friends</p></Button>
-                <Button variant="outline" className="osef" onClick={getBlock}><p>Blocked</p></Button>
-                <Button variant="outline" className="osef" onClick={getChannel}><p>Channel</p></Button>
+            <div><UserNav /></div>
+            <div className="layout">
+                <div className="sidebar">
+                    <div style={{ display: 'flex', flexDirection: 'row', gap: '5px', flexWrap: 'wrap' }}>
+                        {/* Boutons ajustés */}
+                        <Button variant="outline" className="button-small" onClick={getNotifications}>Notifications</Button>
+                        <Button variant="outline" className="button-small" onClick={getFriends}>Friends</Button>
+                        <Button variant="outline" className="button-small" onClick={getBlock}>Blocked</Button>
+                        <Button variant="outline" className="button-small" onClick={getChannel}>Channel</Button>
 
-                <div style={{ display: 'flex', gap: '5px' }}>
-                <input
-                    type="text"
-                    value={blockInput}
-                    onChange={(e) => setBlockInput(e.target.value)}
-                    placeholder="Enter user ID to block"
-                />
-                <Button variant="outline" className="osef" onClick={handleBlock}>
-                    <p>Block</p>
-                </Button>
+                        {/* Champs de saisie et boutons pour bloquer et ajouter */}
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                            <input
+                                type="text"
+                                value={blockInput}
+                                onChange={(e) => setBlockInput(e.target.value)}
+                                placeholder="Block ID"
+                                className="input-small"
+                            />
+                            <Button variant="outline" className="button-small" onClick={handleBlock}>Block</Button>
+                        </div>
+                        <div style={{ display: 'flex', gap: '5px' }}>
+                            <input
+                                type="text"
+                                value={addInput}
+                                onChange={(e) => setaddInput(e.target.value)}
+                                placeholder="Add User"
+                                className="input-small"
+                            />
+                            <Button variant="outline" className="button-small" onClick={handleadd}>Add</Button>
+                        </div>
+                    </div>
+        
+                    {/* Render Lists */}
+                    {/* ... */}
+                </div>
+                <div className="body">
+                    {/* Contenu du corps principal */}
+                    {currentView === 'Notifications' && (
+                        <ul>
+                            {Lists.map((item, index) => (
+                                <li key={index}>{item}</li> // Affiche chaque élément de la liste
+                            ))}
+                        </ul>
+                    )}
+                    {/* ... autres contenus du corps principal ... */}
+                </div>
             </div>
-            <div style={{ display: 'flex', gap: '5px' }}>
-                <input
-                    type="text"
-                    value={addInput}
-                    onChange={(e) => setaddInput(e.target.value)}
-                    placeholder="Enter user pseudo"
-                />
-
-                {/* Bouton Block */}
-                <Button variant="outline" className="osef" onClick={handleadd}><p>Add</p></Button>
-            </div>
-            </div>
-    
-            {/* Render Lists */}
-            <ul>
-                {Lists.map((item, index) => (
-                    <li key={index}>
-                        {item}
-                        {/* Afficher les boutons uniquement pour Notifications */}
-                        {currentView === 'Notifications' && (
-                            <>
-                                <Button 
-                                    variant="outline" 
-                                    style={{ backgroundColor: 'white', color: 'green', marginLeft: '10px' }}
-                                    onClick={() => handleAccept(item)}
-                                >
-                                    <span role="img" aria-label="accept">✔️</span>
-                                </Button>
-                                <Button 
-                                    variant="outline" 
-                                    style={{ backgroundColor: 'white', color: 'red', marginLeft: '10px' }}
-                                    onClick={() => handleDecline(item)}
-                                >
-                                    <span role="img" aria-label="decline">❌</span>
-                                </Button>
-                            </>
-                        )}
-                    </li>
-                ))}
-            </ul>
         </div>
     );
 }
+
 export default social;

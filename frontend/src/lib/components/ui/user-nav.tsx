@@ -56,16 +56,6 @@ function UserAv() {
 
     return (
       <DropdownMenu>
-        <div>
-          {user ? (
-            <>
-            <p>Username: {user[0].pseudo}</p>
-            <p>Email: {user[0].email}</p>
-            </>
-            ) : (
-            <p>User unknown</p>
-            )}
-        </div>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
