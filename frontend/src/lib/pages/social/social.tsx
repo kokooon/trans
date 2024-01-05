@@ -261,9 +261,15 @@ const social = () => {
             </div>
         </div>
         <div className="chat-container">
-            {/* Composants du chat ici */}
+            <div className="message-thread">
+                {/* Les messages du chat seront affichés ici */}
+            </div>
+            <div className="chat-input-container">
+                <input type="text" placeholder="Type a message..." className="chat-input" />
+                <button className="chat-send-button">Send</button>
+            </div>
         </div>
     </div>
-);
+    );
 }
 export default social;

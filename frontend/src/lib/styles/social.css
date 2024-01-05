@@ -1,16 +1,34 @@
 .main-container {
     display: flex;
-    height: 90vh;
-    margin: 5vh auto;
+    height: 100vh;
     padding: 20px;
     box-sizing: border-box;
-    max-width: 1200px;
   }
   
   .functionality-content {
     /* Styles pour le contenu dynamique */
     flex-grow: 1; /* Permet au contenu de remplir l'espace */
   }
+
+  .additional-features {
+    /* Positionner les fonctionnalités additionnelles en bas */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Aligner les boutons et inputs au début */
+    padding: 10px;
+    border-top: 1px solid #ccc; /* Ligne de séparation si nécessaire */
+  }
+
+  .channel-actions {
+    margin-bottom: 10px; /* Espacer les boutons de création/rejoindre de ceux de blocage/ajout */
+  }
+
+  .input-group {
+    display: flex;
+    margin-bottom: 10px; /* Espacer chaque groupe d'input */
+  }
+
+
 
   .functionality-container {
     width: 35%;
@@ -33,8 +51,20 @@
   }
 
   .input-small {
+  flex-grow: 1;
+  margin-right: 5px; /* Espacer l'input du bouton */
+    }
+
+    .chat-input {
     flex-grow: 1;
-    margin-right: 5px; /* Espace entre l'input et le bouton */
+    margin-right: 10px; /* Espacement entre l'input et le bouton */
+    padding: 10px; /* Ajustez selon vos besoins */
+  }
+
+  .chat-input-container {
+    margin-top: auto; /* Pousse le conteneur d'entrée vers le bas */
+    display: flex;
+    padding: 10px 0; /* Ajustez selon vos besoins */
   }
 
   .chat-container {
@@ -43,18 +73,32 @@
     border: 2px solid green;
     display: flex;
     flex-direction: column;
+    position: relative; /* Permet de positionner absolument le message input container par rapport à cela */
+    padding-bottom: 60px; /* Fait de la place pour l'input de message */
   }
   
   .message-thread {
     flex-grow: 1; /* Permettre au fil de messages d'occuper l'espace disponible */
     border-bottom: 2px solid green; /* Bordure pour séparer de l'input */
+    overflow-y: auto;
+    height: 100%; /* Prend la hauteur totale du conteneur */
   }
   
   .message-input {
-    display: flex;
-    padding: 10px 0; /* Ajuster selon les besoins */
+    flex-grow: 1; /* Laisse l'input de texte s'étendre */
+    margin-right: 10px; /* Espacement entre l'input et le bouton */
   }
   
+  .message-input-container {
+    position: absolute; /* Positionne le conteneur d'input en bas */
+    bottom: 0;
+    left: 0;
+    width: 100%; /* Assurez-vous que l'input de message s'étend sur toute la largeur */
+    display: flex;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
   .message-input input {
     flex-grow: 1; /* Permettre à l'input de s'étendre */
     padding: 10px;
@@ -65,4 +109,8 @@
     padding: 10px 20px; /* Ajuster selon les besoins */
   }
   
-  
+  .chat-send-button {
+    padding: 10px 20px; /* Ajustez selon vos besoins */
+    /* Ajoutez ici d'autres styles pour votre bouton */
+  }
+
