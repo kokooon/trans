@@ -3,8 +3,8 @@ import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 //import { fetchAvatarByPseudo } from '../utils/UtilsFetch';
 //import { User } from '../settings/user.model.tsx';
 import { Button } from "@/lib/components/ui/button";
-//import { AddFriends } from '@/lib/components/ui/AddFriends';
-import { UserNav } from '@/lib/components/ui/user-nav';
+//import { AddFriends } from '@/lib/components/ui/AddFriends'
+//import { UserNav } from '@/lib/components/ui/user-nav';
 //import { useCookies } from 'react-cookie';
 //import { useNavigate } from 'react-router-dom';
 import "../../styles/social.css"
@@ -15,7 +15,8 @@ const social = () => {
     const [user, setUser] = useState<any | null>(null);
     const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
-
+    currentView;
+    Lists;
     useEffect(() => {
         const fetchData = async () => {
           const userData = await fetchUserDetails();
@@ -24,7 +25,7 @@ const social = () => {
         fetchData();
     }, []);
 
-    const handleadd = async () => {
+   const handleadd = async () => {
         try {
           // Envoyer le nouveau pseudo au backend
           const response = await fetch('http://127.0.0.1:3001/users/FriendRequest', {
@@ -209,60 +210,60 @@ const social = () => {
         } catch (error) {
             console.error('Error during get friends:', error);
         }
-    }; 
+    };
+
+    const handleCreateChannel = async () => {
+        ;
+    }
+
+    const handleJoinChannel  = async () => {
+        ;
+    }
 
     return (
-        <div>
-            <div><UserNav /></div>
-            <div className="layout">
-                <div className="sidebar">
-                    <div style={{ display: 'flex', flexDirection: 'row', gap: '5px', flexWrap: 'wrap' }}>
-                        {/* Boutons ajustés */}
-                        <Button variant="outline" className="button-small" onClick={getNotifications}>Notifications</Button>
-                        <Button variant="outline" className="button-small" onClick={getFriends}>Friends</Button>
-                        <Button variant="outline" className="button-small" onClick={getBlock}>Blocked</Button>
-                        <Button variant="outline" className="button-small" onClick={getChannel}>Channel</Button>
-
-                        {/* Champs de saisie et boutons pour bloquer et ajouter */}
-                        <div style={{ display: 'flex', gap: '5px' }}>
-                            <input
-                                type="text"
-                                value={blockInput}
-                                onChange={(e) => setBlockInput(e.target.value)}
-                                placeholder="Block ID"
-                                className="input-small"
-                            />
-                            <Button variant="outline" className="button-small" onClick={handleBlock}>Block</Button>
-                        </div>
-                        <div style={{ display: 'flex', gap: '5px' }}>
-                            <input
-                                type="text"
-                                value={addInput}
-                                onChange={(e) => setaddInput(e.target.value)}
-                                placeholder="Add User"
-                                className="input-small"
-                            />
-                            <Button variant="outline" className="button-small" onClick={handleadd}>Add</Button>
-                        </div>
-                    </div>
-        
-                    {/* Render Lists */}
-                    {/* ... */}
+        <div className="main-container"> {/* Cadre principal (orange) */}
+            <div className="functionality-container"> {/* Cadre fonctionnalités (rouge) */}
+            <div className="button-group"> {/* Conteneur pour les boutons */}
+                <Button variant="outline" className="button-small" onClick={getNotifications}>Notifications</Button>
+                <Button variant="outline" className="button-small" onClick={getFriends}>Friends</Button>
+                <Button variant="outline" className="button-small" onClick={getBlock}>Blocked</Button>
+                <Button variant="outline" className="button-small" onClick={getChannel}>Channel</Button>
+            </div>
+            <div className="functionality-content">
+                {/* Contenu qui change en fonction des boutons cliqués */}
+            </div>
+            <div className="additional-features">
+                <div className="channel-actions">
+                    <Button variant="outline" className="button-small" onClick={handleCreateChannel}>Create Channel</Button>
+                    <Button variant="outline" className="button-small" onClick={handleJoinChannel}>Join Channel</Button>
                 </div>
-                <div className="body">
-                    {/* Contenu du corps principal */}
-                    {currentView === 'Notifications' && (
-                        <ul>
-                            {Lists.map((item, index) => (
-                                <li key={index}>{item}</li> // Affiche chaque élément de la liste
-                            ))}
-                        </ul>
-                    )}
-                    {/* ... autres contenus du corps principal ... */}
+
+                <div className="block-user">
+                    <input
+                        type="text"
+                        value={blockInput}
+                        onChange={(e) => setBlockInput(e.target.value)}
+                        placeholder="Block ID"
+                        className="input-small"
+                    />
+                    <Button variant="outline" className="button-small" onClick={handleBlock}>Block</Button>
+                </div>
+                <div className="add-user">
+                    <input
+                        type="text"
+                        value={addInput}
+                        onChange={(e) => setaddInput(e.target.value)}
+                        placeholder="Add User"
+                        className="input-small"
+                    />
+                    <Button variant="outline" className="button-small" onClick={handleadd}>Add</Button>
                 </div>
             </div>
         </div>
-    );
+        <div className="chat-container">
+            {/* Composants du chat ici */}
+        </div>
+    </div>
+);
 }
-
 export default social;

@@ -1,19 +1,68 @@
-.layout {
-    width: 1366px;
-    height: 768px;
-    display: grid;
-    grid: "sidebar body" 1fr / 30% 3fr;
-    gap: 8px;
-}
+.main-container {
+    display: flex;
+    height: 90vh;
+    margin: 5vh auto;
+    padding: 20px;
+    box-sizing: border-box;
+    max-width: 1200px;
+  }
+  
+  .functionality-content {
+    /* Styles pour le contenu dynamique */
+    flex-grow: 1; /* Permet au contenu de remplir l'espace */
+  }
 
-.sidebar {
-    grid-area: sidebar;
-    overflow-y: auto; /* Ajoute un défilement vertical si nécessaire */
-    padding: 10px; /* Ajouter un peu de padding pour l'esthétique */
-}
+  .functionality-container {
+    width: 35%;
+    height: calc(90vh - 40px);
+    margin-right: 20px;
+    border: 2px solid red;
+    display: flex;
+    flex-direction: column; /* Organise les enfants en colonne */
+  }
 
+  .functionality-inputs {
+    margin-top: auto; /* Pousse les inputs en bas */
+    padding: 10px;
+    border-top: 1px solid #ccc; /* Ligne de séparation si nécessaire */
+  }
 
-.body {
-    grid-area: body;
-    /* Styles supplémentaires pour le corps principal si nécessaire */
-}
+  .block-user, .add-user {
+    display: flex;
+    margin-bottom: 10px; /* Espace entre les éléments d'input */
+  }
+
+  .input-small {
+    flex-grow: 1;
+    margin-right: 5px; /* Espace entre l'input et le bouton */
+  }
+
+  .chat-container {
+    flex-grow: 1; /* Le chat prendra l'espace restant, qui est maintenant réduit */
+    height: calc(90vh - 40px);
+    border: 2px solid green;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .message-thread {
+    flex-grow: 1; /* Permettre au fil de messages d'occuper l'espace disponible */
+    border-bottom: 2px solid green; /* Bordure pour séparer de l'input */
+  }
+  
+  .message-input {
+    display: flex;
+    padding: 10px 0; /* Ajuster selon les besoins */
+  }
+  
+  .message-input input {
+    flex-grow: 1; /* Permettre à l'input de s'étendre */
+    padding: 10px;
+    margin-right: 10px; /* Espace entre l'input et le bouton */
+  }
+  
+  .message-input button {
+    padding: 10px 20px; /* Ajuster selon les besoins */
+  }
+  
+  
