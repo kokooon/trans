@@ -15,6 +15,7 @@ const social = () => {
     const [user, setUser] = useState<any | null>(null);
     const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
+    const [addChannel, setaddChannel] = useState(''); // Valeur de l'entrée de texte pour add
     currentView;
     Lists;
     useEffect(() => {
@@ -233,11 +234,6 @@ const social = () => {
                 {/* Contenu qui change en fonction des boutons cliqués */}
             </div>
             <div className="additional-features">
-                <div className="channel-actions">
-                    <Button variant="outline" className="button-small" onClick={handleCreateChannel}>Create Channel</Button>
-                    <Button variant="outline" className="button-small" onClick={handleJoinChannel}>Join Channel</Button>
-                </div>
-
                 <div className="block-user">
                     <input
                         type="text"
@@ -247,6 +243,14 @@ const social = () => {
                         className="input-small"
                     />
                     <Button variant="outline" className="button-small" onClick={handleBlock}>Block</Button>
+                    <input
+                        type="text"
+                        value={addChannel}
+                        onChange={(e) => setaddChannel(e.target.value)}
+                        placeholder="Channel Name"
+                        className="input-small"
+                    />
+                    <Button variant="outline" className="button-small" onClick={handleCreateChannel}>Create Channel</Button>
                 </div>
                 <div className="add-user">
                     <input
@@ -257,6 +261,14 @@ const social = () => {
                         className="input-small"
                     />
                     <Button variant="outline" className="button-small" onClick={handleadd}>Add</Button>
+                    <input
+                        type="text"
+                        value={addInput}
+                        onChange={(e) => setaddInput(e.target.value)}
+                        placeholder="Channel Name"
+                        className="input-small"
+                    />
+                    <Button variant="outline" className="button-small" onClick={handleJoinChannel}>Join Channel</Button>
                 </div>
             </div>
         </div>

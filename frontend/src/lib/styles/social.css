@@ -51,8 +51,9 @@
   }
 
   .input-small {
-  flex-grow: 1;
-  margin-right: 5px; /* Espacer l'input du bouton */
+      flex: 0 1 50%;
+      margin-right: 5px; /* Espacer l'input du bouton */
+      width: 50%;
     }
 
     .chat-input {
