@@ -102,6 +102,41 @@ export class UserController {
     }
   }
 
+  @Post('social/unblock')
+  async unblockUser(@Req() req, @Res() res) {
+    try {
+        const jwtCookie = req.cookies.jwt;
+        if (!jwtCookie || jwtCookie === undefined) {
+            return res.status(500).send('no token');
+        }
+
+        // Extract userId from the JWT token
+        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+        if (!decodedData || !decodedData.userId) {
+            return res.status(500).send('invalid token');
+        }
+
+        const userId = parseInt(decodedData.userId, 10);
+        if (isNaN(userId)) {
+            return res.status(500).send('invalid userId');
+        }
+        // Extract from the request body
+        const pseudo = req.body.unblockpseudo;
+        if (!pseudo) {
+            return res.status(400).send('no pseudo provided');
+        }
+
+        await this.userService.unblockUser(userId, pseudo);
+        return res.status(200).json({ status: 'success' });
+    } catch (error) {
+        console.log('Error unblocking user:', error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Failed to block user',
+        });
+    }
+  }
+
   @Post('Block')
   async blockUser(@Req() req, @Res() res) {
     try {

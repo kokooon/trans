@@ -197,7 +197,6 @@ const social = () => {
                     method: 'GET',
                     credentials: 'include',
                 });
-    
                 if (response.ok) {
                     const responseData = await response.text();
                     friendsList.push(responseData);
@@ -210,6 +209,26 @@ const social = () => {
             setLists([...friendsList]);
         } catch (error) {
             console.error('Error during get friends:', error);
+        }
+    };
+
+    const handleUnblock  = async (unblockPseudo: string) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:3001/users/social/unblock`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
+                },
+                credentials: 'include', // Inclure les cookies avec la requête
+                body: JSON.stringify({ unblockpseudo: unblockPseudo }),
+            });
+            if (!response.ok) {
+                throw new Error('La réponse du réseau n’était pas correcte');
+            }
+            // Gérer ici la mise à jour réussie du friend
+        } catch (error) {
+            console.error('Erreur lors du blockage :', error);
         }
     };
 
@@ -251,7 +270,10 @@ const social = () => {
             {currentView === 'Blocked' && (
                 <div className="content-display">
                     {Lists.map((blockedUser, index) => (
-                        <div key={index}>{blockedUser}</div> // Affichage des utilisateurs bloqués
+                        <div key={index} className="blocked-item">
+                            <span>{blockedUser}</span>
+                            <Button variant="outline" className="button-small" onClick={() => handleUnblock(blockedUser)}>Unblock</Button>
+                        </div> // Affichage des utilisateurs bloqués avec bouton pour débloquer
                     ))}
                 </div>
             )}

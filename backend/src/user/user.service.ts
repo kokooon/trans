@@ -108,6 +108,19 @@ export class UserService {
     await this.userRepository.save(usertwo);
   }
 
+  async unblockUser(userId: number, Friendtwo: string): Promise<void>{
+    const user = await this.findById(userId);
+    const usertwo = await this.findByPseudo(Friendtwo);
+    if (!user || !usertwo) {
+      // Handle the case where the user with the given ID is not found
+      throw new BadRequestException('User not found');
+    }
+    console.log("id user = ", user.id);
+    console.log("id unblock = ", usertwo.id);
+    user.banlist = user.banlist.filter(id => Number(id) !== usertwo.id);
+    await this.userRepository.save(user);
+  }
+
   async blockUser(userId: number, Friendtwo: string): Promise<void>{
     const user = await this.findById(userId);
     const usertwo = await this.findByPseudo(Friendtwo);
