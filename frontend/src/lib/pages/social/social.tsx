@@ -75,52 +75,52 @@ const social = () => {
         setBlockInput('');
     };
 
-    // const handleAccept = async (friend: string) => {
-    //     console.log("Accepted friend:", friend);
-    //     //POST ajouter l'id dans la colonne friends
-    //     //retirer l'id des notifs
-    //     try {
-    //         // Envoyer le nouveau pseudo au backend
-    //         const response = await fetch('http://127.0.0.1:3001/users/AcceptFriend', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
-    //             },
-    //             credentials: 'include', // Inclure les cookies avec la requête
-    //             body: JSON.stringify({ friendPseudo: friend }),
-    //         });
-    //         if (!response.ok) {
-    //             throw new Error('La réponse du réseau n’était pas correcte');
-    //         }
-    //         // Gérer ici la mise à jour réussie du friend
-    //     } catch (error) {
-    //         console.error('Erreur lors de l\'ajout du friend :', error);
-    //     }
-    // }
+     const handleAccept = async (friend: string) => {
+         console.log("Accepted friend:", friend);
+         //POST ajouter l'id dans la colonne friends
+         //retirer l'id des notifs
+         try {
+             // Envoyer le nouveau pseudo au backend
+             const response = await fetch('http://127.0.0.1:3001/users/AcceptFriend', {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json',
+                     // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
+                 },
+                 credentials: 'include', // Inclure les cookies avec la requête
+                 body: JSON.stringify({ friendPseudo: friend }),
+             });
+             if (!response.ok) {
+                 throw new Error('La réponse du réseau n’était pas correcte');
+             }
+             // Gérer ici la mise à jour réussie du friend
+         } catch (error) {
+             console.error('Erreur lors de l\'ajout du friend :', error);
+        }
+    }
     
-    // const handleDecline = async (friend: string) => {
-    //     console.log("Declined friend:", friend);
-    //     //POST retirer l'id des notifs et request
-    //     try {
-    //         // Envoyer le nouveau pseudo au backend
-    //         const response = await fetch('http://127.0.0.1:3001/users/RefuseFriend', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
-    //             },
-    //             credentials: 'include', // Inclure les cookies avec la requête
-    //             body: JSON.stringify({ friendPseudo: friend }),
-    //         });
-    //         if (!response.ok) {
-    //             throw new Error('La réponse du réseau n’était pas correcte');
-    //         }
-    //         // Gérer ici la mise à jour réussie du friend
-    //     } catch (error) {
-    //         console.error('Erreur lors de l\'ajout du friend :', error);
-    //     }
-    // }
+     const handleDecline = async (friend: string) => {
+         console.log("Declined friend:", friend);
+         //POST retirer l'id des notifs et request
+         try {
+             // Envoyer le nouveau pseudo au backend
+             const response = await fetch('http://127.0.0.1:3001/users/RefuseFriend', {
+                 method: 'POST',
+                 headers: {
+                    'Content-Type': 'application/json',
+                     // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
+                 },
+                 credentials: 'include', // Inclure les cookies avec la requête
+                body: JSON.stringify({ friendPseudo: friend }),
+             });
+             if (!response.ok) {
+                 throw new Error('La réponse du réseau n’était pas correcte');
+             }
+             // Gérer ici la mise à jour réussie du friend
+         } catch (error) {
+             console.error('Erreur lors de l\'ajout du friend :', error);
+         }
+    }
 
     const getFriends  = async () => {
         setCurrentView('Friends');
@@ -152,7 +152,7 @@ const social = () => {
     const getChannel = async () => {
         setCurrentView('Channel');
         const List = []; // Créez une nouvelle liste pour les amis
-        for (let i = 0; i < user[0].channels; i++) {
+        for (let i = 0; i < user[0].channels.length; i++) {
             const channel = user[0].channels[i];
             List.push(channel);
             }
@@ -165,7 +165,7 @@ const social = () => {
         try {
             const List = []; // Créez une nouvelle liste pour les amis
     
-            for (let i = 0; i < user[0].banlist; i++) {
+            for (let i = 0; i < user[0].banlist.length; i++) {
                 const friendId = user[0].banlist[i];
                 const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
                     method: 'GET',
@@ -230,6 +230,38 @@ const social = () => {
                 <Button variant="outline" className="button-small" onClick={getBlock}>Blocked</Button>
                 <Button variant="outline" className="button-small" onClick={getChannel}>Channel</Button>
             </div>
+            {currentView === 'Notifications' && (
+                <div className="content-display">
+                    {Lists.map((notification, index) => (
+                        <div key={index} className="notification-item">
+                            <span>{notification}</span>
+                            <Button variant="outline" className="button-small" onClick={() => handleAccept(notification)}>Accepter</Button>
+                            <Button variant="outline" className="button-small" onClick={() => handleDecline(notification)}>Décliner</Button>
+                        </div> // Affichage des notifications avec boutons pour accepter ou décliner
+                    ))}
+                </div>
+            )}
+            {currentView === 'Friends' && (
+                <div className="content-display">
+                    {Lists.map((friend, index) => (
+                        <div key={index}>{friend}</div> // Affichage des amis
+                    ))}
+                </div>
+            )}
+            {currentView === 'Blocked' && (
+                <div className="content-display">
+                    {Lists.map((blockedUser, index) => (
+                        <div key={index}>{blockedUser}</div> // Affichage des utilisateurs bloqués
+                    ))}
+                </div>
+            )}
+            {currentView === 'Channel' && (
+                <div className="content-display">
+                    {Lists.map((channel, index) => (
+                        <div key={index}>{channel}</div> // Affichage des canaux
+                    ))}
+                </div>
+            )}
             <div className="functionality-content">
                 {/* Contenu qui change en fonction des boutons cliqués */}
             </div>
