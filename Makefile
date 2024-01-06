@@ -10,5 +10,3 @@ clean:
 	docker rmi -f $(docker images -aq)
 	docker network prune -f
 	docker volume prune -f
-
-

@@ -15,7 +15,9 @@ const social = () => {
     const [user, setUser] = useState<any | null>(null);
     const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
-    const [addChannel, setaddChannel] = useState(''); // Valeur de l'entrée de texte pour add
+    const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
+    const [passwordInput, setPasswordInput] = useState('');
+
     currentView;
     Lists;
     useEffect(() => {
@@ -52,7 +54,6 @@ const social = () => {
 
     const handleBlock  = async () => {
         // Logique de blocage ici
-        console.log("Blocage de:", blockInput);
         try {
             // Envoyer le nouveau pseudo au backend
             const response = await fetch('http://127.0.0.1:3001/users/Block', {
@@ -233,10 +234,12 @@ const social = () => {
     };
 
     const handleCreateChannel = async () => {
+        //channel name input stocked in ChannelName
         ;
     }
 
     const handleJoinChannel  = async () => {
+        //channel password input stocked in passwordInput
         ;
     }
 
@@ -299,8 +302,8 @@ const social = () => {
                     <Button variant="outline" className="button-small" onClick={handleBlock}>Block</Button>
                     <input
                         type="text"
-                        value={addChannel}
-                        onChange={(e) => setaddChannel(e.target.value)}
+                        value={ChannelName}
+                        onChange={(e) => setChannelName(e.target.value)}
                         placeholder="Channel Name"
                         className="input-small"
                     />
@@ -317,9 +320,9 @@ const social = () => {
                     <Button variant="outline" className="button-small" onClick={handleadd}>Add</Button>
                     <input
                         type="text"
-                        value={addInput}
-                        onChange={(e) => setaddInput(e.target.value)}
-                        placeholder="Channel Name"
+                        value={passwordInput}
+                        onChange={(e) => setPasswordInput(e.target.value)}
+                        placeholder="Channel password"
                         className="input-small"
                     />
                     <Button variant="outline" className="button-small" onClick={handleJoinChannel}>Join Channel</Button>
