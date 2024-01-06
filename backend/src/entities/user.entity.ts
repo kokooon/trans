@@ -1,9 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Message } from './message.entity';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @OneToMany(() => Message, message => message.sender)
+  sentMessages: Message[];
+
+  // If you also want to track messages received by the user in direct messaging
+  @OneToMany(() => Message, message => message.recipient, { nullable: true })
+  receivedMessages: Message[];
 
   @Column({ nullable: true })
   pseudo: string;
