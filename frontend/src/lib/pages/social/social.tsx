@@ -17,6 +17,7 @@ const social = () => {
     const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
     const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
     const [passwordInput, setPasswordInput] = useState('');
+    const [channelVisibility, setChannelVisibility] = useState('public');
 
     currentView;
     Lists;
@@ -234,6 +235,13 @@ const social = () => {
     };
 
     const handleCreateChannel = async () => {
+        const channelData = {
+            name: ChannelName,
+            visibility: channelVisibility,
+            password: passwordInput, // Only include this if the channel is private and a password is set
+          };
+          channelData;
+          // user who created the channel is in the variable 'user' need it because user who created a channel is the admin per default
         //channel name input stocked in ChannelName
         ;
     }
@@ -309,6 +317,27 @@ const social = () => {
                     />
                     <Button variant="outline" className="button-small" onClick={handleCreateChannel}>Create Channel</Button>
                 </div>
+                <div className="visibility-options">
+                    <input
+                        type="radio"
+                        id="public"
+                        name="visibility"
+                        value="public"
+                        checked={channelVisibility === 'public'}
+                        onChange={(e) => setChannelVisibility(e.target.value)}
+                    />
+                    <label htmlFor="public">Public</label>
+
+                    <input
+                        type="radio"
+                        id="private"
+                        name="visibility"
+                        value="private"
+                        checked={channelVisibility === 'private'}
+                        onChange={(e) => setChannelVisibility(e.target.value)}
+                    />
+                    <label htmlFor="private">Private</label>
+                 </div>
                 <div className="add-user">
                     <input
                         type="text"
