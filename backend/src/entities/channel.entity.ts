@@ -1,10 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Message } from './message.entity';
-
-export enum ChannelVisibility {
-    PUBLIC = 'public',  // Visible to everyone
-    PRIVATE = 'private', // Visible only to certain users
-  }
+import { ChannelVisibility } from '../channel/dto/channel-visibility.enum'; // Import this from where you defined the enum
 
 @Entity()
 export class Channel {

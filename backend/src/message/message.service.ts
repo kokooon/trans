@@ -11,5 +11,16 @@ export class MessageService {
     // ... other dependencies
   ) {}
 
+  async createMessage(createChannelDto): Promise<Message> {
+    const channel = new Message();
+    // Populate the channel entity using createChannelDto
+    // For example:
+    // channel.name = createChannelDto.name;
+    // channel.status = createChannelDto.status;
+    // channel.password = createChannelDto.password;
+    
+    return this.messageRepository.save(channel);
+  }
+
   // Define methods to handle message operations here
 }

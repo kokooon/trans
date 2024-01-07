@@ -25,18 +25,6 @@ export class UserService {
   async getAvatar(pseudo: string): Promise<string | undefined> {
     const user = await this.userRepository.findOne({ where: { pseudo } });
 
-    // TROP VOLUMINEUX
-    // if (user && user.avatar) {
-    //   // Si l'utilisateur existe et a un avatar
-    //   try {
-    //     // Convertir l'URL de l'avatar en base64
-    //     const base64Avatar = await this.convertImageToBase64(user.avatar); TROP VOLUMINEUX
-    //     return base64Avatar;
-    //   } catch (error) {
-    //     console.error('Error converting avatar to base64:', error);
-    //     return undefined;
-    //   }
-    // }
     if (user && user.avatar) {
       // Si l'utilisateur existe et a un avatar
       return user.avatar;
