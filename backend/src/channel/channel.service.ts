@@ -19,10 +19,11 @@ export class ChannelService {
     const channel = new Channel();
     // Populate the channel entity using createChannelDto
     // For example:
-    // channel.name = createChannelDto.name;
-    // channel.status = createChannelDto.status;
-    // channel.password = createChannelDto.password;
-    
+    channel.name = createChannelDto.name;
+    channel.visibility = createChannelDto.visibility;
+    channel.password = createChannelDto.password;
+    channel.admin = createChannelDto.admin;
+    channel.memberIds = createChannelDto.memberIds;
     return this.channelRepository.save(channel);
   }
 

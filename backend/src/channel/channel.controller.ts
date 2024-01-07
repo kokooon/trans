@@ -1,5 +1,5 @@
 // channel.controller.ts
-
+import { Channel } from '../entities/channel.entity';
 import { Controller, Post, Body, Req, Res, HttpStatus, HttpException } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
@@ -13,20 +13,16 @@ export class ChannelController {
   ) {}
 
   @Post('create')
-  async createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req, @Res() res) {
+  async createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req, @Res() res): Promise<Channel> {
     try {
-      // Here you would include logic to verify the user's identity and rights to create a channel
-      // For example, check if the user is authenticated or has the required role
-
-      // Then, use the channel service to create a new channel with the provided DTO
-        const channel = await this.channelService.createChannel(createChannelDto);
-        // Return the created channel data
-        return channel;
+      const channel = await this.channelService.createChannel(createChannelDto);
+      return res.status(201).json(channel); // Make sure to return a response with JSON
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+      console.log("failed to create in the POST: ", error.message);
+      return res.status(500).json({ error: error.message });
     }
   }
-
+  
 /*  @Post('join')
   async joinChannel(
     // Include DTO for joining a channel, which might include the channel name and optional password

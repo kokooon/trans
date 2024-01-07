@@ -7,10 +7,10 @@ export class CreateChannelDto {
   @IsNotEmpty()
   @IsString()
   name: string;
-
+  admin: number;
   @IsEnum(ChannelVisibility)
   visibility: ChannelVisibility;
-
+  memberIds: number;
   @IsString()
   @IsOptional()
   @MinLength(4) // You can set your own minimum length for passwords
