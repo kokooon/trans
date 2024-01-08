@@ -243,7 +243,6 @@ const social = () => {
             admin: user[0].id,
             memberIds: user[0].id // The current user's ID
           };
-          console.log("ok1");
           const response = await fetch('http://127.0.0.1:3001/channels/create', {
             method: 'POST',
             headers: {
@@ -253,15 +252,26 @@ const social = () => {
             body: JSON.stringify(channelData),
           });
           const newChannel = await response.json();
-          console.log('New channel created:', newChannel);
+          //console.log('New channel created:', newChannel.id);
+          //console.log('user id:', user[0].id);
           if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+          }
+          const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include', // if you're including credentials like cookies
+            body: JSON.stringify({ channelId: newChannel.id }),
+          });
+          if (!responsetwo.ok) {
             throw new Error(`Network response was not ok: ${response.statusText}`);
           }
         } catch (error) {
           console.error('Error during channel creation:', error);
         }
       };
-      
 
     const handleJoinChannel  = async () => {
         //channel password input stocked in passwordInput

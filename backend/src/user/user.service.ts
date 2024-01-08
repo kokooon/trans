@@ -22,6 +22,17 @@ export class UserService {
     return base64Image;
   }
 
+  async addChannelId(channelId: number, userId: number): Promise<void> {
+    const user = await this.findById(userId);
+    if (user){
+      user.channels.push(channelId);
+      await this.userRepository.save(user);
+    }else {
+      // Handle the case where the user with the given ID is not found
+      throw new BadRequestException('User not found');
+    }
+  }
+
   async getAvatar(pseudo: string): Promise<string | undefined> {
     const user = await this.userRepository.findOne({ where: { pseudo } });
 

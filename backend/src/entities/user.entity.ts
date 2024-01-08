@@ -50,6 +50,6 @@ export class User {
   History: string[];
 
   @Column('simple-array', { nullable: true })
-  channels: string[];
+  channels: number[];
   //Channels
 }
