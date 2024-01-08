@@ -37,6 +37,9 @@ const Settings = () => {
             {            
                 const userData = result[0];
                 setUser(userData);
+                if (userData && userData.is2FAEnabled !== undefined) {
+                    setIs2FAEnabled(userData.is2FAEnabled);
+                  }
             }
           } catch (error) {
             console.error('Error fetching user details:', error);
