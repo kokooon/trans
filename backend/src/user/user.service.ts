@@ -63,10 +63,13 @@ export class UserService {
       throw new BadRequestException('User not found');
     }
     const friendNotificationsAsNumbers = userN.friendNotif.map(Number);
+    const friendsAsNumber = userN.friends.map(Number);
     if (!friendNotificationsAsNumbers.includes(userId) && userId !== FriendRequestid)
     {
-      userN.friendNotif.push(userId);
-      await this.userRepository.save(userN);
+      if (!friendsAsNumber.includes(userId)){
+        userN.friendNotif.push(userId);
+        await this.userRepository.save(userN);
+      }
     }
     else {
       console.log(`L'ID ${userId} est déjà présent dans la liste de notifications.`);
@@ -81,9 +84,12 @@ export class UserService {
     }
 
     const friendIdsAsNumbers = user.friendRequest.map(Number);
+    const friendsAsNumbers = user.friends.map(Number);
     if (!friendIdsAsNumbers.includes(FriendRequestid) && user.id !== FriendRequestid) {
-      user.friendRequest.push(FriendRequestid);
-      await this.userRepository.save(user);
+      if (!friendsAsNumbers.includes(FriendRequestid)){
+        user.friendRequest.push(FriendRequestid);
+        await this.userRepository.save(user);
+      }
     }
     else {
       console.log(`L'ID ${FriendRequestid} est déjà présent dans la liste d'amis.`);

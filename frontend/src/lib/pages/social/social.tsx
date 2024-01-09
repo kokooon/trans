@@ -71,6 +71,7 @@ const social = () => {
           console.error('Erreur lors de la mise à jour du pseudo :', error);
           // Gérer l'erreur ici, comme afficher une notification à l'utilisateur
         }
+        setaddInput('');
       };
 
     const handleBlock  = async () => {
@@ -270,6 +271,10 @@ const social = () => {
             admin: user[0].id,
             memberIds: user[0].id // The current user's ID
           };
+          if (!ChannelName){
+            console.log("need a name for the channel");
+            return ;
+          }
           const response = await fetch('http://127.0.0.1:3001/channels/create', {
             method: 'POST',
             headers: {
@@ -301,6 +306,8 @@ const social = () => {
         } catch (error) {
           console.error('Error during channel creation:', error);
         }
+        setChannelName('');
+        setPasswordInput('');
       };
 
     const handleJoinChannel  = async () => {
@@ -370,15 +377,29 @@ const social = () => {
                 }
             } catch (error) {
                 console.error('Error during join channel:', error);
-            }     
-            //channel password input stocked in passwordInput
-            /*channel name in ChannelName
-            1st look if channelName valid -> GET -> fonction findByName sur channel
-            look if password need and compare 
-            if all is ok POST in membersIds in channel
-            POST in user Channels*/
+            }
+            setPasswordInput('');     
     };
 
+    /*const handleUnfriend  = async (friendname: string) => {
+        try {
+            const response = await fetch('http://127.0.0.1:3001/users/Unfriend', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                credentials: 'include', // if you're including credentials like cookies
+                body: JSON.stringify({ friendName: friendname }),
+              });
+              if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+        }
+        catch (error) {
+            console.log("unable to unfriend");
+        }
+    };*/
+    
     return (
         <div className="main-container"> {/* Cadre principal (orange) */}
             <div className="functionality-container"> {/* Cadre fonctionnalités (rouge) */}
@@ -501,7 +522,7 @@ const social = () => {
                         type="text"
                         value={passwordInput}
                         onChange={(e) => setPasswordInput(e.target.value)}
-                        placeholder="Channel Name"
+                        placeholder="Channel password"
                         className="input-small"
                     />
                     <Button variant="outline" className="button-small" onClick={handleJoinChannel}>Join Channel</Button>

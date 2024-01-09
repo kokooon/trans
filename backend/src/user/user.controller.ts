@@ -189,6 +189,11 @@ export class UserController {
     }
 
     //social
+    @Post ('Unfriend')
+    async Unfriend(@Req() req, @Res() res) {
+      ;
+    }
+    //social
     @Post('FriendRequest')
     async FriendRequest(@Req() req, @Res() res) {
       try {
