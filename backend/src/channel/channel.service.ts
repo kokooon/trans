@@ -40,6 +40,7 @@ export class ChannelService {
   async findChannelByName(name: string): Promise<Channel | undefined> {
     return this.channelRepository.findOneBy({ name });
   }
+  
   async findChannelById(id: number): Promise<Channel | undefined> {
     return this.channelRepository.findOneBy({ id });
   }

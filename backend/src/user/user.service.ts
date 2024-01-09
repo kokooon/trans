@@ -23,7 +23,8 @@ export class UserService {
   }
 
   async addChannelId(channelId: number, user: User): Promise<void> {
-    if (!user.channels.includes(channelId)){
+    const channelsAsNumbers = user.channels.map(Number);
+    if (!channelsAsNumbers.includes(channelId)){
       user.channels.push(channelId);
       await this.userRepository.save(user);
     }else {
@@ -125,8 +126,14 @@ export class UserService {
       // Handle the case where the user with the given ID is not found
       throw new BadRequestException('User not found');
     }
-    user.banlist.push(usertwo.id);
-    await this.userRepository.save(user);
+    const banlistAsNumbers = user.banlist.map(Number);
+    if (!banlistAsNumbers.includes(usertwo.id)) {
+      user.banlist.push(usertwo.id);
+      await this.userRepository.save(user);
+    }
+    else{
+      console.log("user already blocked");
+    }
   }
 
   async updateFriend(userId: number, Friendtwo: string): Promise<void>{

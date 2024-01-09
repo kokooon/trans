@@ -155,12 +155,19 @@ const social = () => {
         setCurrentView('Channel');
         const List = []; // Créez une nouvelle liste pour les amis
         for (let i = 0; i < user[0].channels.length; i++) {
-            const channel = user[0].channels[i];
-            List.push(channel);
-            }
+            const channelId = user[0].channels[i];
+            const response = await fetch(`http://127.0.0.1:3001/channels/channelNameById/${channelId}`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+                if (response.ok) {
+                    const responseData = await response.text();
+                    List.push(responseData);
+                }
             // Mettez à jour FriendsLists avec la liste complète des amis
             setLists([...List]);
         }
+    }
 
     const getBlock  = async () => {
         setCurrentView('Blocked');
@@ -193,8 +200,8 @@ const social = () => {
         try {
             const friendsList = []; // Créez une nouvelle liste pour les amis
     
-            for (let i = 0; i < user[0].friendNotifications.length; i++) {
-                const friendId = user[0].friendNotifications[i];
+            for (let i = 0; i < user[0].friendNotif.length; i++) {
+                const friendId = user[0].friendNotif[i];
                 const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
                     method: 'GET',
                     credentials: 'include',
@@ -210,7 +217,7 @@ const social = () => {
             // Mettez à jour FriendsLists avec la liste complète des amis
             setLists([...friendsList]);
         } catch (error) {
-            console.error('Error during get friends:', error);
+            console.error('Error during get notifs:', error);
         }
     };
 

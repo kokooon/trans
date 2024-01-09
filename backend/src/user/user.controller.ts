@@ -15,7 +15,226 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+    //social
+    @Post('/channel/AddInUser')
+    async AddChannelId(@Req() req, @Res() res) {
+    try {
+      const jwtCookie = req.cookies.jwt;
+      if (!jwtCookie || jwtCookie === undefined) {
+          return res.status(500).send('no token');
+      }
+      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+        if (!decodedData || !decodedData.userId) {
+            return res.status(500).send('invalid token');
+        }
+        const userId = parseInt(decodedData.userId, 10);
+        if (isNaN(userId)) {
+            return res.status(500).send('invalid userId');
+        }
+        const user = await this.userService.findById(userId);
+        await this.userService.addChannelId(req.body.channelId, user);
+        return res.status(200).json({ status: 'success' });
+      } catch (error) {
+        console.error('Error adding channel:', error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Failed to add channel',
+        });
+      }
+    }
 
+    //social
+    @Post('social/unblock')
+    async unblockUser(@Req() req, @Res() res) {
+      try {
+          const jwtCookie = req.cookies.jwt;
+          if (!jwtCookie || jwtCookie === undefined) {
+              return res.status(500).send('no token');
+          }
+  
+          // Extract userId from the JWT token
+          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+          if (!decodedData || !decodedData.userId) {
+              return res.status(500).send('invalid token');
+          }
+  
+          const userId = parseInt(decodedData.userId, 10);
+          if (isNaN(userId)) {
+              return res.status(500).send('invalid userId');
+          }
+          // Extract from the request body
+          const pseudo = req.body.unblockpseudo;
+          if (!pseudo) {
+              return res.status(400).send('no pseudo provided');
+          }
+  
+          await this.userService.unblockUser(userId, pseudo);
+          return res.status(200).json({ status: 'success' });
+      } catch (error) {
+          console.log('Error unblocking user:', error);
+          return res.status(500).json({
+              status: 'error',
+              message: 'Failed to block user',
+          });
+      }
+    }
+
+    //social
+    @Post('Block')
+    async blockUser(@Req() req, @Res() res) {
+      try {
+          const jwtCookie = req.cookies.jwt;
+          console.log("jwtCookie =", jwtCookie);
+          if (!jwtCookie || jwtCookie === undefined) {
+              return res.status(500).send('no token');
+          }
+  
+          // Extract userId from the JWT token
+          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+          console.log(decodedData);
+          if (!decodedData || !decodedData.userId) {
+              return res.status(500).send('invalid token');
+          }
+  
+          const userId = parseInt(decodedData.userId, 10);
+          if (isNaN(userId)) {
+              return res.status(500).send('invalid userId');
+          }
+          // Extract newPseudo from the request body
+          const pseudo = req.body.blockpseudo;
+          if (!pseudo) {
+              return res.status(400).send('no pseudo provided');
+          }
+  
+          await this.userService.blockUser(userId, pseudo);
+          return res.status(200).json({ status: 'success' });
+      } catch (error) {
+          console.error('Error blocking user:', error);
+          return res.status(500).json({
+              status: 'error',
+              message: 'Failed to block user',
+          });
+      }
+    }
+
+    //social
+    @Post('RefuseFriend')
+    async RefuseFriend(@Req() req, @Res() res) {
+      try {
+          const jwtCookie = req.cookies.jwt;
+          if (!jwtCookie || jwtCookie === undefined) {
+              return res.status(500).send('no token');
+          }
+          // Extract userId from the JWT token
+          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+          console.log(decodedData);
+          if (!decodedData || !decodedData.userId) {
+              return res.status(500).send('invalid token');
+          }
+          const userId = parseInt(decodedData.userId, 10);
+          if (isNaN(userId)) {
+              return res.status(500).send('invalid userId');
+          }
+          // Extract newPseudo from the request body
+          const RequestPseudo = req.body.friendPseudo;
+          if (!RequestPseudo) {
+              return res.status(400).send('no new pseudo provided');
+          }
+  
+          await this.userService.RefuseFriend(userId, RequestPseudo);
+          return res.status(200).json({ status: 'success' });
+      } catch (error) {
+          console.error('Error changing pseudo:', error);
+          return res.status(500).json({
+              status: 'error',
+              message: 'Failed to change pseudo',
+          });
+      }
+    }
+
+    //social
+    @Post('AcceptFriend')
+    async AcceptFriend(@Req() req, @Res() res) {
+      try {
+          const jwtCookie = req.cookies.jwt;
+          console.log("jwtCookie =", jwtCookie);
+          if (!jwtCookie || jwtCookie === undefined) {
+              return res.status(500).send('no token');
+          }
+  
+          // Extract userId from the JWT token
+          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+          console.log(decodedData);
+          if (!decodedData || !decodedData.userId) {
+              return res.status(500).send('invalid token');
+          }
+          const userId = parseInt(decodedData.userId, 10);
+          if (isNaN(userId)) {
+              return res.status(500).send('invalid userId');
+          }
+          // Extract newPseudo from the request body
+          const NewFriendPseudo = req.body.friendPseudo;
+          if (!NewFriendPseudo) {
+              return res.status(400).send('no new pseudo provided');
+          }
+          await this.userService.updateFriend(userId, NewFriendPseudo);
+          return res.status(200).json({ status: 'success' });
+      } catch (error) {
+          console.error('Error changing pseudo:', error);
+          return res.status(500).json({
+              status: 'error',
+              message: 'Failed to change pseudo',
+          });
+      }
+    }
+
+    //social
+    @Post('FriendRequest')
+    async FriendRequest(@Req() req, @Res() res) {
+      try {
+          const jwtCookie = req.cookies.jwt;
+          console.log("jwtCookie =", jwtCookie);
+          if (!jwtCookie || jwtCookie === undefined) {
+              return res.status(500).send('no token');
+          }
+  
+          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+          console.log(decodedData);
+          if (!decodedData || !decodedData.userId) {
+              return res.status(500).send('invalid token');
+          }
+  
+          const userId = parseInt(decodedData.userId, 10);
+          if (isNaN(userId)) {
+              return res.status(500).send('invalid userId');
+          }
+      
+          const addFriend = req.body.addFriend;
+          if (!addFriend)
+            return res.status(400).send('no valide friend name');
+          const FriendId = await this.userService.findIdByPseudo(addFriend);
+          if (!FriendId)
+          return res.status(400).send('no friend');
+  
+          await this.userService.AddInFriendRequest(userId, FriendId);
+          return res.status(200).json({ status: 'success' });
+      } catch (error) {
+          console.error('Error adding friend:', error);
+          return res.status(500).json({
+              status: 'error',
+              message: 'Failed to add friend',
+          });
+      }
+    }
+
+    //social
+    @Get('friends/:userId') // Définissez le paramètre dans l'URL comme ":userId"
+    async findPseudoById(@Param('userId') userId: number): Promise<string> {
+      const user = await this.userService.findById(userId);
+      return user.pseudo;
+    }
+
+    //end of social call
   @Post('changeAvatar')
   async changeAvatar(@Req() req, @Res() res) {
     try {
@@ -50,33 +269,6 @@ export class UserController {
     }
   }
 
-  @Post('/channel/AddInUser')
-  async AddChannelId(@Req() req, @Res() res) {
-    try {
-      const jwtCookie = req.cookies.jwt;
-      if (!jwtCookie || jwtCookie === undefined) {
-          return res.status(500).send('no token');
-      }
-      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-        if (!decodedData || !decodedData.userId) {
-            return res.status(500).send('invalid token');
-        }
-        const userId = parseInt(decodedData.userId, 10);
-        if (isNaN(userId)) {
-            return res.status(500).send('invalid userId');
-        }
-        const user = await this.userService.findById(userId);
-        await this.userService.addChannelId(req.body.channelId, user);
-        return res.status(200).json({ status: 'success' });
-    } catch (error) {
-        console.error('Error adding channel:', error);
-        return res.status(500).json({
-            status: 'error',
-            message: 'Failed to add channel',
-        });
-    }
-  }
-
   @Post('logout')
   async logout(@Req() req, @Res() res) {
     try {
@@ -94,148 +286,6 @@ export class UserController {
       });
     }
   }
-
-  @Post('RefuseFriend')
-  async RefuseFriend(@Req() req, @Res() res) {
-    try {
-        const jwtCookie = req.cookies.jwt;
-        if (!jwtCookie || jwtCookie === undefined) {
-            return res.status(500).send('no token');
-        }
-        // Extract userId from the JWT token
-        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-        console.log(decodedData);
-        if (!decodedData || !decodedData.userId) {
-            return res.status(500).send('invalid token');
-        }
-        const userId = parseInt(decodedData.userId, 10);
-        if (isNaN(userId)) {
-            return res.status(500).send('invalid userId');
-        }
-        // Extract newPseudo from the request body
-        const RequestPseudo = req.body.friendPseudo;
-        if (!RequestPseudo) {
-            return res.status(400).send('no new pseudo provided');
-        }
-
-        await this.userService.RefuseFriend(userId, RequestPseudo);
-        return res.status(200).json({ status: 'success' });
-    } catch (error) {
-        console.error('Error changing pseudo:', error);
-        return res.status(500).json({
-            status: 'error',
-            message: 'Failed to change pseudo',
-        });
-    }
-  }
-
-  @Post('social/unblock')
-  async unblockUser(@Req() req, @Res() res) {
-    try {
-        const jwtCookie = req.cookies.jwt;
-        if (!jwtCookie || jwtCookie === undefined) {
-            return res.status(500).send('no token');
-        }
-
-        // Extract userId from the JWT token
-        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-        if (!decodedData || !decodedData.userId) {
-            return res.status(500).send('invalid token');
-        }
-
-        const userId = parseInt(decodedData.userId, 10);
-        if (isNaN(userId)) {
-            return res.status(500).send('invalid userId');
-        }
-        // Extract from the request body
-        const pseudo = req.body.unblockpseudo;
-        if (!pseudo) {
-            return res.status(400).send('no pseudo provided');
-        }
-
-        await this.userService.unblockUser(userId, pseudo);
-        return res.status(200).json({ status: 'success' });
-    } catch (error) {
-        console.log('Error unblocking user:', error);
-        return res.status(500).json({
-            status: 'error',
-            message: 'Failed to block user',
-        });
-    }
-  }
-
-  @Post('Block')
-  async blockUser(@Req() req, @Res() res) {
-    try {
-        const jwtCookie = req.cookies.jwt;
-        console.log("jwtCookie =", jwtCookie);
-        if (!jwtCookie || jwtCookie === undefined) {
-            return res.status(500).send('no token');
-        }
-
-        // Extract userId from the JWT token
-        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-        console.log(decodedData);
-        if (!decodedData || !decodedData.userId) {
-            return res.status(500).send('invalid token');
-        }
-
-        const userId = parseInt(decodedData.userId, 10);
-        if (isNaN(userId)) {
-            return res.status(500).send('invalid userId');
-        }
-        // Extract newPseudo from the request body
-        const pseudo = req.body.blockpseudo;
-        if (!pseudo) {
-            return res.status(400).send('no pseudo provided');
-        }
-
-        await this.userService.blockUser(userId, pseudo);
-        return res.status(200).json({ status: 'success' });
-    } catch (error) {
-        console.error('Error blocking user:', error);
-        return res.status(500).json({
-            status: 'error',
-            message: 'Failed to block user',
-        });
-    }
-  }
-
-  @Post('AcceptFriend')
-  async AcceptFriend(@Req() req, @Res() res) {
-    try {
-        const jwtCookie = req.cookies.jwt;
-        console.log("jwtCookie =", jwtCookie);
-        if (!jwtCookie || jwtCookie === undefined) {
-            return res.status(500).send('no token');
-        }
-
-        // Extract userId from the JWT token
-        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-        console.log(decodedData);
-        if (!decodedData || !decodedData.userId) {
-            return res.status(500).send('invalid token');
-        }
-        const userId = parseInt(decodedData.userId, 10);
-        if (isNaN(userId)) {
-            return res.status(500).send('invalid userId');
-        }
-        // Extract newPseudo from the request body
-        const NewFriendPseudo = req.body.friendPseudo;
-        if (!NewFriendPseudo) {
-            return res.status(400).send('no new pseudo provided');
-        }
-        await this.userService.updateFriend(userId, NewFriendPseudo);
-        return res.status(200).json({ status: 'success' });
-    } catch (error) {
-        console.error('Error changing pseudo:', error);
-        return res.status(500).json({
-            status: 'error',
-            message: 'Failed to change pseudo',
-        });
-    }
-  }
-
 
   @Post('changePseudo')
   async changePseudo(@Req() req, @Res() res) {
@@ -275,55 +325,11 @@ export class UserController {
     }
   }
 
-  @Post('FriendRequest')
-  async FriendRequest(@Req() req, @Res() res) {
-    try {
-        const jwtCookie = req.cookies.jwt;
-        console.log("jwtCookie =", jwtCookie);
-        if (!jwtCookie || jwtCookie === undefined) {
-            return res.status(500).send('no token');
-        }
-
-        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-        console.log(decodedData);
-        if (!decodedData || !decodedData.userId) {
-            return res.status(500).send('invalid token');
-        }
-
-        const userId = parseInt(decodedData.userId, 10);
-        if (isNaN(userId)) {
-            return res.status(500).send('invalid userId');
-        }
-    
-        const addFriend = req.body.addFriend;
-        if (!addFriend)
-          return res.status(400).send('no valide friend name');
-        const FriendId = await this.userService.findIdByPseudo(addFriend);
-        if (!FriendId)
-        return res.status(400).send('no friend');
-
-        await this.userService.AddInFriendRequest(userId, FriendId);
-        return res.status(200).json({ status: 'success' });
-    } catch (error) {
-        console.error('Error adding friend:', error);
-        return res.status(500).json({
-            status: 'error',
-            message: 'Failed to add friend',
-        });
-    }
-  }
-
 /*  @Get('friends/:userId') // Définissez le paramètre dans l'URL comme ":userId"
   async findAvatarById(@Param('userId') userId: number): Promise<User> {
     const user = await this.userService.findById(userId);
     return user;
   }*/
-
-  @Get('friends/:userId') // Définissez le paramètre dans l'URL comme ":userId"
-  async findPseudoById(@Param('userId') userId: number): Promise<string> {
-    const user = await this.userService.findById(userId);
-    return user.pseudo;
-  }
 
   @Get('cookie')
   async findbyId(@Req() req): Promise<User[]> {

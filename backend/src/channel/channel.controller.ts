@@ -12,6 +12,15 @@ export class ChannelController {
     // Inject other services if needed
   ) {}
 
+  @Get('channelNameById/:channelId')
+  async getChannelName(@Param('channelId') channelId: number): Promise<string> {
+      console.log("im here");
+      const channel = this.channelService.findChannelById(channelId);
+      console.log("channel = ", channel);
+      console.log("test nsame = ", (await channel).name)
+      return (await channel).name;
+  }
+
   @Post('create')
   async createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req, @Res() res): Promise<Channel | void> {
     try {
