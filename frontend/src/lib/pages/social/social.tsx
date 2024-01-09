@@ -7,6 +7,8 @@ import { Button } from "@/lib/components/ui/button";
 //import { UserNav } from '@/lib/components/ui/user-nav';
 //import { useCookies } from 'react-cookie';
 //import { useNavigate } from 'react-router-dom';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
 import "../../styles/social.css"
 
 const social = () => {
@@ -18,6 +20,24 @@ const social = () => {
     const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
     const [passwordInput, setPasswordInput] = useState('');
     const [channelVisibility, setChannelVisibility] = useState('public');
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const style = {
+        position: 'absolute' as 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        p: 4,
+        display: 'flex',
+        flexDirection: 'column', // Utilisez 'row' pour un alignement horizontal
+        alignItems: 'center',    // Centre horizontalement dans un conteneur 'flex'
+        justifyContent: 'center'
+      };
 
     currentView;
     Lists;
@@ -423,10 +443,16 @@ const social = () => {
                         placeholder="Channel Name"
                         className="input-small"
                     />
-                    <Button variant="outline" className="button-small" onClick={handleCreateChannel}>Create Channel</Button>
-                </div>
-                <div className="visibility-options">
-                    <input
+                    <Button variant="outline" className="button-small" onClick={handleOpen}>Create Channel</Button>
+                    <Modal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                     <Box sx={style}>
+                        <div>
+                     <input
                         type="radio"
                         id="public"
                         name="visibility"
@@ -434,8 +460,7 @@ const social = () => {
                         checked={channelVisibility === 'public'}
                         onChange={(e) => setChannelVisibility(e.target.value)}
                     />
-                    <label htmlFor="public">Public</label>
-
+                    <label htmlFor="public" className="mr-4">Public</label>
                     <input
                         type="radio"
                         id="private"
@@ -445,6 +470,23 @@ const social = () => {
                         onChange={(e) => setChannelVisibility(e.target.value)}
                     />
                     <label htmlFor="private">Private</label>
+                    </div>
+                    {channelVisibility === 'private' && (
+                    <div className="mt-4">
+                        <input
+                            type="text"
+                            value={passwordInput}
+                            onChange={(e) => setPasswordInput(e.target.value)}
+                            placeholder="Channel password"
+                            required
+                        />
+                    </div>
+                    )}
+                    <Button variant="outline" className="button-small mt-4" onClick={handleCreateChannel}>Create Channel</Button>
+                    </Box>
+                    </Modal>
+                </div>
+                <div className="visibility-options">
                  </div>
                 <div className="add-user">
                     <input
@@ -459,7 +501,7 @@ const social = () => {
                         type="text"
                         value={passwordInput}
                         onChange={(e) => setPasswordInput(e.target.value)}
-                        placeholder="Channel password"
+                        placeholder="Channel Name"
                         className="input-small"
                     />
                     <Button variant="outline" className="button-small" onClick={handleJoinChannel}>Join Channel</Button>
