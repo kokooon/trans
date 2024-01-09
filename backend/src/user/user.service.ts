@@ -22,14 +22,12 @@ export class UserService {
     return base64Image;
   }
 
-  async addChannelId(channelId: number, userId: number): Promise<void> {
-    const user = await this.findById(userId);
-    if (user){
+  async addChannelId(channelId: number, user: User): Promise<void> {
+    if (!user.channels.includes(channelId)){
       user.channels.push(channelId);
       await this.userRepository.save(user);
     }else {
-      // Handle the case where the user with the given ID is not found
-      throw new BadRequestException('User not found');
+      console.log("channel id already in havent add");
     }
   }
 
@@ -63,10 +61,10 @@ export class UserService {
     if (!userN) {
       throw new BadRequestException('User not found');
     }
-    const friendNotificationsAsNumbers = userN.friendNotifications.map(Number);
+    const friendNotificationsAsNumbers = userN.friendNotif.map(Number);
     if (!friendNotificationsAsNumbers.includes(userId) && userId !== FriendRequestid)
     {
-      userN.friendNotifications.push(userId);
+      userN.friendNotif.push(userId);
       await this.userRepository.save(userN);
     }
     else {
@@ -100,8 +98,8 @@ export class UserService {
       // Handle the case where the user with the given ID is not found
       throw new BadRequestException('User not found');
     }
-    user.friendNotifications = user.friendNotifications.filter(id => Number(id) !== usertwo.id);
-    usertwo.friendRequest = user.friendNotifications.filter(id => Number(id) !== user.id)
+    user.friendNotif = user.friendNotif.filter(id => Number(id) !== usertwo.id);
+    usertwo.friendRequest = user.friendNotif.filter(id => Number(id) !== user.id)
 
     await this.userRepository.save(user);
     await this.userRepository.save(usertwo);
@@ -150,8 +148,8 @@ export class UserService {
   usertwo.friendRequest = usertwo.friendRequest.filter(id => Number(id) !== user.id);
   user.friendRequest = user.friendRequest.filter(id => Number(id) !== usertwo.id);
 
-  usertwo.friendNotifications = usertwo.friendNotifications.filter(id => Number(id) !== user.id);
-  user.friendNotifications = user.friendNotifications.filter(id => Number(id) !== usertwo.id);
+  usertwo.friendNotif = usertwo.friendNotif.filter(id => Number(id) !== user.id);
+  user.friendNotif = user.friendNotif.filter(id => Number(id) !== usertwo.id);
 
   await this.userRepository.save(user);
   await this.userRepository.save(usertwo);
@@ -215,13 +213,12 @@ export class UserService {
   async add_user_42(profile: any) {
     try {
         let user = new User();
-        user.fortytwoId = profile.id;
         user.pseudo = profile.username;
         user.email = profile.emails[0].value;
         user.avatar = profile._json.image.link;
         user.friends = [];
         user.friendRequest = [];
-        user.friendNotifications = [];
+        user.friendNotif = [];
         user.History = [];
         user.banlist = [];
         user.channels = [];

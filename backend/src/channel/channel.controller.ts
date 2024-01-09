@@ -41,7 +41,6 @@ export class ChannelController {
 
   @Post('addUserId/:userId')
     async addUserId(@Param('userId') userId: number, @Body() channelName: any, @Req() req, @Res() res): Promise<void> {
-      console.log("5id = ", userId);
       const channel = await this.channelService.findChannelByName(channelName.channelName);
       await this.channelService.addUserId(userId, channel);
     }

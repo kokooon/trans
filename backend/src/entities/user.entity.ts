@@ -19,9 +19,6 @@ export class User {
   @Column({ nullable: true })
   email: string;
 
-  @Column({ nullable: true })
-  fortytwoId: string;
-
   @Column({ type: 'text', nullable: true })
   avatar: string;
 
@@ -32,7 +29,7 @@ export class User {
   friendRequest: number[];
 
   @Column('simple-array', { nullable: true })
-  friendNotifications: number[];
+  friendNotif: number[];
 
   @Column('simple-array', { nullable: true })
   friends: number[];

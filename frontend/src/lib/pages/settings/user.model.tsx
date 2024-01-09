@@ -4,7 +4,6 @@ export interface User {
     pseudo: string;
     password: string;
     email: string;
-    fortytwoId: string;
     avatar: string;
     is2FAEnabled: boolean;
     friendRequest: number[];

@@ -32,7 +32,7 @@ export class ChannelService {
       await this.channelRepository.save(channel);
     }
     else{
-      console.log("already in this channel");
+      console.log("already in this channel, havent add user id");
     }
   }
 
