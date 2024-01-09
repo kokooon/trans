@@ -218,18 +218,15 @@ export class UserController {
         if (!decodedData || !decodedData.userId) {
             return res.status(500).send('invalid token');
         }
-
         const userId = parseInt(decodedData.userId, 10);
         if (isNaN(userId)) {
             return res.status(500).send('invalid userId');
         }
-        console.log("user id = ", userId);
         // Extract newPseudo from the request body
         const NewFriendPseudo = req.body.friendPseudo;
         if (!NewFriendPseudo) {
             return res.status(400).send('no new pseudo provided');
         }
-
         await this.userService.updateFriend(userId, NewFriendPseudo);
         return res.status(200).json({ status: 'success' });
     } catch (error) {

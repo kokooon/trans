@@ -251,12 +251,15 @@ const social = () => {
             credentials: 'include', // if you're including credentials like cookies
             body: JSON.stringify(channelData),
           });
-          const newChannel = await response.json();
-          //console.log('New channel created:', newChannel.id);
-          //console.log('user id:', user[0].id);
           if (!response.ok) {
-            throw new Error(`Network response was not ok: ${response.statusText}`);
+            const errorData = await response.json();
+            console.error('Error while creating channel:', errorData.error);
+            if (response.status === 409) {
+                console.log("channel name already taken");
+                return;
+              }
           }
+          const newChannel = await response.json();
           const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
             method: 'POST',
             headers: {
@@ -274,9 +277,40 @@ const social = () => {
       };
 
     const handleJoinChannel  = async () => {
-        //channel password input stocked in passwordInput
-        ;
-    }
+            try {
+                const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${ChannelName}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                      },
+                    credentials: 'include',
+                });
+                if (response.ok){
+                    const responseData = await response.json();
+                    if (responseData.password) {
+                        console.log("name = ", responseData);
+                        console.log("password needed = ", responseData.password);//password not needed
+                        console.log("name = ", responseData.name);
+                    }
+                    else {
+                        console.log("password not needed");
+                        // responseData = 2 password needed
+                    }
+                }
+                else {
+                    console.error('unable to find channel:', ChannelName);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error during join channel:', error);
+            }     
+            //channel password input stocked in passwordInput
+            /*channel name in ChannelName
+            1st look if channelName valid -> GET -> fonction findByName sur channel
+            look if password need and compare 
+            if all is ok POST in membersIds in channel
+            POST in user Channels*/
+    };
 
     return (
         <div className="main-container"> {/* Cadre principal (orange) */}

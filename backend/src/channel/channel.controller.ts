@@ -1,6 +1,6 @@
 // channel.controller.ts
 import { Channel } from '../entities/channel.entity';
-import { Controller, Post, Body, Req, Res, HttpStatus, HttpException } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, BadRequestException, Query, Req, Res } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 // Import additional DTOs as needed
@@ -13,8 +13,14 @@ export class ChannelController {
   ) {}
 
   @Post('create')
-  async createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req, @Res() res): Promise<Channel> {
+  async createChannel(@Body() createChannelDto: CreateChannelDto, @Req() req, @Res() res): Promise<Channel | void> {
     try {
+      const channelCheck = await this.channelService.findChannelByName(createChannelDto.name);
+      if (channelCheck) {
+      console.log('Channel name already taken');
+      // Send a 409 Conflict response, or another appropriate status code
+      return res.status(409).json({ error: 'Channel name already taken' });
+    }
       const channel = await this.channelService.createChannel(createChannelDto);
       return res.status(201).json(channel); // Make sure to return a response with JSON
     } catch (error) {
@@ -23,6 +29,15 @@ export class ChannelController {
     }
   }
   
+  @Get('findChannelByName/:ChannelName') // Définissez le paramètre dans l'URL comme ":userId"
+  async findChannelByName(@Param('userId') channelName: string,  @Req() req, @Res() res): Promise<Channel | void> {
+    const channel = await this.channelService.findChannelByName(channelName);
+    if (channel)
+      return res.status(201).json(channel);
+    else
+      return res.status(409).json({ error: 'can\'t find channel' });;
+  }
+
 /*  @Post('join')
   async joinChannel(
     // Include DTO for joining a channel, which might include the channel name and optional password

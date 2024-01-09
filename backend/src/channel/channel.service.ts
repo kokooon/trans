@@ -1,5 +1,5 @@
 // channel.service.ts
-
+import { BadRequestException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -15,10 +15,8 @@ export class ChannelService {
   ) {}
 
   // Example method to create a channel
-  async createChannel(createChannelDto): Promise<Channel> {
+  async createChannel(createChannelDto): Promise<Channel | void> {
     const channel = new Channel();
-    // Populate the channel entity using createChannelDto
-    // For example:
     channel.name = createChannelDto.name;
     channel.visibility = createChannelDto.visibility;
     channel.password = createChannelDto.password;
