@@ -29,8 +29,8 @@ export class ChannelController {
     }
   }
   
-  @Get('findChannelByName/:ChannelName') // Définissez le paramètre dans l'URL comme ":userId"
-  async findChannelByName(@Param('userId') channelName: string,  @Req() req, @Res() res): Promise<Channel | void> {
+  @Get('findChannelByName/:channelName') // Définissez le paramètre dans l'URL comme ":userId"
+  async findChannelByName(@Param('channelName') channelName: string,  @Req() req, @Res() res): Promise<Channel | void> {
     const channel = await this.channelService.findChannelByName(channelName);
     if (channel)
       return res.status(201).json(channel);
@@ -38,6 +38,13 @@ export class ChannelController {
       return res.status(409).json({ error: 'can\'t find channel' });;
   }
 
+
+  @Post('addUserId/:userId')
+    async addUserId(@Param('userId') userId: number, @Body() channelName: any, @Req() req, @Res() res): Promise<void> {
+      console.log("5id = ", userId);
+      const channel = await this.channelService.findChannelByName(channelName.channelName);
+      await this.channelService.addUserId(userId, channel);
+    }
 /*  @Post('join')
   async joinChannel(
     // Include DTO for joining a channel, which might include the channel name and optional password

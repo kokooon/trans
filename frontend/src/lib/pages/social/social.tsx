@@ -288,12 +288,52 @@ const social = () => {
                 if (response.ok){
                     const responseData = await response.json();
                     if (responseData.password) {
-                        console.log("name = ", responseData);
-                        console.log("password needed = ", responseData.password);//password not needed
-                        console.log("name = ", responseData.name);
+                        if (!passwordInput || (passwordInput !== responseData.password)){
+                            console.log("wrong password or password missing1")
+                            return;
+                        }
+                        const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
+                        method: 'POST',
+                        headers: {
+                        'Content-Type': 'application/json',
+                        },
+                        credentials: 'include', // if you're including credentials like cookies
+                        body: JSON.stringify({ channelId: responseData.id }),
+                        });
+                        if (!responsetwo.ok) {
+                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                        }
+                        const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
+                        method: 'POST',
+                        headers: {
+                        'Content-Type': 'application/json',
+                        },
+                        credentials: 'include', // if you're including credentials like cookies
+                        body: JSON.stringify({ channelName: responseData.name }),
+                        });
+                        if (!responsethree.ok) {
+                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                        }
                     }
                     else {
                         console.log("password not needed");
+                        if (passwordInput){
+                            console.log("wrong password or password missing");
+                            return ;
+                        }
+                        else {
+                            const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
+                            method: 'POST',
+                            headers: {
+                            'Content-Type': 'application/json',
+                            },
+                            credentials: 'include', // if you're including credentials like cookies
+                            body: JSON.stringify({ channelId: responseData.id }),
+                            });
+                            if (!responsetwo.ok) {
+                                throw new Error(`Network response was not ok: ${response.statusText}`);
+                            }
+                        }
                         // responseData = 2 password needed
                     }
                 }

@@ -62,7 +62,7 @@ function UserAv() {
             {/* Utiliser l'avatar récupéré */}
             <AvatarImage src={user && user[0] ? user[0].avatar || 'placeholder_url' : 'placeholder_url'} alt={user && user[0] ? user[0].pseudo || 'Unknown User' : 'Unknown User'} />
 
-            <AvatarFallback>{user?.pseudo42?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+            <AvatarFallback>{user?.pseudo?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
           </Avatar>
           </Button>
         </DropdownMenuTrigger>

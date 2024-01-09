@@ -17,12 +17,6 @@ export class User {
   pseudo: string;
 
   @Column({ nullable: true })
-  pseudo42: string;
-  
-  @Column()
-  password: string;
-
-  @Column({ nullable: true })
   email: string;
 
   @Column({ nullable: true })

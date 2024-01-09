@@ -193,7 +193,7 @@ export class UserService {
   }
 
   async findByFortyTwoId(profile: any): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { pseudo42: profile.username } });
+    return this.userRepository.findOne({ where: { pseudo: profile.username } });
   }
 
   async findById(userId: number): Promise<User | undefined> {
@@ -217,9 +217,7 @@ export class UserService {
         let user = new User();
         user.fortytwoId = profile.id;
         user.pseudo = profile.username;
-        user.pseudo42 = profile.username;
         user.email = profile.emails[0].value;
-        user.password = "1234";
         user.avatar = profile._json.image.link;
         user.friends = [];
         user.friendRequest = [];
@@ -246,8 +244,6 @@ export class UserService {
 
     let user = new User();
     user.pseudo = pseudo;
-    user.pseudo42 = pseudo;
-    user.password = password;
     user.email = email;
     user.avatar = avatar; 
     return this.userRepository.save(user);

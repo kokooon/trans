@@ -25,6 +25,17 @@ export class ChannelService {
     return this.channelRepository.save(channel);
   }
 
+  async addUserId(userId: number, channel: Channel){
+    if (!channel.memberIds.includes(userId))
+    {
+      channel.memberIds.push(userId);
+      await this.channelRepository.save(channel);
+    }
+    else{
+      console.log("already in this channel");
+    }
+  }
+
   // Example method to find a channel by name
   async findChannelByName(name: string): Promise<Channel | undefined> {
     return this.channelRepository.findOneBy({ name });

@@ -2,7 +2,6 @@
 export interface User {
     id: number;
     pseudo: string;
-    pseudo42: string;
     password: string;
     email: string;
     fortytwoId: string;
