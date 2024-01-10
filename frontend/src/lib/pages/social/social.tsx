@@ -326,6 +326,7 @@ const social = () => {
                             console.log("wrong password or password missing1")
                             return;
                         }
+                        //ad channel id in user
                         const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
                         method: 'POST',
                         headers: {
@@ -337,6 +338,7 @@ const social = () => {
                         if (!responsetwo.ok) {
                             throw new Error(`Network response was not ok: ${response.statusText}`);
                         }
+                        //add userId in channel membersId
                         const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
                         method: 'POST',
                         headers: {
@@ -350,7 +352,6 @@ const social = () => {
                         }
                     }
                     else {
-                        console.log("password not needed");
                         if (passwordInput){
                             console.log("wrong password or password missing");
                             return ;
@@ -367,6 +368,17 @@ const social = () => {
                             if (!responsetwo.ok) {
                                 throw new Error(`Network response was not ok: ${response.statusText}`);
                             }
+                            const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
+                            method: 'POST',
+                            headers: {
+                            'Content-Type': 'application/json',
+                            },
+                            credentials: 'include', // if you're including credentials like cookies
+                            body: JSON.stringify({ channelName: responseData.name }),
+                            });
+                        if (!responsethree.ok) {
+                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                            }
                         }
                         // responseData = 2 password needed
                     }
@@ -381,7 +393,7 @@ const social = () => {
             setPasswordInput('');     
     };
 
-    /*const handleUnfriend  = async (friendname: string) => {
+    const handleUnfriend  = async (friendname: string) => {
         try {
             const response = await fetch('http://127.0.0.1:3001/users/Unfriend', {
                 method: 'POST',
@@ -398,7 +410,7 @@ const social = () => {
         catch (error) {
             console.log("unable to unfriend");
         }
-    };*/
+    };
     
     return (
         <div className="main-container"> {/* Cadre principal (orange) */}
@@ -423,7 +435,10 @@ const social = () => {
             {currentView === 'Friends' && (
                 <div className="content-display">
                     {Lists.map((friend, index) => (
-                        <div key={index}>{friend}</div> // Affichage des amis
+                       <div key={index} className="notification-item">
+                       <span>{friend}</span>
+                       <Button variant="outline" className="button-small" onClick={() => handleUnfriend(friend)}>Unfriend</Button>
+                   </div> // Affichage des notifications avec boutons pour accepter ou décliner
                     ))}
                 </div>
             )}

@@ -16,12 +16,114 @@ export class UserService {
     private readonly myConfigService: MyConfigService,
   ) {}
 
-  async convertImageToBase64(imageUrl: string): Promise<string> {
-    const response = await axios.default.get(imageUrl, { responseType: 'arraybuffer' });
-    const base64Image = Buffer.from(response.data, 'binary').toString('base64');
-    return base64Image;
+
+    //social
+    async unfriend(userId: number, unfriendId: number): Promise<void> {
+      const user = await this.findById(userId);
+      const usertwo = await this.findById(unfriendId);
+      if (!user || !usertwo)
+        throw new BadRequestException('User not found');
+      user.friends = user.friends.filter(id => Number(id) != unfriendId);
+      usertwo.friends = usertwo.friends.filter(id => Number(id) != userId);
+      await this.userRepository.save(user);
+      await this.userRepository.save(usertwo);
+    }
+
+    //social
+    async RefuseFriend(userId: number, Friendtwo: string): Promise<void>{
+      const user = await this.findById(userId);
+      const usertwo = await this.findByPseudo(Friendtwo);
+  
+      if (!user || !usertwo) {
+        // Handle the case where the user with the given ID is not found
+        throw new BadRequestException('User not found');
+      }
+      user.friendNotif = user.friendNotif.filter(id => Number(id) !== usertwo.id);
+      usertwo.friendRequest = user.friendNotif.filter(id => Number(id) !== user.id)
+  
+      await this.userRepository.save(user);
+      await this.userRepository.save(usertwo);
+    }
+  
+    //social
+    async unblockUser(userId: number, Friendtwo: string): Promise<void>{
+      const user = await this.findById(userId);
+      const usertwo = await this.findByPseudo(Friendtwo);
+      if (!user || !usertwo) {
+        // Handle the case where the user with the given ID is not found
+        throw new BadRequestException('User not found');
+      }
+      console.log("id user = ", user.id);
+      console.log("id unblock = ", usertwo.id);
+      user.banlist = user.banlist.filter(id => Number(id) !== usertwo.id);
+      await this.userRepository.save(user);
+    }
+  
+    //social
+    async blockUser(userId: number, Friendtwo: string): Promise<void>{
+      const user = await this.findById(userId);
+      const usertwo = await this.findByPseudo(Friendtwo);
+      if (!user || !usertwo) {
+        // Handle the case where the user with the given ID is not found
+        throw new BadRequestException('User not found');
+      }
+      const banlistAsNumbers = user.banlist.map(Number);
+      if (!banlistAsNumbers.includes(usertwo.id)) {
+        user.banlist.push(usertwo.id);
+        await this.userRepository.save(user);
+      }
+      else{
+        console.log("user already blocked");
+      }
+    }
+
+    //social
+    async AddInFriendRequest(userId: number, FriendRequestid: number): Promise<void> {
+      const user = await this.findById(userId);
+  
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+  
+      const friendIdsAsNumbers = user.friendRequest.map(Number);
+      const friendsAsNumbers = user.friends.map(Number);
+      if (!friendIdsAsNumbers.includes(FriendRequestid) && user.id !== FriendRequestid) {
+        if (!friendsAsNumbers.includes(FriendRequestid)){
+          user.friendRequest.push(FriendRequestid);
+          await this.userRepository.save(user);
+        }
+      }
+      else {
+        console.log(`L'ID ${FriendRequestid} est déjà présent dans la liste d'amis.`);
+      }
+      this.SetNotifications(userId, FriendRequestid);
   }
 
+    //social
+    async SetNotifications(userId: number, FriendRequestid: number): Promise<void>{
+      const userN = await this.findById(FriendRequestid);
+  
+      if (!userN) {
+        throw new BadRequestException('User not found');
+      }
+      const blockedAsNumbers = userN.banlist.map(Number);
+      if (!blockedAsNumbers.includes(userId)){
+        const friendNotificationsAsNumbers = userN.friendNotif.map(Number);
+        const friendsAsNumber = userN.friends.map(Number);
+        if (!friendNotificationsAsNumbers.includes(userId) && userId !== FriendRequestid)
+        {
+          if (!friendsAsNumber.includes(userId)){
+            userN.friendNotif.push(userId);
+            await this.userRepository.save(userN);
+          }
+        }
+        else {
+          console.log(`L'ID ${userId} est déjà présent dans la liste de notifications.`);
+        }
+      }
+    }
+
+  //social
   async addChannelId(channelId: number, user: User): Promise<void> {
     const channelsAsNumbers = user.channels.map(Number);
     if (!channelsAsNumbers.includes(channelId)){
@@ -30,6 +132,40 @@ export class UserService {
     }else {
       console.log("channel id already in havent add");
     }
+  }
+
+    //social
+    async updateFriend(userId: number, Friendtwo: string): Promise<void>{
+      const user = await this.findById(userId);
+      const usertwo = await this.findByPseudo(Friendtwo);
+      if (!user || !usertwo) {
+        // Handle the case where the user with the given ID is not found
+        throw new BadRequestException('User not found');
+    }
+    const friendsAsNumbers = user.friends.map(Number);
+    const friendsAsNumberstwo = usertwo.friends.map(Number);
+    if (!friendsAsNumbers.includes(usertwo.id) && !friendsAsNumberstwo.includes(user.id)){
+      user.friends.push(usertwo.id);
+      usertwo.friends.push(user.id);
+    }
+    else{
+      console.log('Already Friend');
+    }
+    usertwo.friendRequest = usertwo.friendRequest.filter(id => Number(id) !== user.id);
+    user.friendRequest = user.friendRequest.filter(id => Number(id) !== usertwo.id);
+  
+    usertwo.friendNotif = usertwo.friendNotif.filter(id => Number(id) !== user.id);
+    user.friendNotif = user.friendNotif.filter(id => Number(id) !== usertwo.id);
+  
+    await this.userRepository.save(user);
+    await this.userRepository.save(usertwo);
+    }
+    //end of /social function
+
+  async convertImageToBase64(imageUrl: string): Promise<string> {
+    const response = await axios.default.get(imageUrl, { responseType: 'arraybuffer' });
+    const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+    return base64Image;
   }
 
   async getAvatar(pseudo: string): Promise<string | undefined> {
@@ -55,119 +191,6 @@ export class UserService {
       throw new BadRequestException('User not found');
     }
   }
-  
-  async SetNotifications(userId: number, FriendRequestid: number): Promise<void>{
-    const userN = await this.findById(FriendRequestid);
-
-    if (!userN) {
-      throw new BadRequestException('User not found');
-    }
-    const friendNotificationsAsNumbers = userN.friendNotif.map(Number);
-    const friendsAsNumber = userN.friends.map(Number);
-    if (!friendNotificationsAsNumbers.includes(userId) && userId !== FriendRequestid)
-    {
-      if (!friendsAsNumber.includes(userId)){
-        userN.friendNotif.push(userId);
-        await this.userRepository.save(userN);
-      }
-    }
-    else {
-      console.log(`L'ID ${userId} est déjà présent dans la liste de notifications.`);
-    }
-  }
-
-  async AddInFriendRequest(userId: number, FriendRequestid: number): Promise<void> {
-    const user = await this.findById(userId);
-
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
-
-    const friendIdsAsNumbers = user.friendRequest.map(Number);
-    const friendsAsNumbers = user.friends.map(Number);
-    if (!friendIdsAsNumbers.includes(FriendRequestid) && user.id !== FriendRequestid) {
-      if (!friendsAsNumbers.includes(FriendRequestid)){
-        user.friendRequest.push(FriendRequestid);
-        await this.userRepository.save(user);
-      }
-    }
-    else {
-      console.log(`L'ID ${FriendRequestid} est déjà présent dans la liste d'amis.`);
-    }
-    this.SetNotifications(userId, FriendRequestid);
-}
-
-  async RefuseFriend(userId: number, Friendtwo: string): Promise<void>{
-    const user = await this.findById(userId);
-    const usertwo = await this.findByPseudo(Friendtwo);
-
-    if (!user || !usertwo) {
-      // Handle the case where the user with the given ID is not found
-      throw new BadRequestException('User not found');
-    }
-    user.friendNotif = user.friendNotif.filter(id => Number(id) !== usertwo.id);
-    usertwo.friendRequest = user.friendNotif.filter(id => Number(id) !== user.id)
-
-    await this.userRepository.save(user);
-    await this.userRepository.save(usertwo);
-  }
-
-  async unblockUser(userId: number, Friendtwo: string): Promise<void>{
-    const user = await this.findById(userId);
-    const usertwo = await this.findByPseudo(Friendtwo);
-    if (!user || !usertwo) {
-      // Handle the case where the user with the given ID is not found
-      throw new BadRequestException('User not found');
-    }
-    console.log("id user = ", user.id);
-    console.log("id unblock = ", usertwo.id);
-    user.banlist = user.banlist.filter(id => Number(id) !== usertwo.id);
-    await this.userRepository.save(user);
-  }
-
-  async blockUser(userId: number, Friendtwo: string): Promise<void>{
-    const user = await this.findById(userId);
-    const usertwo = await this.findByPseudo(Friendtwo);
-    if (!user || !usertwo) {
-      // Handle the case where the user with the given ID is not found
-      throw new BadRequestException('User not found');
-    }
-    const banlistAsNumbers = user.banlist.map(Number);
-    if (!banlistAsNumbers.includes(usertwo.id)) {
-      user.banlist.push(usertwo.id);
-      await this.userRepository.save(user);
-    }
-    else{
-      console.log("user already blocked");
-    }
-  }
-
-  async updateFriend(userId: number, Friendtwo: string): Promise<void>{
-    const user = await this.findById(userId);
-    const usertwo = await this.findByPseudo(Friendtwo);
-    if (!user || !usertwo) {
-      // Handle the case where the user with the given ID is not found
-      throw new BadRequestException('User not found');
-  }
-  const friendsAsNumbers = user.friends.map(Number);
-  const friendsAsNumberstwo = usertwo.friends.map(Number);
-  if (!friendsAsNumbers.includes(usertwo.id) && !friendsAsNumberstwo.includes(user.id)){
-    user.friends.push(usertwo.id);
-    usertwo.friends.push(user.id);
-  }
-  else{
-    console.log('Already Friend');
-  }
-  usertwo.friendRequest = usertwo.friendRequest.filter(id => Number(id) !== user.id);
-  user.friendRequest = user.friendRequest.filter(id => Number(id) !== usertwo.id);
-
-  usertwo.friendNotif = usertwo.friendNotif.filter(id => Number(id) !== user.id);
-  user.friendNotif = user.friendNotif.filter(id => Number(id) !== usertwo.id);
-
-  await this.userRepository.save(user);
-  await this.userRepository.save(usertwo);
-  }
-
 
   async updatePseudo(userId: number, newPseudo: string): Promise<void> {
     const user = await this.findById(userId);

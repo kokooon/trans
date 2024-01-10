@@ -191,36 +191,55 @@ export class UserController {
     //social
     @Post ('Unfriend')
     async Unfriend(@Req() req, @Res() res) {
-      ;
+      try {
+        const jwtCookie = req.cookies.jwt;
+          if (!jwtCookie || jwtCookie === undefined) {
+              return res.status(500).send('no token');
+          }
+          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+          if (!decodedData || !decodedData.userId) {
+              return res.status(500).send('invalid token');
+          }
+          const userId = parseInt(decodedData.userId, 10);
+          if (isNaN(userId)) {
+              return res.status(500).send('invalid userId');
+          }
+          const UnFriend = req.body.friendName;
+          const FriendId = await this.userService.findIdByPseudo(UnFriend);
+          await this.userService.unfriend(userId, FriendId);
+          return res.status(200).json({ status: 'success' });
+      }catch (error) {
+        console.error('Error unfriend:', error);
+        return res.status(500).json({
+            status: 'error',
+            message: 'Failed to unriend',
+        });
     }
+  }
+
     //social
     @Post('FriendRequest')
     async FriendRequest(@Req() req, @Res() res) {
       try {
           const jwtCookie = req.cookies.jwt;
-          console.log("jwtCookie =", jwtCookie);
           if (!jwtCookie || jwtCookie === undefined) {
               return res.status(500).send('no token');
           }
-  
           const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
           console.log(decodedData);
           if (!decodedData || !decodedData.userId) {
               return res.status(500).send('invalid token');
           }
-  
           const userId = parseInt(decodedData.userId, 10);
           if (isNaN(userId)) {
               return res.status(500).send('invalid userId');
           }
-      
           const addFriend = req.body.addFriend;
           if (!addFriend)
             return res.status(400).send('no valide friend name');
           const FriendId = await this.userService.findIdByPseudo(addFriend);
           if (!FriendId)
-          return res.status(400).send('no friend');
-  
+            return res.status(400).send('no friend');
           await this.userService.AddInFriendRequest(userId, FriendId);
           return res.status(200).json({ status: 'success' });
       } catch (error) {
