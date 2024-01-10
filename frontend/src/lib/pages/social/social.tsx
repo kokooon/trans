@@ -51,7 +51,6 @@ const social = () => {
 
    const handleadd = async () => {
         try {
-          // Envoyer le nouveau pseudo au backend
           const response = await fetch('http://127.0.0.1:3001/users/FriendRequest', {
             method: 'POST',
             headers: {
@@ -64,25 +63,18 @@ const social = () => {
           if (!response.ok) {
             throw new Error('La réponse du réseau n’était pas correcte');
           }
-    
-          // Gérer ici la mise à jour réussie du pseudo
-          // Vous pourriez vouloir afficher une notification ou mettre à jour l'interface utilisateur
         } catch (error) {
           console.error('Erreur lors de la mise à jour du pseudo :', error);
-          // Gérer l'erreur ici, comme afficher une notification à l'utilisateur
         }
         setaddInput('');
       };
 
     const handleBlock  = async () => {
-        // Logique de blocage ici
         try {
-            // Envoyer le nouveau pseudo au backend
             const response = await fetch('http://127.0.0.1:3001/users/Block', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
                 },
                 credentials: 'include', // Inclure les cookies avec la requête
                 body: JSON.stringify({ blockpseudo: blockInput }),
@@ -90,25 +82,18 @@ const social = () => {
             if (!response.ok) {
                 throw new Error('La réponse du réseau n’était pas correcte');
             }
-            // Gérer ici la mise à jour réussie du friend
         } catch (error) {
             console.error('Erreur lors du blockage :', error);
         }
-        // Réinitialiser l'entrée de texte
         setBlockInput('');
     };
 
      const handleAccept = async (friend: string) => {
-         console.log("Accepted friend:", friend);
-         //POST ajouter l'id dans la colonne friends
-         //retirer l'id des notifs
          try {
-             // Envoyer le nouveau pseudo au backend
              const response = await fetch('http://127.0.0.1:3001/users/AcceptFriend', {
                  method: 'POST',
                  headers: {
                      'Content-Type': 'application/json',
-                     // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
                  },
                  credentials: 'include', // Inclure les cookies avec la requête
                  body: JSON.stringify({ friendPseudo: friend }),
@@ -116,22 +101,17 @@ const social = () => {
              if (!response.ok) {
                  throw new Error('La réponse du réseau n’était pas correcte');
              }
-             // Gérer ici la mise à jour réussie du friend
          } catch (error) {
              console.error('Erreur lors de l\'ajout du friend :', error);
         }
     }
     
      const handleDecline = async (friend: string) => {
-         console.log("Declined friend:", friend);
-         //POST retirer l'id des notifs et request
          try {
-             // Envoyer le nouveau pseudo au backend
              const response = await fetch('http://127.0.0.1:3001/users/RefuseFriend', {
                  method: 'POST',
                  headers: {
                     'Content-Type': 'application/json',
-                     // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
                  },
                  credentials: 'include', // Inclure les cookies avec la requête
                 body: JSON.stringify({ friendPseudo: friend }),
@@ -139,7 +119,6 @@ const social = () => {
              if (!response.ok) {
                  throw new Error('La réponse du réseau n’était pas correcte');
              }
-             // Gérer ici la mise à jour réussie du friend
          } catch (error) {
              console.error('Erreur lors de l\'ajout du friend :', error);
          }
@@ -149,7 +128,6 @@ const social = () => {
         setCurrentView('Friends');
         try {
             const List = []; // Créez une nouvelle liste pour les amis
-    
             for (let i = 0; i < user[0].friends.length; i++) {
                 const friendId = user[0].friends[i];
                 const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
@@ -164,8 +142,6 @@ const social = () => {
                     console.error('Get friends failed for friendId:', friendId);
                 }
             }
-    
-            // Mettez à jour FriendsLists avec la liste complète des amis
             setLists([...List]);
         } catch (error) {
             console.error('Error during get friends:', error);
@@ -185,7 +161,6 @@ const social = () => {
                     const responseData = await response.text();
                     List.push(responseData);
                 }
-            // Mettez à jour FriendsLists avec la liste complète des amis
             setLists([...List]);
         }
     }
@@ -194,7 +169,6 @@ const social = () => {
         setCurrentView('Blocked');
         try {
             const List = []; // Créez une nouvelle liste pour les amis
-    
             for (let i = 0; i < user[0].banlist.length; i++) {
                 const friendId = user[0].banlist[i];
                 const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
@@ -209,7 +183,6 @@ const social = () => {
                     console.error('Get friends failed for friendId:', friendId);
                 }
             }
-            // Mettez à jour FriendsLists avec la liste complète des amis
             setLists([...List]);
         } catch (error) {
             console.error('Error during get friends:', error);
@@ -234,8 +207,6 @@ const social = () => {
                     console.error('Get friends failed for friendId:', friendId);
                 }
             }
-    
-            // Mettez à jour FriendsLists avec la liste complète des amis
             setLists([...friendsList]);
         } catch (error) {
             console.error('Error during get notifs:', error);
@@ -248,7 +219,6 @@ const social = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
                 },
                 credentials: 'include', // Inclure les cookies avec la requête
                 body: JSON.stringify({ unblockpseudo: unblockPseudo }),
@@ -256,7 +226,6 @@ const social = () => {
             if (!response.ok) {
                 throw new Error('La réponse du réseau n’était pas correcte');
             }
-            // Gérer ici la mise à jour réussie du friend
         } catch (error) {
             console.error('Erreur lors du blockage :', error);
         }
@@ -326,7 +295,6 @@ const social = () => {
                             console.log("wrong password or password missing1")
                             return;
                         }
-                        //ad channel id in user
                         const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
                         method: 'POST',
                         headers: {
@@ -338,7 +306,6 @@ const social = () => {
                         if (!responsetwo.ok) {
                             throw new Error(`Network response was not ok: ${response.statusText}`);
                         }
-                        //add userId in channel membersId
                         const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
                         method: 'POST',
                         headers: {
@@ -380,7 +347,6 @@ const social = () => {
                             throw new Error(`Network response was not ok: ${response.statusText}`);
                             }
                         }
-                        // responseData = 2 password needed
                     }
                 }
                 else {
@@ -411,6 +377,10 @@ const social = () => {
             console.log("unable to unfriend");
         }
     };
+
+    const handleLeave = async (channelName: string) => {
+        ;
+    }
     
     return (
         <div className="main-container"> {/* Cadre principal (orange) */}
@@ -455,7 +425,10 @@ const social = () => {
             {currentView === 'Channel' && (
                 <div className="content-display">
                     {Lists.map((channel, index) => (
-                        <div key={index}>{channel}</div> // Affichage des canaux
+                        <div key={index} className="blocked-item">
+                        <span>{channel}</span>
+                        <Button variant="outline" className="button-small" onClick={() => handleLeave(channel)}>leave</Button>
+                    </div> // Affichage des utilisateurs bloqués avec bouton pour débloquer // Affichage des canaux
                     ))}
                 </div>
             )}

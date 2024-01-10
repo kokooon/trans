@@ -14,10 +14,7 @@ export class ChannelController {
 
   @Get('channelNameById/:channelId')
   async getChannelName(@Param('channelId') channelId: number): Promise<string> {
-      console.log("im here");
       const channel = this.channelService.findChannelById(channelId);
-      console.log("channel = ", channel);
-      console.log("test nsame = ", (await channel).name)
       return (await channel).name;
   }
 
@@ -26,8 +23,6 @@ export class ChannelController {
     try {
       const channelCheck = await this.channelService.findChannelByName(createChannelDto.name);
       if (channelCheck) {
-      console.log('Channel name already taken');
-      // Send a 409 Conflict response, or another appropriate status code
       return res.status(409).json({ error: 'Channel name already taken' });
     }
       const channel = await this.channelService.createChannel(createChannelDto);
@@ -53,23 +48,5 @@ export class ChannelController {
       const channel = await this.channelService.findChannelByName(req.body.channelName);
       await this.channelService.addUserId(userId, channel);
     }
-/*  @Post('join')
-  async joinChannel(
-    // Include DTO for joining a channel, which might include the channel name and optional password
-    @Body() joinChannelDto, 
-    @Req() req, 
-    @Res() res
-  ) {
-    try {
-      // Similar to create, include logic to verify the user's identity
-
-      // Then, use the channel service to join the channel
-      const result = await this.channelService.joinChannel(joinChannelDto);
-      return res.status(HttpStatus.OK).json(result);
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }*/
-
   // Add other endpoints as needed for updating, deleting, or listing channels
 }

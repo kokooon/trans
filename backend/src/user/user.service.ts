@@ -16,7 +16,6 @@ export class UserService {
     private readonly myConfigService: MyConfigService,
   ) {}
 
-
     //social
     async unfriend(userId: number, unfriendId: number): Promise<void> {
       const user = await this.findById(userId);
@@ -33,14 +32,11 @@ export class UserService {
     async RefuseFriend(userId: number, Friendtwo: string): Promise<void>{
       const user = await this.findById(userId);
       const usertwo = await this.findByPseudo(Friendtwo);
-  
       if (!user || !usertwo) {
-        // Handle the case where the user with the given ID is not found
         throw new BadRequestException('User not found');
       }
       user.friendNotif = user.friendNotif.filter(id => Number(id) !== usertwo.id);
       usertwo.friendRequest = user.friendNotif.filter(id => Number(id) !== user.id)
-  
       await this.userRepository.save(user);
       await this.userRepository.save(usertwo);
     }
@@ -50,11 +46,8 @@ export class UserService {
       const user = await this.findById(userId);
       const usertwo = await this.findByPseudo(Friendtwo);
       if (!user || !usertwo) {
-        // Handle the case where the user with the given ID is not found
         throw new BadRequestException('User not found');
       }
-      console.log("id user = ", user.id);
-      console.log("id unblock = ", usertwo.id);
       user.banlist = user.banlist.filter(id => Number(id) !== usertwo.id);
       await this.userRepository.save(user);
     }
@@ -64,7 +57,6 @@ export class UserService {
       const user = await this.findById(userId);
       const usertwo = await this.findByPseudo(Friendtwo);
       if (!user || !usertwo) {
-        // Handle the case where the user with the given ID is not found
         throw new BadRequestException('User not found');
       }
       const banlistAsNumbers = user.banlist.map(Number);
@@ -72,19 +64,14 @@ export class UserService {
         user.banlist.push(usertwo.id);
         await this.userRepository.save(user);
       }
-      else{
-        console.log("user already blocked");
-      }
     }
 
     //social
     async AddInFriendRequest(userId: number, FriendRequestid: number): Promise<void> {
       const user = await this.findById(userId);
-  
       if (!user) {
         throw new BadRequestException('User not found');
       }
-  
       const friendIdsAsNumbers = user.friendRequest.map(Number);
       const friendsAsNumbers = user.friends.map(Number);
       if (!friendIdsAsNumbers.includes(FriendRequestid) && user.id !== FriendRequestid) {
@@ -93,16 +80,12 @@ export class UserService {
           await this.userRepository.save(user);
         }
       }
-      else {
-        console.log(`L'ID ${FriendRequestid} est déjà présent dans la liste d'amis.`);
-      }
       this.SetNotifications(userId, FriendRequestid);
   }
 
     //social
     async SetNotifications(userId: number, FriendRequestid: number): Promise<void>{
       const userN = await this.findById(FriendRequestid);
-  
       if (!userN) {
         throw new BadRequestException('User not found');
       }
@@ -117,9 +100,6 @@ export class UserService {
             await this.userRepository.save(userN);
           }
         }
-        else {
-          console.log(`L'ID ${userId} est déjà présent dans la liste de notifications.`);
-        }
       }
     }
 
@@ -129,8 +109,6 @@ export class UserService {
     if (!channelsAsNumbers.includes(channelId)){
       user.channels.push(channelId);
       await this.userRepository.save(user);
-    }else {
-      console.log("channel id already in havent add");
     }
   }
 
@@ -139,7 +117,6 @@ export class UserService {
       const user = await this.findById(userId);
       const usertwo = await this.findByPseudo(Friendtwo);
       if (!user || !usertwo) {
-        // Handle the case where the user with the given ID is not found
         throw new BadRequestException('User not found');
     }
     const friendsAsNumbers = user.friends.map(Number);
@@ -147,9 +124,6 @@ export class UserService {
     if (!friendsAsNumbers.includes(usertwo.id) && !friendsAsNumberstwo.includes(user.id)){
       user.friends.push(usertwo.id);
       usertwo.friends.push(user.id);
-    }
-    else{
-      console.log('Already Friend');
     }
     usertwo.friendRequest = usertwo.friendRequest.filter(id => Number(id) !== user.id);
     user.friendRequest = user.friendRequest.filter(id => Number(id) !== usertwo.id);
@@ -170,45 +144,32 @@ export class UserService {
 
   async getAvatar(pseudo: string): Promise<string | undefined> {
     const user = await this.userRepository.findOne({ where: { pseudo } });
-
     if (user && user.avatar) {
-      // Si l'utilisateur existe et a un avatar
       return user.avatar;
     }
-
     return undefined;
   }
 
   async updateAvatar(userId: number, newAvatar: string): Promise<void> {
-  
     const user = await this.findById(userId);
 
     if (user) {
       user.avatar = newAvatar;
       await this.userRepository.save(user);
     } else {
-      // Handle the case where the user with the given ID is not found
       throw new BadRequestException('User not found');
     }
   }
 
   async updatePseudo(userId: number, newPseudo: string): Promise<void> {
     const user = await this.findById(userId);
-
     if (!user) {
-        // Handle the case where the user with the given ID is not found
         throw new BadRequestException('User not found');
     }
-
-    // Vérifie si le nouveau pseudo est déjà utilisé par un autre utilisateur
     const isPseudoTaken = await this.userRepository.findOne({ where: { pseudo: newPseudo } });
-
     if (isPseudoTaken && isPseudoTaken.id !== userId) {
-        // Le pseudo est déjà pris par un autre utilisateur
         throw new BadRequestException('Pseudo is already taken');
     }
-
-    // Si le pseudo n'est pas pris ou s'il est pris par l'utilisateur actuel, procédez à la mise à jour
     user.pseudo = newPseudo;
     await this.userRepository.save(user);
 }
@@ -236,8 +197,6 @@ export class UserService {
 
   async checkById(userId: number): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
-  
-    // If the user is found, return true; otherwise, return false
     return !!user; // Convert to boolean
   }  
 
@@ -258,9 +217,7 @@ export class UserService {
         user.History = [];
         user.banlist = [];
         user.channels = [];
-        // Enregistrez l'utilisateur dans la base de données
         const savedUser = await this.userRepository.save(user);
-
         return savedUser;
     } catch (error) {
         console.error('Erreur lors de l\'ajout de l\'utilisateur :', error);
@@ -287,11 +244,6 @@ export class UserService {
       return false;
     return true;
   }
-  // async exampleMethodUsingEnvVars(): Promise<void> {
-  //   const apiKey = this.myConfigService.get_env().apiKey;
-  //   const publicapiKey = this.myConfigService.get_env().publicapiKey;
-  //   console.log(apiKey);
-  // }
 
   async update2FA(userId: number, is2FAEnabled: boolean): Promise<void> {
     try {
@@ -308,6 +260,4 @@ export class UserService {
       throw new Error(`Failed to update 2FA: ${error.message}`);
     }
   }
-
-  
 }
