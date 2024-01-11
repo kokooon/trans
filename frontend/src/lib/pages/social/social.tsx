@@ -87,7 +87,6 @@ const social = () => {
         }
         if (currentView === 'Blocked'){
             getBlock();
-            setCurrentView('Blocked');
         }
         setBlockInput('');
     };
@@ -109,7 +108,6 @@ const social = () => {
              console.error('Erreur lors de l\'ajout du friend :', error);
         }
         getNotifications();
-        setCurrentView('Notifications');
     }
     
      const handleDecline = async (friend: string) => {
@@ -129,7 +127,6 @@ const social = () => {
              console.error('Erreur lors de l\'ajout du friend :', error);
          }
         getNotifications();
-        setCurrentView('Notifications');
     }
 
     const getFriends  = async () => {
@@ -244,7 +241,6 @@ const social = () => {
             console.error('Erreur lors du blockage :', error);
         }
         getBlock();
-        setCurrentView('Blocked');
     };
 
     const handleCreateChannel = async () => {
@@ -296,7 +292,6 @@ const social = () => {
         setPasswordInput('');
         if (currentView === 'Channel') {
             getChannel();
-            setCurrentView('Channel');
         }
       };
 
@@ -393,7 +388,6 @@ const social = () => {
         console.log("final here");
         if (currentView === 'Channel') {
             getChannel();
-            setCurrentView('Channel');
         }
     };
 
@@ -415,7 +409,6 @@ const social = () => {
             console.log("unable to unfriend");
         }
         getFriends();
-        setCurrentView('Friends');
     };
 
     const handleLeave = async (channelName: string) => {
