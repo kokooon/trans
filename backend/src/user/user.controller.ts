@@ -19,15 +19,7 @@ export class UserController {
     @Post('/channel/AddInUser')
     async AddChannelId(@Req() req, @Res() res) {
     try {
-      const jwtCookie = req.cookies.jwt;
-      if (!jwtCookie || jwtCookie === undefined) {
-          return res.status(500).send('no token');
-      }
-      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-        if (!decodedData || !decodedData.userId) {
-            return res.status(500).send('invalid token');
-        }
-        const userId = parseInt(decodedData.userId, 10);
+        const userId = req.body.userId;
         if (isNaN(userId)) {
             return res.status(500).send('invalid userId');
         }
@@ -47,15 +39,7 @@ export class UserController {
     @Post('social/unblock')
     async unblockUser(@Req() req, @Res() res) {
       try {
-          const jwtCookie = req.cookies.jwt;
-          if (!jwtCookie || jwtCookie === undefined) {
-              return res.status(500).send('no token');
-          }
-          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-          if (!decodedData || !decodedData.userId) {
-              return res.status(500).send('invalid token');
-          }
-          const userId = parseInt(decodedData.userId, 10);
+          const userId = req.body.userId
           if (isNaN(userId)) {
               return res.status(500).send('invalid userId');
           }
@@ -78,17 +62,7 @@ export class UserController {
     @Post('Block')
     async blockUser(@Req() req, @Res() res) {
       try {
-          const jwtCookie = req.cookies.jwt;
-          console.log("jwtCookie =", jwtCookie);
-          if (!jwtCookie || jwtCookie === undefined) {
-              return res.status(500).send('no token');
-          }
-          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-          console.log(decodedData);
-          if (!decodedData || !decodedData.userId) {
-              return res.status(500).send('invalid token');
-          }
-          const userId = parseInt(decodedData.userId, 10);
+          const userId = req.body.userId
           if (isNaN(userId)) {
               return res.status(500).send('invalid userId');
           }
@@ -111,16 +85,7 @@ export class UserController {
     @Post('RefuseFriend')
     async RefuseFriend(@Req() req, @Res() res) {
       try {
-          const jwtCookie = req.cookies.jwt;
-          if (!jwtCookie || jwtCookie === undefined) {
-              return res.status(500).send('no token');
-          }
-          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-          console.log(decodedData);
-          if (!decodedData || !decodedData.userId) {
-              return res.status(500).send('invalid token');
-          }
-          const userId = parseInt(decodedData.userId, 10);
+          const userId = req.body.userId
           if (isNaN(userId)) {
               return res.status(500).send('invalid userId');
           }
@@ -143,17 +108,7 @@ export class UserController {
     @Post('AcceptFriend')
     async AcceptFriend(@Req() req, @Res() res) {
       try {
-          const jwtCookie = req.cookies.jwt;
-          console.log("jwtCookie =", jwtCookie);
-          if (!jwtCookie || jwtCookie === undefined) {
-              return res.status(500).send('no token');
-          }
-          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-          console.log(decodedData);
-          if (!decodedData || !decodedData.userId) {
-              return res.status(500).send('invalid token');
-          }
-          const userId = parseInt(decodedData.userId, 10);
+          const userId = req.body.userId;
           if (isNaN(userId)) {
               return res.status(500).send('invalid userId');
           }
@@ -176,15 +131,7 @@ export class UserController {
     @Post ('Unfriend')
     async Unfriend(@Req() req, @Res() res) {
       try {
-        const jwtCookie = req.cookies.jwt;
-          if (!jwtCookie || jwtCookie === undefined) {
-              return res.status(500).send('no token');
-          }
-          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-          if (!decodedData || !decodedData.userId) {
-              return res.status(500).send('invalid token');
-          }
-          const userId = parseInt(decodedData.userId, 10);
+          const userId = req.body.userId;
           if (isNaN(userId)) {
               return res.status(500).send('invalid userId');
           }
@@ -237,16 +184,7 @@ export class UserController {
   @Post('changeAvatar')
   async changeAvatar(@Req() req, @Res() res) {
     try {
-      const jwtCookie = req.cookies.jwt;
-      if (!jwtCookie || jwtCookie === undefined) {
-          return res.status(500).send('no token');
-      }
-      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-        console.log(decodedData);
-        if (!decodedData || !decodedData.userId) {
-            return res.status(500).send('invalid token');
-        }
-        const userId = parseInt(decodedData.userId, 10);
+        const userId = req.body.userId;
         if (isNaN(userId)) {
             return res.status(500).send('invalid userId');
         }
@@ -282,17 +220,7 @@ export class UserController {
   @Post('changePseudo')
   async changePseudo(@Req() req, @Res() res) {
     try {
-        const jwtCookie = req.cookies.jwt;
-        console.log("jwtCookie =", jwtCookie);
-        if (!jwtCookie || jwtCookie === undefined) {
-            return res.status(500).send('no token');
-        }
-        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-        console.log(decodedData);
-        if (!decodedData || !decodedData.userId) {
-            return res.status(500).send('invalid token');
-        }
-        const userId = parseInt(decodedData.userId, 10);
+        const userId = req.body.userId;
         if (isNaN(userId)) {
             return res.status(500).send('invalid userId');
         }

@@ -39,8 +39,6 @@ const social = () => {
         justifyContent: 'center'
       };
 
-    currentView;
-    Lists;
     useEffect(() => {
         const fetchData = async () => {
           const userData = await fetchUserDetails();
@@ -77,7 +75,7 @@ const social = () => {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include', // Inclure les cookies avec la requête
-                body: JSON.stringify({ blockpseudo: blockInput }),
+                body: JSON.stringify({ blockpseudo: blockInput, userId: user[0].id }),
             });
             if (!response.ok) {
                 throw new Error('La réponse du réseau n’était pas correcte');
@@ -99,7 +97,7 @@ const social = () => {
                      'Content-Type': 'application/json',
                  },
                  credentials: 'include', // Inclure les cookies avec la requête
-                 body: JSON.stringify({ friendPseudo: friend }),
+                 body: JSON.stringify({ friendPseudo: friend, userId: user[0].id }),
              });
              if (!response.ok) {
                  throw new Error('La réponse du réseau n’était pas correcte');
@@ -118,7 +116,7 @@ const social = () => {
                     'Content-Type': 'application/json',
                  },
                  credentials: 'include', // Inclure les cookies avec la requête
-                body: JSON.stringify({ friendPseudo: friend }),
+                body: JSON.stringify({ friendPseudo: friend, userId: user[0].id }),
              });
              if (!response.ok) {
                  throw new Error('La réponse du réseau n’était pas correcte');
@@ -232,7 +230,7 @@ const social = () => {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include', // Inclure les cookies avec la requête
-                body: JSON.stringify({ unblockpseudo: unblockPseudo }),
+                body: JSON.stringify({ unblockpseudo: unblockPseudo, userId: user[0].id }),
             });
             if (!response.ok) {
                 throw new Error('La réponse du réseau n’était pas correcte');
@@ -280,7 +278,7 @@ const social = () => {
               'Content-Type': 'application/json',
             },
             credentials: 'include', // if you're including credentials like cookies
-            body: JSON.stringify({ channelId: newChannel.id }),
+            body: JSON.stringify({ channelId: newChannel.id, userId: user[0].id }),
           });
           if (!responsetwo.ok) {
             throw new Error(`Network response was not ok: ${response.statusText}`);
@@ -317,7 +315,7 @@ const social = () => {
                 'Content-Type': 'application/json',
                 },
                 credentials: 'include', // if you're including credentials like cookies
-                body: JSON.stringify({ channelId: responseData.id }),
+                body: JSON.stringify({ channelId: responseData.id, userId: user[0].id }),
                 });
                 if (!responsetwo.ok) {
                     throw new Error(`Network response was not ok: ${response.statusText}`);
@@ -347,7 +345,7 @@ const social = () => {
                         'Content-Type': 'application/json',
                         },
                         credentials: 'include', // if you're including credentials like cookies
-                        body: JSON.stringify({ channelId: responseData.id }),
+                        body: JSON.stringify({ channelId: responseData.id, userId: user[0].id }),
                         });
                         if (!responsetwo.ok) {
                             throw new Error(`Network response was not ok: ${response.statusText}`);
@@ -399,7 +397,7 @@ const social = () => {
                   'Content-Type': 'application/json',
                 },
                 credentials: 'include', // if you're including credentials like cookies
-                body: JSON.stringify({ friendName: friendname }),
+                body: JSON.stringify({ friendName: friendname, userId: user[0].id }),
               });
               if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
@@ -443,6 +441,7 @@ const social = () => {
             )}
             {currentView === 'Friends' && (
                 <div className="content-display">
+                    {/*//call getfriend() */}
                     {Lists.map((friend, index) => (
                        <div key={index} className="notification-item">
                        <span>{friend}</span>

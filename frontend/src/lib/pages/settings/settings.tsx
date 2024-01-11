@@ -81,7 +81,7 @@ const Settings = () => {
                         'Content-Type': 'application/json',
                     },
                     credentials: 'include',
-                    body: JSON.stringify({ avatarUrl: data.secure_url }),
+                    body: JSON.stringify({ avatarUrl: data.secure_url, userId: user.id }),
                 });
     
                 if (!backendResponse.ok) {
@@ -123,7 +123,7 @@ const Settings = () => {
                     // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
                 },
                 credentials: 'include', // Inclure les cookies avec la requête
-                body: JSON.stringify({ newPseudo: event.target.value }),
+                body: JSON.stringify({ newPseudo: event.target.value, userId: user.id }),
             });
     
             if (!response.ok) {
