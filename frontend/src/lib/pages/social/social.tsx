@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState} from 'react';
 import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 //import { fetchAvatarByPseudo } from '../utils/UtilsFetch';
 //import { User } from '../settings/user.model.tsx';
 import { Button } from "@/lib/components/ui/button";
+import { TextField, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 //import { AddFriends } from '@/lib/components/ui/AddFriends'
 //import { UserNav } from '@/lib/components/ui/user-nav';
 //import { useCookies } from 'react-cookie';
@@ -19,7 +21,9 @@ const social = () => {
     const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
     const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
     const [passwordInput, setPasswordInput] = useState('');
+    const [joinChannel, setJoinChannel] = useState('');
     const [channelVisibility, setChannelVisibility] = useState('public');
+    const [showPassword, setShowPassword] = useState<boolean>(false);
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -46,6 +50,10 @@ const social = () => {
         };
         fetchData();
     }, []);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+      };
 
    const handleadd = async () => {
         try {
@@ -520,14 +528,29 @@ const social = () => {
                     </div>
                     {channelVisibility === 'private' && (
                     <div className="mt-4">
-                        <input
-                            type="text"
-                            value={passwordInput}
-                            onChange={(e) => setPasswordInput(e.target.value)}
-                            placeholder="Channel password"
-                            required
-                        />
-                    </div>
+                    <TextField
+                      type={showPassword ? 'text' : 'password'}
+                      value={passwordInput}
+                      onChange={(e) => setPasswordInput(e.target.value)}
+                      placeholder="Channel password"
+                      required
+                      fullWidth
+                      style={{ width: '200px' }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <button
+                              type="button"
+                              onClick={togglePasswordVisibility}
+                              style={{ border: 'none', background: 'none', cursor: 'pointer' }}
+                            >
+                              {showPassword ? <Visibility /> : <VisibilityOff />}
+                            </button>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </div>
                     )}
                     <Button variant="outline" className="button-small mt-4" onClick={handleCreateChannel}>Create Channel</Button>
                     </Box>
@@ -546,9 +569,9 @@ const social = () => {
                     <Button variant="outline" className="button-small" onClick={handleadd}>Add</Button>
                     <input
                         type="text"
-                        value={passwordInput}
-                        onChange={(e) => setPasswordInput(e.target.value)}
-                        placeholder="Channel password"
+                        value={joinChannel}
+                        onChange={(e) => setJoinChannel(e.target.value)}
+                        placeholder="Channel Name"
                         className="input-small"
                     />
                     <Button variant="outline" className="button-small" onClick={handleJoinChannel}>Join Channel</Button>
