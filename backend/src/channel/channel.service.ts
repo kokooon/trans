@@ -21,6 +21,7 @@ export class ChannelService {
     channel.visibility = createChannelDto.visibility;
     channel.password = createChannelDto.password;
     channel.admin = createChannelDto.admin;
+    channel.owner = createChannelDto.admin;
     channel.memberIds = createChannelDto.memberIds;
     return this.channelRepository.save(channel);
   }

@@ -205,16 +205,7 @@ export class UserController {
     @Post('FriendRequest')
     async FriendRequest(@Req() req, @Res() res) {
       try {
-          const jwtCookie = req.cookies.jwt;
-          if (!jwtCookie || jwtCookie === undefined) {
-              return res.status(500).send('no token');
-          }
-          const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
-          console.log(decodedData);
-          if (!decodedData || !decodedData.userId) {
-              return res.status(500).send('invalid token');
-          }
-          const userId = parseInt(decodedData.userId, 10);
+          const userId = req.body.userId;
           if (isNaN(userId)) {
               return res.status(500).send('invalid userId');
           }

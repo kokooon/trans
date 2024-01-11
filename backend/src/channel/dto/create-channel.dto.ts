@@ -8,6 +8,7 @@ export class CreateChannelDto {
   @IsString()
   name: string;
   admin: number;
+  owner: number;
   @IsEnum(ChannelVisibility)
   visibility: ChannelVisibility;
   memberIds: number;

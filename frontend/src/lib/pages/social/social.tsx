@@ -57,7 +57,7 @@ const social = () => {
               'Content-Type': 'application/json',
             },
             credentials: 'include',
-            body: JSON.stringify({ addFriend: addInput }),
+            body: JSON.stringify({ addFriend: addInput, userId: user[0].id }),
           });
     
           if (!response.ok) {
@@ -85,6 +85,10 @@ const social = () => {
         } catch (error) {
             console.error('Erreur lors du blockage :', error);
         }
+        if (currentView === 'Blocked'){
+            getBlock();
+            setCurrentView('Blocked');
+        }
         setBlockInput('');
     };
 
@@ -104,6 +108,8 @@ const social = () => {
          } catch (error) {
              console.error('Erreur lors de l\'ajout du friend :', error);
         }
+        getNotifications();
+        setCurrentView('Notifications');
     }
     
      const handleDecline = async (friend: string) => {
@@ -122,14 +128,17 @@ const social = () => {
          } catch (error) {
              console.error('Erreur lors de l\'ajout du friend :', error);
          }
+        getNotifications();
+        setCurrentView('Notifications');
     }
 
     const getFriends  = async () => {
         setCurrentView('Friends');
+        const userData = await fetchUserDetails();
         try {
             const List = []; // Créez une nouvelle liste pour les amis
-            for (let i = 0; i < user[0].friends.length; i++) {
-                const friendId = user[0].friends[i];
+            for (let i = 0; i < userData[0].friends.length; i++) {
+                const friendId = userData[0].friends[i];
                 const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
                     method: 'GET',
                     credentials: 'include',
@@ -150,9 +159,11 @@ const social = () => {
 
     const getChannel = async () => {
         setCurrentView('Channel');
-        const List = []; // Créez une nouvelle liste pour les amis
-        for (let i = 0; i < user[0].channels.length; i++) {
-            const channelId = user[0].channels[i];
+        const userData = await fetchUserDetails();
+        console.log(userData[0].channels);
+        const List = [];
+        for (let i = 0; i < userData[0].channels.length; i++) {
+            const channelId = userData[0].channels[i];
             const response = await fetch(`http://127.0.0.1:3001/channels/channelNameById/${channelId}`, {
                     method: 'GET',
                     credentials: 'include',
@@ -167,10 +178,11 @@ const social = () => {
 
     const getBlock  = async () => {
         setCurrentView('Blocked');
+        const userData = await fetchUserDetails();
         try {
             const List = []; // Créez une nouvelle liste pour les amis
-            for (let i = 0; i < user[0].banlist.length; i++) {
-                const friendId = user[0].banlist[i];
+            for (let i = 0; i < userData[0].banlist.length; i++) {
+                const friendId = userData[0].banlist[i];
                 const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
                     method: 'GET',
                     credentials: 'include',
@@ -191,11 +203,13 @@ const social = () => {
 
     const getNotifications = async () => {
         setCurrentView('Notifications');
+        const userData = await fetchUserDetails();
         try {
             const friendsList = []; // Créez une nouvelle liste pour les amis
     
-            for (let i = 0; i < user[0].friendNotif.length; i++) {
-                const friendId = user[0].friendNotif[i];
+            for (let i = 0; i < userData[0].friendNotif.length; i++) {
+                const friendId = userData[0].friendNotif[i];
+                console.log(user[0].friendNotif[i]);
                 const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
                     method: 'GET',
                     credentials: 'include',
@@ -229,6 +243,8 @@ const social = () => {
         } catch (error) {
             console.error('Erreur lors du blockage :', error);
         }
+        getBlock();
+        setCurrentView('Blocked');
     };
 
     const handleCreateChannel = async () => {
@@ -238,6 +254,7 @@ const social = () => {
             password: passwordInput, // From your state, could be empty if not private
             visibility: channelVisibility, // From your state
             admin: user[0].id,
+            owner: user[0].id,
             memberIds: user[0].id // The current user's ID
           };
           if (!ChannelName){
@@ -277,24 +294,58 @@ const social = () => {
         }
         setChannelName('');
         setPasswordInput('');
+        if (currentView === 'Channel') {
+            getChannel();
+            setCurrentView('Channel');
+        }
       };
 
     const handleJoinChannel  = async () => {
-            try {
-                const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${ChannelName}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                      },
-                    credentials: 'include',
+        try {
+            const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${ChannelName}`, {
+            method: 'GET',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            });
+            if (response.ok){
+                const responseData = await response.json();
+                if (responseData.password) {
+                    if (!passwordInput || (passwordInput !== responseData.password)){
+                        console.log("wrong password or password missing1")
+                        return;
+                    }
+                const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                credentials: 'include', // if you're including credentials like cookies
+                body: JSON.stringify({ channelId: responseData.id }),
                 });
-                if (response.ok){
-                    const responseData = await response.json();
-                    if (responseData.password) {
-                        if (!passwordInput || (passwordInput !== responseData.password)){
-                            console.log("wrong password or password missing1")
-                            return;
-                        }
+                if (!responsetwo.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                credentials: 'include', // if you're including credentials like cookies
+                body: JSON.stringify({ channelName: responseData.name }),
+                });
+                if (!responsethree.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                }
+                else {
+                    if (passwordInput){
+                        console.log("wrong password or password missing");
+                        return ;
+                    }
+                    else {
+                        console.log("here1");
                         const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
                         method: 'POST',
                         headers: {
@@ -306,57 +357,44 @@ const social = () => {
                         if (!responsetwo.ok) {
                             throw new Error(`Network response was not ok: ${response.statusText}`);
                         }
-                        const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
-                        method: 'POST',
-                        headers: {
-                        'Content-Type': 'application/json',
-                        },
-                        credentials: 'include', // if you're including credentials like cookies
-                        body: JSON.stringify({ channelName: responseData.name }),
-                        });
-                        if (!responsethree.ok) {
-                            throw new Error(`Network response was not ok: ${response.statusText}`);
-                        }
-                    }
-                    else {
-                        if (passwordInput){
-                            console.log("wrong password or password missing");
-                            return ;
-                        }
-                        else {
-                            const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
+                        try {
+                            console.log("here2");
+                            const responsefor = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
                             method: 'POST',
                             headers: {
                             'Content-Type': 'application/json',
                             },
-                            credentials: 'include', // if you're including credentials like cookies
-                            body: JSON.stringify({ channelId: responseData.id }),
-                            });
-                            if (!responsetwo.ok) {
-                                throw new Error(`Network response was not ok: ${response.statusText}`);
-                            }
-                            const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
-                            method: 'POST',
-                            headers: {
-                            'Content-Type': 'application/json',
-                            },
-                            credentials: 'include', // if you're including credentials like cookies
+                            credentials: 'include',
                             body: JSON.stringify({ channelName: responseData.name }),
                             });
-                        if (!responsethree.ok) {
-                            throw new Error(`Network response was not ok: ${response.statusText}`);
+                            console.log("here3");
+                            if (!responsefor.ok) {
+                            throw new Error(`Network response was not ok: ${responsefor.statusText}`);
                             }
-                        }
+                                // ... autres traitements ...
+                        }catch (error) {
+                            console.log("Caught an error:", error);
+                        }  
+                    console.log("here4");
                     }
+                    console.log("here5");
                 }
-                else {
-                    console.error('unable to find channel:', ChannelName);
-                    return;
-                }
-            } catch (error) {
-                console.error('Error during join channel:', error);
+                console.log("here6");
             }
-            setPasswordInput('');     
+            else {
+                console.log('unable to find channel:', ChannelName);
+                return;
+            }
+        } catch (error) {
+            console.log('Error during join channel:', error);
+        }
+        setPasswordInput('');
+        setChannelName('');
+        console.log("final here");
+        if (currentView === 'Channel') {
+            getChannel();
+            setCurrentView('Channel');
+        }
     };
 
     const handleUnfriend  = async (friendname: string) => {
@@ -376,10 +414,18 @@ const social = () => {
         catch (error) {
             console.log("unable to unfriend");
         }
+        getFriends();
+        setCurrentView('Friends');
     };
 
     const handleLeave = async (channelName: string) => {
-        ;
+        channelName;
+        //try {
+
+        //}
+        //supprimer userId in the channel MembersId //POST in channel
+        //supprimer channelId in the user Channel //POST in user
+        // if user is owner destroy channel //POST channel delete ?
     }
     
     return (

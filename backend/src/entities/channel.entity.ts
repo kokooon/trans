@@ -22,6 +22,9 @@ export class Channel {
 
   @Column('simple-array', { nullable: true })
   admin: number[];
+
+  @Column('simple-array', { nullable: true })
+  owner: number;
   // Array of user IDs who are members of the channel
   @Column('simple-array', { nullable: true })
   memberIds: number[];
