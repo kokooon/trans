@@ -544,7 +544,7 @@ const social = () => {
                               onClick={togglePasswordVisibility}
                               style={{ border: 'none', background: 'none', cursor: 'pointer' }}
                             >
-                              {showPassword ? <Visibility /> : <VisibilityOff />}
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
                             </button>
                           </InputAdornment>
                         ),
