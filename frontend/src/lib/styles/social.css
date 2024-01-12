@@ -125,12 +125,13 @@
   .button-small-selected {
     flex: 1;
     margin: 5px;
-    background-color: #338CFF; /* Remplacez yourColor par la couleur souhaitée pour le bouton sélectionné */
+    background-color: #004aab; /* Remplacez yourColor par la couleur souhaitée pour le bouton sélectionné */
     color: #fff; /* Couleur du texte pour le bouton sélectionné */
   }
   
   .content-display {
     width: 100%;
+    margin: 10px;
   }
   
   .notification-item {
@@ -139,3 +140,4 @@
     justify-content: space-between;
     margin-bottom: 10px;
   }
+  

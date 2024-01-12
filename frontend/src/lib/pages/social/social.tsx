@@ -469,7 +469,7 @@ const social = () => {
                 </div>
             )}
             {currentView === 'Channel' && (
-                <div className="content-display">
+                <div className="content-display mt-4">
                     {Lists.map((channel, index) => (
                         <div key={index} className="blocked-item">
                         <span>{channel}</span>
