@@ -431,10 +431,10 @@ const social = () => {
         <div className="main-container"> {/* Cadre principal (orange) */}
             <div className="functionality-container"> {/* Cadre fonctionnalités (rouge) */}
             <div className="button-group"> {/* Conteneur pour les boutons */}
-                <Button variant="outline" className="button-small" onClick={getNotifications}>Notifications</Button>
-                <Button variant="outline" className="button-small" onClick={getFriends}>Friends</Button>
-                <Button variant="outline" className="button-small" onClick={getBlock}>Blocked</Button>
-                <Button variant="outline" className="button-small" onClick={getChannel}>Channel</Button>
+                <Button variant="outline" className={currentView === 'Notifications' ? 'button-small button-small-selected' : 'button-small'} onClick={getNotifications}>Notifications</Button>
+                <Button variant="outline" className={currentView === 'Friends' ? 'button-small button-small-selected' : 'button-small'} onClick={getFriends}>Friends</Button>
+                <Button variant="outline" className={currentView === 'Blocked' ? 'button-small button-small-selected' : 'button-small'} onClick={getBlock}>Blocked</Button>
+                <Button variant="outline" className={currentView === 'Channel' ? 'button-small button-small-selected' : 'button-small'} onClick={getChannel}>Channel</Button>
             </div>
             {currentView === 'Notifications' && (
                 <div className="content-display">
