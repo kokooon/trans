@@ -5,6 +5,7 @@ import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 import { Button } from "@/lib/components/ui/button";
 import { TextField, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import Avatar from '@mui/material/Avatar';
 //import { AddFriends } from '@/lib/components/ui/AddFriends'
 //import { UserNav } from '@/lib/components/ui/user-nav';
 //import { useCookies } from 'react-cookie';
@@ -439,10 +440,11 @@ const social = () => {
             {currentView === 'Notifications' && (
                 <div className="content-display">
                     {Lists.map((notification, index) => (
-                        <div key={index} className="notification-item">
+                        <div key={index} className="notification-item flex items-center mb-4">
+                            <Avatar alt="User Avatar" src={user[0].avatar} className="mr-2"/>
                             <span>{notification}</span>
-                            <Button variant="outline" className="button-small" onClick={() => handleAccept(notification)}>Accepter</Button>
-                            <Button variant="outline" className="button-small" onClick={() => handleDecline(notification)}>Décliner</Button>
+                            <Button variant="outline" className="button-small" style={{ maxWidth: 'fit-content' }} onClick={() => handleAccept(notification)}>Accepter</Button>
+                            <Button variant="outline" className="button-small" style={{ maxWidth: 'fit-content' }} onClick={() => handleDecline(notification)}>Décliner</Button>
                         </div> // Affichage des notifications avec boutons pour accepter ou décliner
                     ))}
                 </div>
@@ -471,9 +473,9 @@ const social = () => {
             {currentView === 'Channel' && (
                 <div className="content-display mt-4">
                     {Lists.map((channel, index) => (
-                        <div key={index} className="blocked-item">
+                        <div key={index} className="blocked-item flex items-center mb-4">
                         <span>{channel}</span>
-                        <Button variant="outline" className="button-small" onClick={() => handleLeave(channel)}>leave</Button>
+                        <Button variant="outline" className="button-small w-auto" style={{ maxWidth: 'fit-content' }} onClick={() => handleLeave(channel)}>leave</Button>
                     </div> // Affichage des utilisateurs bloqués avec bouton pour débloquer // Affichage des canaux
                     ))}
                 </div>
