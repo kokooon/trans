@@ -67,9 +67,10 @@ export class AuthController {
 
       // Stocker la clé secrète otpSecret associée à l'utilisateur dans votre base de données
       const secret = await this.userService.addSecret(user.id, otpSecret);
-
+      console.log("secret = ", secret);
       // Générer le code QR
       const qrCodeUrl = await QRCode.toDataURL(otpauth_url);
+      console.log("qrcode = ", qrCodeUrl);
       //return qrCodeUrl;
       //res.status(201).json({ qrCode: qrCodeUrl });
       // Passer le secret OTP à la vue (ou à l'endroit approprié dans votre frontend)
