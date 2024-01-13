@@ -41,8 +41,8 @@ export function CreateAccount() {
         });
         if (response.ok) {
           const responseData = await response.json();
-          setQrCodeUrl(responseData[0].qrcode);
-          //console.log(responseData[0].qrcode);
+          setQrCodeUrl(responseData.qrcodeUrl);
+          console.log("qrcode url = ", qrCodeUrl);
         }
       } catch (error) {
         console.log("error");
@@ -69,6 +69,11 @@ export function CreateAccount() {
       <Button variant="outline" onClick={handleCreateAccountClick}>
             <img src='../../../../assets/Final-sigle-seul.svg' className="mr-2 w-10 h-10" />
       </Button>
+      {qrCodeUrl && (
+        <div className="qr-code-container">
+          <img src={qrCodeUrl} alt="QR Code" className="mr-2 w-10 h-10" />
+        </div>
+      )}
     </div>
   );
 }

@@ -55,22 +55,21 @@ export class AuthController {
     try {
       const userId = req.body.userId;
       const user = await this.userService.findById(userId);
-
       if (!user || !user.pseudo) {
         throw new Error('Invalid user data');
       }
-
       // Générer une clé secrète pour l'utilisateur
       const { base32: otpSecret, otpauth_url } = speakeasy.generateSecret({
         name: 'YourApp',  // Nom de votre application pour le code OTP
       });
-
       // Stocker la clé secrète otpSecret associée à l'utilisateur dans votre base de données
       const secret = await this.userService.addSecret(user.id, otpSecret);
       console.log("secret = ", secret);
       // Générer le code QR
-      const qrCodeUrl = await QRCode.toDataURL(otpauth_url);
-      console.log("qrcode = ", qrCodeUrl);
+      const qrCodeurl = await QRCode.toDataURL(otpauth_url);
+      console.log("qrcode = ", qrCodeurl);
+      // After generating the QR code URL
+      res.status(200).json({ qrcodeUrl: qrCodeurl });
       //return qrCodeUrl;
       //res.status(201).json({ qrCode: qrCodeUrl });
       // Passer le secret OTP à la vue (ou à l'endroit approprié dans votre frontend)
