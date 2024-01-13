@@ -1,9 +1,9 @@
 import { Controller, Get, Post, UseGuards, Req, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { UserService } from '../user/user.service';
 import * as speakeasy from 'speakeasy';
 import * as QRCode from 'qrcode';
+import { UserService } from '../user/user.service';
 
 @Controller('auth')
 export class AuthController {
@@ -49,11 +49,12 @@ export class AuthController {
     res.render('verification-page');  // Assurez-vous d'avoir une vue associée à la vérification
   }
 
-  @Get('enable-2fa')
-  @UseGuards(AuthGuard('42'))
+  @Post('enable-2fa')
   async enableTwoFactorAuth(@Req() req, @Res() res: any) {
+    console.log("in enable-2fa backend");
     try {
-      const user = req.user;
+      const userId = req.body.userId;
+      const user = await this.userService.findById(userId);
 
       if (!user || !user.pseudo) {
         throw new Error('Invalid user data');
@@ -70,7 +71,7 @@ export class AuthController {
       // Générer le code QR
       const qrCodeUrl = await QRCode.toDataURL(otpauth_url);
       //return qrCodeUrl;
-      res.status(201).json({ qrCode: qrCodeUrl });
+      //res.status(201).json({ qrCode: qrCodeUrl });
       // Passer le secret OTP à la vue (ou à l'endroit approprié dans votre frontend)
       //res.render('enable-2fa', { qrCodeUrl, otpSecret: secret.otpSecret });
     } catch (error) {

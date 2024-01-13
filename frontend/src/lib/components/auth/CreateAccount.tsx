@@ -32,10 +32,13 @@ export function CreateAccount() {
       console.log("already login and 2fa enabled");
       try {
         const response = await fetch('http://127.0.0.1:3001/auth/enable-2fa', {
-          method: 'GET',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
           credentials: 'include',
+          body: JSON.stringify({ userId: user[0].id }),
         });
-
         if (response.ok) {
           const responseData = await response.json();
           setQrCodeUrl(responseData[0].qrcode);
