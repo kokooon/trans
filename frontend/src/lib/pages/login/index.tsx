@@ -1,10 +1,5 @@
 import { CreateAccount } from "@/lib/components/auth/CreateAccount";
-import { isTokenValid } from "@/lib/components/utils/UtilsFetch";
-import { useEffect } from 'react';
 //import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom';
-import { useState} from 'react';
-import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 
 const Login = () => {
     return ( //afficher qrcode etc if isValid && user[0].is2FAEnabled
