@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/lib/components/ui/button";
 import { useNavigate } from 'react-router-dom'; // if you're using react-router for navigation
+import { isTokenValid } from "@/lib/components/utils/UtilsFetch";
+//import { useCookies } from 'react-cookie';
+import { fetchUserDetails } from '../../components/utils/UtilsFetch';
+
 
 export function CreateAccount() {
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const navigate = useNavigate();
+  const [user, setUser] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const userData = await fetchUserDetails();
+      setUser(userData); 
+    };
+    fetchData();
+  }, []);
 
   const checkToken = async () => {
     // This isTokenValid function needs to be defined or imported from your auth utilities
