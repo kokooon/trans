@@ -9,6 +9,7 @@ import { Auth42Module } from './auth-42/auth-42.module';
 import { AuthController } from './auth-42/auth.controller';
 import { DatabaseModule } from './database/database.module';
 
+
 @Module({
   imports: [DatabaseModule, UserModule, Auth42Module, ChannelModule, MessageModule],
   controllers: [AppController, AuthController],

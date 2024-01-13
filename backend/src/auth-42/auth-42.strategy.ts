@@ -15,19 +15,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       clientID: publicapiKey,
       clientSecret: apiKey,
       callbackURL: 'http://127.0.0.1:3001/auth/42/callback',
-      /*
-      profileFields: {
-        'id': (profile) => String(profile.id),
-        'username': 'login',
-        'displayName': 'displayname',
-        'name.familyName': 'last_name',
-        'name.givenName': 'first_name',
-        'profileUrl': 'url',
-        'emails.0.value': 'email',
-        'phoneNumbers.0.value': 'phone',
-        'photos.0.value': 'image_url'
-      },
-      */
     });
   }
 
@@ -42,5 +29,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       console.error('Error in validate method:', error);
       throw new UnauthorizedException();
     }
+    
   }
 }

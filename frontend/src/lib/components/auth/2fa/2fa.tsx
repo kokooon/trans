@@ -8,11 +8,9 @@ export const toggle2FA = async (is2FAEnabled: boolean, setIs2FAEnabled: (isEnabl
         credentials: 'include',
         body: JSON.stringify({ is2FAEnabled: !is2FAEnabled }),
       });
-  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-
       setIs2FAEnabled(!is2FAEnabled);
     } catch (error) {
       console.error('Error:', error);

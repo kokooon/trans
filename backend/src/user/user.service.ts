@@ -190,10 +190,6 @@ export class UserService {
     return user.id;
   }
 
-  async findByFortyTwoId(profile: any): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { pseudo: profile.username } });
-  }
-
   async findById(userId: number): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { id: userId } });
   }
