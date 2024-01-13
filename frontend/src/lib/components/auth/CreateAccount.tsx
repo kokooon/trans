@@ -7,9 +7,11 @@ import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 
 
 export function CreateAccount() {
+  //const [codeInp, setCodeInput] = useState<any>(null);
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const navigate = useNavigate();
   const [user, setUser] = useState<any | null>(null);
+  const [codeInput, setcodeInput] = useState('');
   qrCodeUrl;
   useEffect(() => {
     const fetchData = async () => {
@@ -64,16 +66,35 @@ export function CreateAccount() {
     // This useEffect could be used for initial token check on component mount, if needed
   }, [navigate]);
 
+  const handleValidationClick = () => {
+    console.log("check code here"); // This will check the token and handle QR code generation.
+    console.log("code input = ", codeInput);
+    //GET secret with user id (in user[0].id)
+  };
+
   return (
-    <div className="flex justify-center">
+    <div className="flex flex-col items-center justify-center">
       <Button variant="outline" onClick={handleCreateAccountClick}>
-            <img src='../../../../assets/Final-sigle-seul.svg' className="mr-2 w-10 h-10" />
+        <img src='../../../../assets/Final-sigle-seul.svg' className="mr-2 w-10 h-10" />
       </Button>
       {qrCodeUrl && (
         <div className="qr-code-container">
-          <img src={qrCodeUrl} alt="QR Code" className="mr-2 w-30 h-30" />
+          <img src={qrCodeUrl} alt="QR Code" className="my-4 w-30 h-30" />
+          <div className="input-container my-4">
+            <input 
+              type="text"
+              value={codeInput}
+              onChange={(e) => setcodeInput(e.target.value)}
+              placeholder="code"
+              className="input-small" 
+              style={{ color: 'red' }} // Ajoutez cette ligne pour le texte en rouge
+            />
+            <button onClick={handleValidationClick} className="validate-button">
+              Valider
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
-}
+}  
