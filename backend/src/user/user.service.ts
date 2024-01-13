@@ -3,6 +3,7 @@ import { Injectable, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { Secret } from 'src/entities/secret.entity';
 import { BadRequestException } from '@nestjs/common';
 import { MyConfigService } from '../config/myconfig.service';
 import * as axios from 'axios';
@@ -13,6 +14,8 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Secret)  // Ajoutez ceci pour injecter SecretRepository
+    private readonly secretRepository: Repository<Secret>,
     private readonly myConfigService: MyConfigService,
   ) {}
 
@@ -258,6 +261,18 @@ export class UserService {
       await this.userRepository.save(user);
     } catch (error) {
       throw new Error(`Failed to update 2FA: ${error.message}`);
+    }
+  }
+
+  async addSecret(userId: number, otpSecret: string): Promise<Secret> {
+    try {
+      const secret = new Secret();
+      secret.userId = userId;
+      secret.otpSecret = otpSecret;
+      return await this.secretRepository.save(secret);
+    } catch (error) {
+      console.error('Error adding secret:', error);
+      throw new Error('Failed to add secret');
     }
   }
 }

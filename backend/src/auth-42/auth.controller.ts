@@ -1,12 +1,16 @@
 import { Controller, Get, Post, UseGuards, Req, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { UserService } from '../user/user.service';
 import * as speakeasy from 'speakeasy';
 import * as QRCode from 'qrcode';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,  // Injectez le service UserService ici
+  ) {}
   @Get('42')
   @UseGuards(AuthGuard('42'))
   async fortyTwoLogin(@Req() req, @Res() res) {
@@ -60,42 +64,43 @@ export class AuthController {
       });
 
       // Stocker la clé secrète otpSecret associée à l'utilisateur dans votre base de données
-      user.otpSecret = otpSecret;
-      // Enregistrez cette information dans votre base de données ou où vous stockez les informations de l'utilisateur.
+      const secret = await this.userService.addSecret(user.id, otpSecret);
 
       // Générer le code QR
       const qrCodeUrl = await QRCode.toDataURL(otpauth_url);
 
-      // Rediriger l'utilisateur vers la page de vérification avec le code QR
-      res.render('enable-2fa', { qrCodeUrl }); // Assurez-vous d'avoir une vue associée à l'activation du 2FA
+      // Passer le secret OTP à la vue (ou à l'endroit approprié dans votre frontend)
+      res.render('enable-2fa', { qrCodeUrl, otpSecret: secret.otpSecret });
     } catch (error) {
       console.error('Error enabling 2FA:', error);
       res.status(500).send('Internal Server Error');
     }
   }
 
+
   @Post('verify-2fa')
-  // Cette route traitera la validation du code 2FA
   async verifyTwoFactorAuth(@Req() req, @Res() res) {
     try {
       const user = req.user;
-      const userEnteredCode = req.body.twoFactorCode; // Assurez-vous que votre formulaire envoie le code 2FA
+
+      // Obtenez le code 2FA à partir du corps de la requête
+      const twoFactorCode = req.body.twoFactorCode;
 
       const isValid2FACode = speakeasy.totp.verify({
-        secret: user.otpSecret,  // La clé secrète générée lors de l'activation de la 2FA
+        secret: user.otpSecret,
         encoding: 'base32',
-        token: userEnteredCode,
+        token: twoFactorCode,
       });
 
       if (isValid2FACode) {
-        // Générer le jeton JWT et le stocker dans le cookie
+        // Le code 2FA est valide, effectuez les actions nécessaires
+        // (par exemple, générer un jeton JWT et le renvoyer au client)
         const jwtToken = this.authService.getJwtToken();
         res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
 
-        // Rediriger l'utilisateur vers la page souhaitée
-        res.redirect('http://127.0.0.1:3000/');
+        res.status(200).send('Verification successful');
       } else {
-        // Gérer le cas où le code 2FA est invalide
+        // Le code 2FA est invalide
         res.status(401).send('Invalid 2FA code');
       }
     } catch (error) {
