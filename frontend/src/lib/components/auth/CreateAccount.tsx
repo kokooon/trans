@@ -71,7 +71,7 @@ export function CreateAccount() {
       </Button>
       {qrCodeUrl && (
         <div className="qr-code-container">
-          <img src={qrCodeUrl} alt="QR Code" className="mr-2 w-10 h-10" />
+          <img src={qrCodeUrl} alt="QR Code" className="mr-2 w-30 h-30" />
         </div>
       )}
     </div>
