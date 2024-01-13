@@ -25,9 +25,9 @@ export function CreateAccount() {
     // The user array needs to be obtained from your auth state or context
     console.log("user = ", user[0]);
 
-    if (isValid && !user[0].is2FAEnabled) {
+    if (isValid && !user[0].is2FAEnabled) { //si cookie valide et pas 2fa rediriger /home
       navigate('/');
-    } else if (isValid && user[0].is2FAEnabled) {
+    } else if (isValid && user[0].is2FAEnabled) { //si cookie valid et 2fa activer afficher qrcode //marche pas a fix
       try {
         const response = await fetch('http://127.0.0.1:3001/auth/enable-2fa', {
           method: 'GET',
@@ -43,7 +43,7 @@ export function CreateAccount() {
         console.log("error");
       }
     }
-    else if (!isValid){
+    else if (!isValid){  //si pas cookie/pas valide // 42 api // cree compte + donner cookie
       window.location.href = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-583457b7e26f8aded8eb59025a81e8399ae8f76265cc6e3b0ba7cc99fe3560cc&redirect_uri=http%3A%2F%2F127.0.0.1%3A3001%2Fauth%2F42%2Fcallback&response_type=code';
     }
     // Further actions or rendering based on QR code URL can be handled here.
