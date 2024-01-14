@@ -3,6 +3,15 @@ import { Button } from "@/lib/components/ui/button";
 import { useNavigate } from 'react-router-dom'; // if you're using react-router for navigation
 import { isTokenValid } from "@/lib/components/utils/UtilsFetch";
 //import { useCookies } from 'react-cookie';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  // CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/lib/components/ui/card";
 import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 
 
@@ -92,33 +101,44 @@ export function CreateAccount() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <Button variant="outline" onClick={handleCreateAccountClick}>
-        <img src='../../../../assets/Final-sigle-seul.svg' className="mr-2 w-10 h-10" />
-      </Button>
-      {qrCodeUrl && (
-        <div className="qr-code-container">
-          <img src={qrCodeUrl} alt="QR Code" className="my-4 w-30 h-30" />
-          <div className="input-container my-4">
-            <input 
-              type="text"
-              value={codeInput}
-              onChange={(e) => setcodeInput(e.target.value)}
-              placeholder="code"
-              className="input-small" 
-              style={{ color: 'red' }} // Ajoutez cette ligne pour le texte en rouge
-            />
-            <button onClick={handleValidationClick} className="validate-button">
-              Valider
-            </button>
-          </div>
+    <Card>
+      <CardHeader className="space-y-1">
+        <CardTitle className="text-2xl">Bienvenue</CardTitle>
+        <CardDescription>
+          Connecte-toi et crée ton compte avec un pseudo unique
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <div className="flex flex-col items-center justify-center">
+          <Button variant="outline" onClick={handleCreateAccountClick}>
+            <img src='../../../../assets/Final-sigle-seul.svg' className="mr-2 w-10 h-10" />
+          </Button>
+          {qrCodeUrl && (
+            <div className="qr-code-container">
+              <img src={qrCodeUrl} alt="QR Code" className="my-4 w-30 h-30" />
+              <div className="input-container my-4">
+                <input 
+                  type="text"
+                  value={codeInput}
+                  onChange={(e) => setcodeInput(e.target.value)}
+                  placeholder="code"
+                  className="input-small" 
+                  style={{ color: 'red' }} // Ajoutez cette ligne pour le texte en rouge
+                />
+                <button onClick={handleValidationClick} className="validate-button">
+                  Valider
+                </button>
+              </div>
+            </div>
+          )}
+          {validCode === 'invalid' && (
+            <div className="error-message">
+              Code not valid, retry
+            </div>
+          )}
         </div>
-      )}
-      {validCode === 'invalid' && (
-        <div className="error-message">
-          Code not valid, retry
-        </div>
-      )}
-    </div>
+      </CardContent>
+      <CardFooter></CardFooter>
+    </Card>
   );
 }  
