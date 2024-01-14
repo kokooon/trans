@@ -6,6 +6,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'text', nullable: true })
+  otpSecret: string;
+
   @OneToMany(() => Message, message => message.sender)
   sentMessages: Message[];
 

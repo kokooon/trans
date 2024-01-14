@@ -3,7 +3,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
-import { Secret } from 'src/entities/secret.entity';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { MyConfigModule } from 'src/config/myconfig.module';
@@ -13,7 +12,6 @@ import { AuthService } from 'src/auth-42/auth.service';
   imports: [
     TypeOrmModule.forFeature([User]), 
     MyConfigModule,
-    TypeOrmModule.forFeature([Secret]),
   ],
   controllers: [UserController],
   providers: [UserService, AuthService],

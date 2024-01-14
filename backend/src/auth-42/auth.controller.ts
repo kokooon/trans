@@ -60,20 +60,14 @@ export class AuthController {
       }
       // Générer une clé secrète pour l'utilisateur
       const { base32: otpSecret, otpauth_url } = speakeasy.generateSecret({
-        name: 'YourApp',  // Nom de votre application pour le code OTP
+        name: 'Pong',  // Nom de votre application pour le code OTP
       });
       // Stocker la clé secrète otpSecret associée à l'utilisateur dans votre base de données
-      const secret = await this.userService.addSecret(user.id, otpSecret);
-      console.log("secret = ", secret);
+      const secret = await this.userService.addSecret(userId, otpSecret);
       // Générer le code QR
       const qrCodeurl = await QRCode.toDataURL(otpauth_url);
-      console.log("qrcode = ", qrCodeurl);
       // After generating the QR code URL
       res.status(200).json({ qrcodeUrl: qrCodeurl });
-      //return qrCodeUrl;
-      //res.status(201).json({ qrCode: qrCodeUrl });
-      // Passer le secret OTP à la vue (ou à l'endroit approprié dans votre frontend)
-      //res.render('enable-2fa', { qrCodeUrl, otpSecret: secret.otpSecret });
     } catch (error) {
       console.error('Error enabling 2FA:', error);
       res.status(500).send('Internal Server Error');
@@ -84,10 +78,9 @@ export class AuthController {
   @Post('verify-2fa')
   async verifyTwoFactorAuth(@Req() req, @Res() res) {
     try {
-      const user = req.user;
-
-      // Obtenez le code 2FA à partir du corps de la requête
-      const twoFactorCode = req.body.twoFactorCode;
+      const userId = req.body.userId;
+      const user = await this.userService.findById(userId);
+      const twoFactorCode = req.body.codeinput;
 
       const isValid2FACode = speakeasy.totp.verify({
         secret: user.otpSecret,
@@ -98,9 +91,8 @@ export class AuthController {
       if (isValid2FACode) {
         // Le code 2FA est valide, effectuez les actions nécessaires
         // (par exemple, générer un jeton JWT et le renvoyer au client)
-        const jwtToken = this.authService.getJwtToken();
-        res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
-
+        //const jwtToken = this.authService.getJwtToken();
+        //res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
         res.status(200).send('Verification successful');
       } else {
         // Le code 2FA est invalide

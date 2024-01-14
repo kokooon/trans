@@ -66,10 +66,27 @@ export function CreateAccount() {
     // This useEffect could be used for initial token check on component mount, if needed
   }, [navigate]);
 
-  const handleValidationClick = () => {
-    console.log("check code here"); // This will check the token and handle QR code generation.
-    console.log("code input = ", codeInput);
+  const handleValidationClick = async () => {
     //GET secret with user id (in user[0].id)
+    try {
+      const response = await fetch('http://127.0.0.1:3001/auth/verify-2fa', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId: user[0].id, codeinput: codeInput }),
+      });
+      if (response.ok) {
+        console.log("valid code");
+        navigate('/');
+      }
+      else {
+        console.log("code not valid");
+      }
+    } catch (error) {
+      console.log("error");
+    }
   };
 
   return (
