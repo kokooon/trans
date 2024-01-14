@@ -12,6 +12,7 @@ export function CreateAccount() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any | null>(null);
   const [codeInput, setcodeInput] = useState('');
+  const [validCode, setValidCode] = useState('');
   qrCodeUrl;
   useEffect(() => {
     const fetchData = async () => {
@@ -44,7 +45,6 @@ export function CreateAccount() {
         if (response.ok) {
           const responseData = await response.json();
           setQrCodeUrl(responseData.qrcodeUrl);
-          console.log("qrcode url = ", qrCodeUrl);
         }
       } catch (error) {
         console.log("error");
@@ -79,9 +79,11 @@ export function CreateAccount() {
       });
       if (response.ok) {
         console.log("valid code");
+        setValidCode('valid');
         navigate('/');
       }
       else {
+        setValidCode('invalid');
         console.log("code not valid");
       }
     } catch (error) {
@@ -110,6 +112,11 @@ export function CreateAccount() {
               Valider
             </button>
           </div>
+        </div>
+      )}
+      {validCode === 'invalid' && (
+        <div className="error-message">
+          Code not valid, retry
         </div>
       )}
     </div>
