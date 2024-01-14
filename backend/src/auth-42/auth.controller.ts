@@ -79,11 +79,11 @@ export class AuthController {
   async verifyTwoFactorAuth(@Req() req, @Res() res) {
     try {
       const userId = req.body.userId;
-      const user = await this.userService.findById(userId);
+      const secret = await this.userService.findSecretById(userId);
       const twoFactorCode = req.body.codeinput;
 
       const isValid2FACode = speakeasy.totp.verify({
-        secret: user.otpSecret,
+        secret: secret.otpSecret,
         encoding: 'base32',
         token: twoFactorCode,
       });

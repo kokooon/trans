@@ -1,18 +1,21 @@
 // user.service.ts
+// user.service.ts
 import { Injectable, Res } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindOneOptions } from 'typeorm';
 import { User } from '../entities/user.entity';
+import { Secret } from 'src/entities/secret.entity';
 import { BadRequestException } from '@nestjs/common';
 import { MyConfigService } from '../config/myconfig.service';
 import * as axios from 'axios';
-
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Secret)  // Ajoutez ceci pour injecter SecretRepository
+    private readonly secretRepository: Repository<Secret>,
     private readonly myConfigService: MyConfigService,
   ) {}
 
@@ -257,11 +260,16 @@ export class UserService {
     }
   }
 
-  async addSecret(userId: number, otpSecret: string): Promise<void> {
+  async findSecretById(userid: number): Promise<Secret> {
+      return await this.secretRepository.findOne({ where: { userId: userid}});
+  }
+
+  async addSecret(userId: number, otpSecret: string): Promise<Secret> {
     try {
-      const user = await this.findById(userId);
-      user.otpSecret = otpSecret;
-      await this.userRepository.save(user);
+      const secret = new Secret();
+      secret.userId = userId;
+      secret.otpSecret = otpSecret;
+      return await this.secretRepository.save(secret);
     } catch (error) {
       console.error('Error adding secret:', error);
       throw new Error('Failed to add secret');
