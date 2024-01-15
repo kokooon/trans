@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/lib/components/ui/card";
 import { fetchUserDetails } from '../../components/utils/UtilsFetch';
-
+import io from 'socket.io-client';
 
 export function CreateAccount() {
   //const [codeInp, setCodeInput] = useState<any>(null);
@@ -32,10 +32,7 @@ export function CreateAccount() {
   }, []);
 
   const checkToken = async () => {
-    // This isTokenValid function needs to be defined or imported from your auth utilities
     const isValid = await isTokenValid(); // Replace with actual token validation call
-    // The user array needs to be obtained from your auth state or context
-    //console.log("user = ", user[0]);
 
     if (isValid && !user[0].is2FAEnabled) { //si cookie valide et pas 2fa rediriger /home
       console.log("already login and no 2fa");
