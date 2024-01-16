@@ -13,7 +13,6 @@ import {
   CardTitle,
 } from "@/lib/components/ui/card";
 import { fetchUserDetails } from '../../components/utils/UtilsFetch';
-import io from 'socket.io-client';
 
 export function CreateAccount() {
   //const [codeInp, setCodeInput] = useState<any>(null);

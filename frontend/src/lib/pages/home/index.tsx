@@ -4,24 +4,36 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/lib/components/ui/button";
 import { UserNav } from '@/lib/components/ui/user-nav';
 import { isTokenValid } from '@/lib/components/utils/UtilsFetch';
-//import { AddFriends } from '@/lib/components/ui/AddFriends';
-//import { Chat } from '@/lib/components/Chat/chat';
-//import { Chat2 } from '@/lib/components/Chat/chat2';
-
+import { fetchUserDetails } from '../../components/utils/UtilsFetch';
+import io from 'socket.io-client';
 
 const Home = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState<any | null>(null);
 
   useEffect(() => {
-    const checkToken = async () => {
+    const checkTokenAndEstablishConnection = async () => {
       const isValid = await isTokenValid();
 
-      if (isValid === false) {
+      if (!isValid) {
         navigate('/login');
+        return;
       }
+      const userData = await fetchUserDetails();
+      setUser(userData);
+      const socket = io('http://127.0.0.1:3001', { withCredentials: true });
+
+      socket.on('connect', () => {
+        console.log('Connected to WebSocket server');
+        // Handle any actions upon successful connection
+      });
+      return () => {
+        socket.disconnect();
+        console.log('Disconnected from WebSocket server');
+      };
     };
   
-    checkToken();
+    checkTokenAndEstablishConnection();
   }, [navigate]);
 
   return (
