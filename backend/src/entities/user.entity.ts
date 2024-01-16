@@ -6,6 +6,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true })
+  socketId: string;
+
   @OneToMany(() => Message, message => message.sender)
   sentMessages: Message[];
 

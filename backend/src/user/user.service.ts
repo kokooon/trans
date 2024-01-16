@@ -139,6 +139,10 @@ export class UserService {
     }
     //end of /social function
 
+    async save(user: User) {
+        await this.userRepository.save(user);
+    }
+
   async convertImageToBase64(imageUrl: string): Promise<string> {
     const response = await axios.default.get(imageUrl, { responseType: 'arraybuffer' });
     const base64Image = Buffer.from(response.data, 'binary').toString('base64');

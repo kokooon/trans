@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 //import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/lib/components/ui/button";
@@ -21,17 +21,24 @@ const Home = () => {
       }
       const userData = await fetchUserDetails();
       setUser(userData);
-      const socket = io('http://127.0.0.1:3001', { withCredentials: true });
-
-      socket.on('connect', () => {
+      const userId = userData[0].id;
+      console.log(user);
+      console.log("userData = ", userData);
+      if (!userData[0].socketId) {
+        const socket = io('http://127.0.0.1:3001', {
+          query: { userId },
+          withCredentials: true
+        });
+        //send user[0].id in the request
+        socket.on('connect', () => {
         console.log('Connected to WebSocket server');
-        // Handle any actions upon successful connection
-      });
-      return () => {
-        socket.disconnect();
-        console.log('Disconnected from WebSocket server');
-      };
-    };
+          // Handle any actions upon successful connection
+        });
+      }
+      else {
+        console.log('already Connected to WebSocket server');
+      }
+  };
   
     checkTokenAndEstablishConnection();
   }, [navigate]);

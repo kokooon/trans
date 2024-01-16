@@ -1,5 +1,6 @@
 import { WebSocketGateway, SubscribeMessage, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { UserService } from './user/user.service'; // Import UserService
 
 @WebSocketGateway({
     cors: {
@@ -12,9 +13,22 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
+  constructor(private userService: UserService) {}
+
   async handleConnection(client: Socket, ...args: any[]) {
     // This will be called when a client connects to the gateway
-    console.log(`Client connected: ${client.id}`);
+    const userId = client.handshake.query.userId;
+    console.log(userId);
+    const userIdString = Array.isArray(userId) ? userId[0] : userId;
+    console.log(userIdString);
+    const userIdNumber = parseInt(userIdString, 10);
+    console.log(userIdNumber);
+    const user = await this.userService.findById(userIdNumber);
+    if (user) {
+      user.socketId = client.id;
+      await this.userService.save(user);
+      console.log(`Client connected: ${client.id}`);
+    }
   }
 
   async handleDisconnect(client: Socket) {
