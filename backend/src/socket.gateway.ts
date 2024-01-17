@@ -18,14 +18,11 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket, ...args: any[]) {
     // This will be called when a client connects to the gateway
     const userId = client.handshake.query.userId;
-    console.log(userId);
     const userIdString = Array.isArray(userId) ? userId[0] : userId;
-    console.log(userIdString);
     const userIdNumber = parseInt(userIdString, 10);
-    console.log(userIdNumber);
     const user = await this.userService.findById(userIdNumber);
     if (user) {
-      user.socketId = client.id;
+      //user.socketId = client.id;
       await this.userService.save(user);
       console.log(`Client connected: ${client.id}`);
     }
@@ -35,6 +32,5 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // This will be called when a client disconnects from the gateway
     console.log(`Client disconnected: ${client.id}`);
   }
-
   // You can add more event handlers and business logic as needed
 }

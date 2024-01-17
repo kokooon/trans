@@ -8,7 +8,7 @@ import { MessageModule } from './message/message.module';
 import { Auth42Module } from './auth-42/auth-42.module';
 import { AuthController } from './auth-42/auth.controller';
 import { DatabaseModule } from './database/database.module';
-import { SocialGateway } from './social.gateway';
+import { SocialGateway } from './socket.gateway';
 
 @Module({
   imports: [DatabaseModule, UserModule, Auth42Module, ChannelModule, MessageModule],

@@ -1,55 +1,65 @@
 import { UserNav } from "@/lib/components/ui/user-nav";
 import { useEffect, useState } from 'react';
-//import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails, isTokenValid } from "@/lib/components/utils/UtilsFetch";
-//import { User } from "./user.model";
-// import speakeasy from 'speakeasy'; 
 import { toggle2FA } from "@/lib/components/auth/2fa/2fa";
+//import { Button } from "@/lib/components/ui/button";
+
 
 const Settings = () => {
-    //const [cookies, ,] = useCookies(['userToken', 'userPseudo']);
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
-   //const [avatar, setAvatar] = useState<string | null>(null);
     const [username, ] = useState<string>(''); 
     const [is2FAEnabled, setIs2FAEnabled] = useState<boolean>(false);
     const [showNotification, setShowNotification] = useState<boolean>(false);
     const [sizeNotification, setSizeNotification] = useState<boolean>(false);
-
+    const [codeInput, setcodeInput] = useState('');
+    const [qrCodeUrl, setQrCodeUrl] = useState(null);
+    const [validCode, setValidCode] = useState<boolean>(false);
+    validCode;
     useEffect(() => {
         const checkToken = async () => {
-          const isValid = await isTokenValid();
-    
-          if (isValid === false) {
-            navigate('/login');
-          }
+            const isValid = await isTokenValid();
+            if (!isValid) {
+              navigate('/login');
+              return;
+            }
+          const userData = await fetchUserDetails();        
+            setUser(userData);
+                if (userData[0].is2FAEnabled !== undefined) {
+                    setIs2FAEnabled(userData[0].is2FAEnabled);
+                  } 
         };
       
         checkToken();
       }, [navigate]);
-
-      useEffect(() => {
-        const fetchData = async () => {
+      
+      const handleQrCode = async () => {
+        const userData = await fetchUserDetails();
+        if (!(!is2FAEnabled)) { //si cookie valide et pas 2fa rediriger /home
+          console.log("no 2fa");
+        } else if (!is2FAEnabled) { //si cookie valid et 2fa activer afficher qrcode //marche pas a fix
+          console.log("2fa enabled");
           try {
-            const result = await fetchUserDetails();
-            if (result && result.length > 0)
-            {            
-                const userData = result[0];
-                setUser(userData);
-                if (userData && userData.is2FAEnabled !== undefined) {
-                    setIs2FAEnabled(userData.is2FAEnabled);
-                  }
+            const response = await fetch('http://127.0.0.1:3001/auth/enable-2fa', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({ userId: userData[0].id }),
+            });
+            if (response.ok) {
+              const responseData = await response.json();
+              setQrCodeUrl(responseData.qrcodeUrl);
+              qrCodeUrl;
             }
           } catch (error) {
-            console.error('Error fetching user details:', error);
-            //setError('Failed to fetch user details');
+            console.log("error");
           }
-        };
-      
-        fetchData();
-      }, []);
-      
+        }
+      };
+
       const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         console.log("avatar = ", file);
@@ -146,7 +156,35 @@ const Settings = () => {
 
     const toggle2FAHandler = () => {
         toggle2FA(is2FAEnabled, setIs2FAEnabled);
+        handleQrCode();
       };
+
+      const handleValidationClick = async () => {
+        //GET secret with user id (in user[0].id)
+        console.log("code input = ", codeInput);
+        try {
+          const response = await fetch('http://127.0.0.1:3001/auth/verify-2fa', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ userId: user[0].id, codeinput: codeInput }),
+          });
+          if (response.ok) {
+            console.log("valid code");
+            setValidCode(true);
+            navigate('/');
+          }
+          else {
+            setValidCode(false);
+            console.log("code not valid");
+          }
+        } catch (error) {
+          console.log("error");
+        }
+      };
+
 
     return (
         <div>
@@ -204,6 +242,24 @@ const Settings = () => {
                         </label>
                         <span className="ml-2">{is2FAEnabled ? '2FA Enabled' : '2FA Disabled'}</span>
                     </div>
+                    {qrCodeUrl && (
+            <div className="qr-code-container">
+              <img src={qrCodeUrl} alt="QR Code" className="my-4 w-30 h-30" />
+              <div className="input-container my-4">
+                <input 
+                  type="text"
+                  value={codeInput}
+                  onChange={(e) => setcodeInput(e.target.value)}
+                  placeholder="code"
+                  className="input-small" 
+                  style={{ color: 'red' }} // Ajoutez cette ligne pour le texte en rouge
+                />
+                <button onClick={handleValidationClick} className="validate-button">
+                  Valider
+                </button>
+              </div>
+            </div>
+          )}
                 </div>
             </div>
         </div>

@@ -44,7 +44,6 @@ export class AuthController {
   @Get('verification-page')
   // Cette route gérera la vérification du code 2FA
   async showVerificationPage(@Req() req, @Res() res) {
-    console.log("test");
     // Afficher la page de vérification où l'utilisateur peut entrer son code 2FA
     res.render('verification-page');  // Assurez-vous d'avoir une vue associée à la vérification
   }

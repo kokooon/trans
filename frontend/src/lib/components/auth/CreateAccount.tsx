@@ -15,20 +15,18 @@ import {
 import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 
 export function CreateAccount() {
-  //const [codeInp, setCodeInput] = useState<any>(null);
-  const [qrCodeUrl, setQrCodeUrl] = useState(null);
   const navigate = useNavigate();
   const [user, setUser] = useState<any | null>(null);
   const [codeInput, setcodeInput] = useState('');
   const [validCode, setValidCode] = useState('');
-  qrCodeUrl;
+
   useEffect(() => {
     const fetchData = async () => {
       const userData = await fetchUserDetails();
       setUser(userData); 
     };
     fetchData();
-  }, []);
+  }, [navigate]);
 
   const checkToken = async () => {
     const isValid = await isTokenValid(); // Replace with actual token validation call
@@ -38,22 +36,6 @@ export function CreateAccount() {
       navigate('/');
     } else if (isValid && user[0].is2FAEnabled) { //si cookie valid et 2fa activer afficher qrcode //marche pas a fix
       console.log("already login and 2fa enabled");
-      try {
-        const response = await fetch('http://127.0.0.1:3001/auth/enable-2fa', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ userId: user[0].id }),
-        });
-        if (response.ok) {
-          const responseData = await response.json();
-          setQrCodeUrl(responseData.qrcodeUrl);
-        }
-      } catch (error) {
-        console.log("error");
-      }
     }
     else if (!isValid){
       console.log("never login and no 2fa"); //si pas cookie/pas valide // 42 api // cree compte + donner cookie
@@ -66,10 +48,6 @@ export function CreateAccount() {
   const handleCreateAccountClick = () => {
     checkToken(); // This will check the token and handle QR code generation.
   };
-
-  useEffect(() => {
-    // This useEffect could be used for initial token check on component mount, if needed
-  }, [navigate]);
 
   const handleValidationClick = async () => {
     //GET secret with user id (in user[0].id)
@@ -109,9 +87,7 @@ export function CreateAccount() {
           <Button variant="outline" onClick={handleCreateAccountClick}>
             <img src='../../../../assets/Final-sigle-seul.svg' className="mr-2 w-10 h-10" />
           </Button>
-          {qrCodeUrl && (
             <div className="qr-code-container">
-              <img src={qrCodeUrl} alt="QR Code" className="my-4 w-30 h-30" />
               <div className="input-container my-4">
                 <input 
                   type="text"
@@ -126,7 +102,6 @@ export function CreateAccount() {
                 </button>
               </div>
             </div>
-          )}
           {validCode === 'invalid' && (
             <div className="error-message">
               Code not valid, retry
