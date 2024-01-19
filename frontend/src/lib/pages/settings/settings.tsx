@@ -184,7 +184,7 @@ const Settings = () => {
                 {/* Photo de profil */}
                 <div className="w-full flex justify-center">
                     <div className="mb-4 cursor-pointer profile-pic-container hover:scale-110 transition-transform duration-300" onClick={handleProfilePictureClick}>
-                    <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} alt="Profile" className="rounded-full w-28 h-28" />
+                    <img src={user && user[0].avatar ? user[0].avatar || 'placeholder_url' : 'placeholder_url'} alt="Profile" className="rounded-full w-28 h-28" />
                         <input 
                             type="file" 
                             id="fileInput" 
