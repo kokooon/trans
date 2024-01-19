@@ -62,28 +62,22 @@ const Settings = () => {
 
       const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        console.log("avatar = ", file);
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
                 setSizeNotification(true);
                 setTimeout(() => setSizeNotification(false), 3000);
                 return;
             }
-    
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', 'ft_trans');
-    
             try {
                 // Upload image to Cloudinary
                 const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/dqyyh88tq/image/upload`, {
                     method: 'POST',
                     body: formData
                 });
-    
                 const data = await uploadResponse.json();
-                console.log("data = ", data.secure_url);
-    
                 // Post the secure URL to your backend
                 const backendResponse = await fetch('http://127.0.0.1:3001/users/changeAvatar', {
                     method: 'POST',
@@ -91,13 +85,12 @@ const Settings = () => {
                         'Content-Type': 'application/json',
                     },
                     credentials: 'include',
-                    body: JSON.stringify({ avatarUrl: data.secure_url, userId: user.id }),
+                    body: JSON.stringify({ avatarUrl: data.secure_url, userId: user[0].id }),
                 });
     
                 if (!backendResponse.ok) {
                     throw new Error('Network response was not ok');
                 }
-    
                 // Handle successful upload and backend response here
                 setShowNotification(true);
                 setTimeout(() => setShowNotification(false), 3000);
@@ -109,8 +102,6 @@ const Settings = () => {
         }
     };
     
-    
-
     const handleProfilePictureClick = () => {
         const fileInput = document.getElementById('fileInput') as HTMLInputElement;
         if (fileInput) {
