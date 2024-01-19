@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 // fonts
 import '@fontsource/plus-jakarta-sans/latin.css';
 import '@/lib/styles/globals.css';
-//test
 import App from './App';
 
 const root = ReactDOM.createRoot(

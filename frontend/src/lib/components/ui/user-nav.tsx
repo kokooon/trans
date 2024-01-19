@@ -20,12 +20,14 @@ import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails } from '../utils/UtilsFetch';
 //import { fetchAvatarByPseudo } from '../utils/UtilsFetch';
 //import { User } from './../user.model.tsx';
+import { useSocket } from '../utils/socketContext';
 
 function UserAv() {
 
 //    const [, , removeCookie] = useCookies(['jwt']);
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
+    const { socket } = useSocket();
     //const [avatar, setAvatar] = useState<string | null>(null);
 
     useEffect(() => {
@@ -43,9 +45,12 @@ function UserAv() {
         method: 'POST',
         credentials: 'include',
       });
-  
+
       if (response.ok) {
-        navigate('/login');
+        if (socket) {
+          socket.disconnect(); // Disconnect the socket
+        }
+        navigate('/login'); // Redirect to login page after logout
       } else {
         console.error('Logout failed');
       }
