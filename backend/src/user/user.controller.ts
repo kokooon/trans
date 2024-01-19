@@ -278,11 +278,11 @@ export class UserController {
         res.status(404).send("no token");
         return;
       }
-      const userId = parseInt(decodedData.userId, 10);
-      if (!isNaN(userId)) {
-        const user = await this.userService.checkById(userId);
+      const userid = parseInt(decodedData.userId, 10);
+      if (!isNaN(userid)) {
+        const user = await this.userService.checkById(userid);
         if (user) {
-          res.status(200).send();
+          res.status(200).json({ userId: userid });
         } else {
           res.status(404).send("no token");
         }
