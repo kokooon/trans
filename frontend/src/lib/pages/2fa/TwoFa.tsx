@@ -26,7 +26,7 @@ const TwoFa = () => {
             }
           const userData = await fetchUserDetails();        
             setUser(userData);
-             if (userData[0].is2FAEnabled == false)
+             if (userData[0].is2FAEnabled === false)
                 navigate('/');
         };
       

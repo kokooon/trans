@@ -24,14 +24,17 @@ export class AuthController {
   async fortyTwoLoginCallback(@Req() req, @Res() res: any) {
     try {
       const user = req.user;
-  
+      console.log('user = ', user);
       if (!user || !user.pseudo) {
         throw new Error('Invalid user data');
       }
       const jwtToken = this.authService.getJwtToken();
 
-      if (user.is2FAEnabled)
-        return res.redirect('/auth/verification-page');
+      if (user.is2FAEnabled) {
+        console.log('i pass here for 2fa');
+        res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
+        return res.redirect('http://127.0.0.1:3000/2fa');
+      }
       res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
       // Redirect the user to the desired page
       res.redirect('http://127.0.0.1:3000/');
