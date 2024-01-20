@@ -1,4 +1,4 @@
-import { Channel } from './channel.model';
+//frontend message model
 
 export interface Message {
     id: number;
@@ -6,5 +6,5 @@ export interface Message {
     content: string;
     createdAt: Date;
     recipient: number;
-    channel: Channel;
+    channel: number;
 }

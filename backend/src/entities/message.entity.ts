@@ -10,16 +10,16 @@ export class Message {
   @Column('text', { nullable: true })
   content: string;
 
-  @ManyToOne(() => User, user => user.sentMessages)
-  sender: User;
+  @Column({ type: 'int', nullable: true })
+  sender: number;
 
   // Nullable: For messages sent to a channel
-  @ManyToOne(() => Channel, channel => channel.messages, { nullable: true })
-  channel: Channel;
+  @Column({ type: 'int', nullable: true })
+  channel: number;
 
   // Nullable: For direct messages to a user
-  @ManyToOne(() => User, user => user.receivedMessages, { nullable: true })
-  recipient: User;
+  @Column({ type: 'int', nullable: true })
+  recipient: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

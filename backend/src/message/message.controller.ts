@@ -1,9 +1,10 @@
 // message.controller.ts
-
-import { Body, Controller, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, BadRequestException, Query, Req, Res } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 // Import additional DTOs as needed
+import { Message} from '../entities/message.entity';
 
 @Controller('messages')
 export class MessageController {
@@ -11,19 +12,20 @@ export class MessageController {
     // Inject other services if needed
   }
 
-  @Post('create')
-  async createMessage(@Body() createMessageDto: CreateMessageDto, @Req() req, @Res() res) {
-    try {
-      // Here you would include logic to verify the user's identity and rights to create a message
-      // For example, check if the user is authenticated or has the required role
+  @Post()
+  async createMessage(@Body() createMessageDto: CreateMessageDto): Promise<Message> {
+      try {
+          const newMessage = await this.messageService.create(createMessageDto);
+          return newMessage;
+      } catch (error) {
+          // Handle errors (e.g., validation errors, database errors)
+          throw new HttpException('Error creating message', HttpStatus.BAD_REQUEST);
+      }
+  }
 
-      // Then, use the message service to create a new message with the provided DTO
-      const message = await this.messageService.createMessage(createMessageDto);
-      // Return the created message data
-      return message;
-    } catch (error) {
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  @Get('history/:userId/:friendId')
+  async getFriendHistory(@Param('userId') userId: Number, @Req() req, @Res() res): Promise<Message[] | void> {
+      ;
   }
 
   // Add other endpoints as needed for updating, deleting, or listing messages

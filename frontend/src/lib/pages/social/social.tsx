@@ -16,7 +16,8 @@ import Box from '@mui/material/Box';
 import "../../styles/social.css"
 
 const social = () => {
-    const [chatcurrentView, setChatCurrentView] = useState<number>(0);
+	const [inputMessage, setInputMessage] = useState('');
+    const [chatContext, setChatContext] = useState<{ type: 'private' | 'channel', id: number }>({ type: 'private', id: 0 });
     //const [chatHistory, setChatHistory] = useState<Message[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
@@ -427,14 +428,49 @@ const social = () => {
                 //user[0].id
                 //get message history based on message;
                 //setChatHistory(Message[]);
-                const responseData = await response.json();
-                setChatCurrentView(responseData);
-            }
-        }catch (error) {
-            console.log('unable to fetch id by pseudo in fetchFriendChatHistory');
-        }
-        chatcurrentView;
-    }
+                const friendId = await response.json();
+				setChatContext({ type: 'private', id: friendId });
+                const userId = user[0].id;
+				console.log('current user id = ', userId);
+				console.log('friend user id = ', friendId);
+				const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/messages/history/${userId}/${friendId}`, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					credentials: 'include',
+				});
+				if (chatHistoryResponse.ok) {
+					//const chatHistory = await chatHistoryResponse.json();
+					//setChatHistory(chatHistory); // Update the chat history state
+					console.log('chatHistory.ok');
+				} else {
+					// Handle errors in fetching chat history
+					console.error('Error fetching chat history');
+				}
+			} else {
+				// Handle errors in fetching friend's user ID
+				console.error('Error fetching friend\'s user ID');
+			}
+		} catch (error) {
+			console.error('Unable to fetch chat history', error);
+		}
+	};
+
+	const sendMessage = () => {
+        if (inputMessage.trim() === '') return; // Prevent sending empty messages
+
+        const messageData = {
+            content: inputMessage,
+            sender: user[0].id, // Assuming user[0].id is the current user's id
+			createdAt: new Date(),
+            ...(chatContext.type === 'private' ? { recipient: chatContext.id } : { channel: chatContext.id })
+        };
+		messageData;
+        // Logic to send messageData to the backend
+
+        setInputMessage(''); // Clear input field after sending
+    };
 
     const handleLeave = async (channelName: string) => {
         channelName;
@@ -607,8 +643,19 @@ const social = () => {
                 {/* Les messages du chat seront affichés ici */}
             </div>
             <div className="chat-input-container">
-                <input type="text" placeholder="Type a message..." className="chat-input" />
-                <button className="chat-send-button">Send</button>
+                <input 
+                    type="text" 
+                    placeholder="Type a message..." 
+                    className="chat-input"
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                />
+                <button 
+                    className="chat-send-button"
+                    onClick={sendMessage}
+                >
+                    Send
+                </button>
             </div>
         </div>
     </div>

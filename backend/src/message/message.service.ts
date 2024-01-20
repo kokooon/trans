@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from '../entities/message.entity';
+import { CreateMessageDto } from './dto/create-message.dto';
 
 @Injectable()
 export class MessageService {
@@ -11,16 +12,16 @@ export class MessageService {
     // ... other dependencies
   ) {}
 
-  async createMessage(createChannelDto): Promise<Message> {
-    const channel = new Message();
-    // Populate the channel entity using createChannelDto
-    // For example:
-    // channel.name = createChannelDto.name;
-    // channel.status = createChannelDto.status;
-    // channel.password = createChannelDto.password;
+  async create(createMessageDto: CreateMessageDto): Promise<Message> {
+    const newMessage = this.messageRepository.create(createMessageDto);
     
-    return this.messageRepository.save(channel);
-  }
+    try {
+        return await this.messageRepository.save(newMessage);
+    } catch (error) {
+        // Handle any database errors
+        throw new Error('Error saving message to the database');
+    }
+}
 
   // Define methods to handle message operations here
 }
