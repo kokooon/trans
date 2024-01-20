@@ -39,7 +39,7 @@ export class ChannelController {
     if (channel)
       return res.status(201).json(channel);
     else
-      return res.status(409).json({ error: 'can\'t find channel' });;
+      return res.status(409).json({ error: 'can\'t find channel' });
   }
 
 

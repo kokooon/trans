@@ -16,6 +16,18 @@ export class UserController {
   ) {}
 
     //social
+    @Get('getId/:pseudo')
+    async findidByPseudo(@Param('pseudo') pseudo: string, @Req() req, @Res() res): Promise<Number | void> {
+		console.log('pseudo = ', pseudo);
+    	const id = await this.userService.findIdByPseudo(pseudo);
+    	if (id)
+			return res.status(201).json(id);
+		else
+			return res.status(409).json({ error: 'can\'t find id' });
+
+    }
+
+    //social
     @Post('/channel/AddInUser')
     async AddChannelId(@Req() req, @Res() res) {
     try {

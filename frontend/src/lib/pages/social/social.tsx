@@ -1,7 +1,8 @@
 import { useEffect, useState} from 'react';
 import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 //import { fetchAvatarByPseudo } from '../utils/UtilsFetch';
-//import { User } from '../settings/user.model.tsx';
+//import { Message } from './message.model';
+//import { Channel } from './channel.model';
 import { Button } from "@/lib/components/ui/button";
 import { TextField, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -15,6 +16,8 @@ import Box from '@mui/material/Box';
 import "../../styles/social.css"
 
 const social = () => {
+    const [chatcurrentView, setChatCurrentView] = useState<number>(0);
+    //const [chatHistory, setChatHistory] = useState<Message[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
@@ -347,7 +350,6 @@ const social = () => {
                         return ;
                     }
                     else {
-                        console.log("here1");
                         const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
                         method: 'POST',
                         headers: {
@@ -360,7 +362,6 @@ const social = () => {
                             throw new Error(`Network response was not ok: ${response.statusText}`);
                         }
                         try {
-                            console.log("here2");
                             const responsefor = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
                             method: 'POST',
                             headers: {
@@ -369,7 +370,6 @@ const social = () => {
                             credentials: 'include',
                             body: JSON.stringify({ channelName: responseData.name }),
                             });
-                            console.log("here3");
                             if (!responsefor.ok) {
                             throw new Error(`Network response was not ok: ${responsefor.statusText}`);
                             }
@@ -377,11 +377,8 @@ const social = () => {
                         }catch (error) {
                             console.log("Caught an error:", error);
                         }  
-                    console.log("here4");
                     }
-                    console.log("here5");
                 }
-                console.log("here6");
             }
             else {
                 console.log('unable to find channel:', ChannelName);
@@ -392,7 +389,6 @@ const social = () => {
         }
         setPasswordInput('');
         setChannelName('');
-        console.log("final here");
         if (currentView === 'Channel') {
             getChannel();
         }
@@ -417,6 +413,28 @@ const social = () => {
         }
         getFriends();
     };
+
+    const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
+        try {
+            const response = await fetch(`http://127.0.0.1:3001/users/getId/${friendPseudo}`, {
+            method: 'GET',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            });
+            if (response.ok) {
+                //user[0].id
+                //get message history based on message;
+                //setChatHistory(Message[]);
+                const responseData = await response.json();
+                setChatCurrentView(responseData);
+            }
+        }catch (error) {
+            console.log('unable to fetch id by pseudo in fetchFriendChatHistory');
+        }
+        chatcurrentView;
+    }
 
     const handleLeave = async (channelName: string) => {
         channelName;
@@ -451,15 +469,19 @@ const social = () => {
             )}
             {currentView === 'Friends' && (
                 <div className="content-display">
-                    {/*//call getfriend() */}
                     {Lists.map((friend, index) => (
-                       <div key={index} className="notification-item">
-                       <span>{friend}</span>
-                       <Button variant="outline" className="button-small" onClick={() => handleUnfriend(friend)}>Unfriend</Button>
-                   </div> // Affichage des notifications avec boutons pour accepter ou décliner
-                    ))}
-                </div>
-            )}
+                    <div key={index} className="notification-item" onClick={() => fetchFriendChatHistory(friend)}>
+                        <span>{friend}</span>
+                        <Button variant="outline" className="button-small" onClick={(e) => {
+                        e.stopPropagation(); // Prevents the click from triggering the parent's onClick event
+                        handleUnfriend(friend);
+                    }}>
+                    Unfriend
+                    </Button>
+                </div> // Each friend is now clickable
+            ))}
+            </div>
+        )}
             {currentView === 'Blocked' && (
                 <div className="content-display">
                     {Lists.map((blockedUser, index) => (
