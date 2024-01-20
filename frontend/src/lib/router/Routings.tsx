@@ -7,6 +7,7 @@ import Login from '../pages/login';
 import Profile from '../pages/profile';
 import Settings from '../pages/settings/settings';
 import Social from '../pages/social/social';
+import TwoFa from '../pages/2fa/TwoFa';
 
 const Routings = () => {
   return (
@@ -18,6 +19,7 @@ const Routings = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/social" element={<Social />} />
+        <Route path="/2fa" element={<TwoFa />} />
         {/* Route 404 */}
         <Route path="*" element={<Page404 />} />
       </Routes>

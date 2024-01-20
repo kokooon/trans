@@ -24,6 +24,7 @@ import Home from '@/lib/pages/home';
 import Login from '../pages/login';
 import Profile from '../pages/profile';
 import Settings from '../pages/settings/settings';
+import TwoFa from '../pages/2fa/TwoFa';
 
 const AppRoutes = () => {
   return (
@@ -36,6 +37,7 @@ const AppRoutes = () => {
             <Route index element={<Login />} />
             <Route index element={<Profile />} />
             <Route index element={<Settings />} />
+            <Route index element={<TwoFa />} />
           </Layout>
         }
       />
