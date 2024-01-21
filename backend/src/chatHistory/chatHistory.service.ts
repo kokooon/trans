@@ -4,10 +4,12 @@ import { Repository } from 'typeorm';
 import { chatHistory } from '../entities/chatHistory.entity';
 import { CreatechatHistoryDto } from './dto/create-chatHistory.dto';
 import { CreateMessageDto } from './dto/create-message.dto'; // Import the DTO for message creation
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class chatHistoryService {
   constructor(
+    private userService: UserService,
     @InjectRepository(chatHistory)
     private readonly chatHistoryRepository: Repository<chatHistory>,
     // ... other dependencies
@@ -40,6 +42,9 @@ export class chatHistoryService {
     const { senderId, recipientId, channelId, content, createdAt } = createMessageDto;
 
     let userIds: number[] | undefined;
+    const user = await this.userService.findById(senderId);
+    const userPseudo = user.pseudo;
+    console.log('userps = ', userPseudo);
     let chatHistory: chatHistory;
     if (channelId) {
       // It's a channel chat
@@ -63,12 +68,12 @@ export class chatHistoryService {
         channelId, 
         user1Id: userIds ? userIds[0] : null,
         user2Id: userIds ? userIds[1] : null,
-        messages: JSON.stringify([{ senderId, content, createdAt }])
+        messages: JSON.stringify([{ userPseudo, content, createdAt }])
       });
     } else {
       // Update existing chat history
       const messages = chatHistory.messages ? JSON.parse(chatHistory.messages) : [];
-      messages.push({ senderId, content, createdAt });
+      messages.push({ userPseudo, content, createdAt });
       chatHistory.messages = JSON.stringify(messages);
     }
   

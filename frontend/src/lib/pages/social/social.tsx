@@ -17,7 +17,7 @@ import "../../styles/social.css"
 
 const social = () => {
 	type ChatMessage = {
-		senderId: number;
+		senderPseudo: string;
 		content: string;
 		createdAt: string; // assuming createdAt is a string that needs to be converted to a Date
 		// add any other properties that are included in your message objects
@@ -689,7 +689,7 @@ const social = () => {
         {chatHistory && chatHistory.map((message, index) => (
             <div key={index} className="chat-message">
                 <div className="message-info">
-                    <span className="sender-id">User : {message.senderId} at  </span>
+                    <span className="sender-id">User : {message.senderPseudo} at  </span>
                     <span className="message-time">{new Date(message.createdAt).toLocaleTimeString()}</span>
                 </div>
                 <p className="message-content">{message.content}</p>
