@@ -27,24 +27,20 @@ const Settings = () => {
         }
     
         const checkConnected = async () => {
-          const isConnected = await isUserConnected();
-          console.log(isConnected);
-          if (!isConnected) {
-            navigate('/login');
-            return;
-          }
-    
           const userData = await fetchUserDetails();
           setUser(userData);
     
-          if (userData[0].is2FAEnabled !== undefined) {
+          if (userData[0].is2FAEnabled !== false) {
             setIs2FAEnabled(userData[0].is2FAEnabled);
+            const isConnected = await isUserConnected();
+            console.log(isConnected);
+            if (!isConnected) {
+              navigate('/2fa');
+            }
           }
         };
-    
         checkConnected();
       };
-    
       checkToken();
     }, [navigate]);
 

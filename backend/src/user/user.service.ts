@@ -181,6 +181,19 @@ export class UserService {
     await this.userRepository.save(user);
 }
 
+async validate2FA(userId: number, is2FAValidate: boolean): Promise<void> {
+  try {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    user.is2FAVerified = is2FAValidate;
+    await this.userRepository.save(user);
+  } catch (error) {
+    throw new Error(`Failed to update 2FA: ${error.message}`);
+  }
+}
+
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }

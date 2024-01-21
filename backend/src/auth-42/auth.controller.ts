@@ -24,7 +24,6 @@ export class AuthController {
   async fortyTwoLoginCallback(@Req() req, @Res() res: any) {
     try {
       const user = req.user;
-      console.log('user = ', user);
       if (!user || !user.pseudo) {
         throw new Error('Invalid user data');
       }
@@ -91,13 +90,11 @@ export class AuthController {
       });
 
       if (isValid2FACode) {
-        // Le code 2FA est valide, effectuez les actions nécessaires
-        // (par exemple, générer un jeton JWT et le renvoyer au client)
-        //const jwtToken = this.authService.getJwtToken();
-        //res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
+        await this.userService.validate2FA(userId, true);
         res.status(200).send('Verification successful');
       } else {
         // Le code 2FA est invalide
+        await this.userService.validate2FA(userId, false);
         res.status(401).send('Invalid 2FA code');
       }
     } catch (error) {

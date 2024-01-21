@@ -43,9 +43,12 @@ function UserAv() {
     try {
       const response = await fetch('http://127.0.0.1:3001/users/logout', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         credentials: 'include',
+        body: JSON.stringify({ userId: user[0].id, }),
       });
-
       if (response.ok) {
         if (socket) {
           socket.disconnect(); // Disconnect the socket

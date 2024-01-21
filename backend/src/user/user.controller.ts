@@ -219,6 +219,7 @@ export class UserController {
   async logout(@Req() req, @Res() res) {
     try {
       res.clearCookie('jwt');
+      await this.userService.validate2FA(req.body.userId, false);
       return res.status(200).json({ status: 'success', message: 'Logout successful' });
     } catch (error) {
       console.error('Error during logout:', error);
@@ -315,13 +316,11 @@ export class UserController {
         res.status(404).send("no token");
         return;
       }
-  
       const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
       if (!decodedData) {
         res.status(404).send("no token");
         return;
       }
-  
       const userId = parseInt(decodedData.userId, 10);
       if (!isNaN(userId)) {
         const user = await this.userService.checkById(userId);
