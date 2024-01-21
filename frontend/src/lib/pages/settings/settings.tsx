@@ -1,7 +1,7 @@
 import { UserNav } from "@/lib/components/ui/user-nav";
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserDetails, isTokenValid } from "@/lib/components/utils/UtilsFetch";
+import { fetchUserDetails, isTokenValid, isUserConnected } from "@/lib/components/utils/UtilsFetch";
 import { toggle2FA } from "@/lib/components/auth/2fa/2fa";
 //import { Button } from "@/lib/components/ui/button";
 
@@ -17,23 +17,37 @@ const Settings = () => {
     const [qrCodeUrl, setQrCodeUrl] = useState(null);
     const [validCode, setValidCode] = useState<boolean>(false);
     validCode;
+
     useEffect(() => {
-        const checkToken = async () => {
-            const isValid = await isTokenValid();
-            if (!isValid) {
-              navigate('/login');
-              return;
-            }
-          const userData = await fetchUserDetails();        
-            setUser(userData);
-                if (userData[0].is2FAEnabled !== undefined) {
-                    setIs2FAEnabled(userData[0].is2FAEnabled);
-                  } 
+      const checkToken = async () => {
+        const isValid = await isTokenValid();
+        if (!isValid) {
+          navigate('/login');
+          return;
+        }
+    
+        const checkConnected = async () => {
+          const isConnected = await isUserConnected();
+          console.log(isConnected);
+          if (!isConnected) {
+            navigate('/login');
+            return;
+          }
+    
+          const userData = await fetchUserDetails();
+          setUser(userData);
+    
+          if (userData[0].is2FAEnabled !== undefined) {
+            setIs2FAEnabled(userData[0].is2FAEnabled);
+          }
         };
-      
-        checkToken();
-      }, [navigate]);
-      
+    
+        checkConnected();
+      };
+    
+      checkToken();
+    }, [navigate]);
+
       const handleQrCode = async () => {
         const userData = await fetchUserDetails();
         if (!(!is2FAEnabled)) { //si cookie valide et pas 2fa rediriger /home

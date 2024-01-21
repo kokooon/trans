@@ -203,6 +203,14 @@ export class UserService {
     return !!user; // Convert to boolean
   }  
 
+  async checkConnectedById(userId: number): Promise<boolean> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (user.is2FAVerified === true)
+      return true;
+    else
+      return false;
+  }  
+
   async checkLogin(pseudo: string, password: string): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { pseudo, password } } as FindOneOptions<User>);
     return !!user;

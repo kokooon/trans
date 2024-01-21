@@ -94,4 +94,33 @@ export async function isTokenValid(): Promise<boolean> {
     return false;
   }
 }
+
+  export async function isUserConnected(): Promise<boolean> {
+    try {
+      const response = await fetch(`http://127.0.0.1:3001/users/check_conection`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+  
+      //console.log('Full response:', response);
+  
+      if (response.status === 200) {
+        // Statut OK (200), renvoyer true
+        return true;
+      } else if (response.status === 404) {
+        // Statut Created (201), renvoyer false
+        return false;
+      } else {
+        // Autres statuts, gérer selon les besoins
+        console.error('Unexpected response status:', response.status);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      return false;
+    }
+}
   

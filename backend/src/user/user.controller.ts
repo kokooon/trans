@@ -307,6 +307,39 @@ export class UserController {
     }
   }
 
+  @Get('check_conection')
+  async checkConnected(@Req() req, @Res() res) {
+    try {
+      const jwtCookie = req.cookies.jwt;
+      if (!jwtCookie || jwtCookie === undefined) {
+        res.status(404).send("no token");
+        return;
+      }
+  
+      const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+      if (!decodedData) {
+        res.status(404).send("no token");
+        return;
+      }
+  
+      const userId = parseInt(decodedData.userId, 10);
+      if (!isNaN(userId)) {
+        const user = await this.userService.checkById(userId);
+        if (user) {
+          const check = await this.userService.checkConnectedById(userId);
+          if (check)
+            res.status(200).json({ userId });
+          else
+            res.status(404).send("not connected");
+          }
+      } else {
+        res.status(404).send("no token");
+      }
+    } catch (error) {
+      console.error('Error processing JWT cookie:', error);
+      res.status(500).json({ isValid: false });
+    }
+  }
 
   @Get(':pseudo')
   async findByPseudo(@Param('pseudo') pseudo: string) {

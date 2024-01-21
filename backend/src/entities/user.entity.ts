@@ -25,6 +25,9 @@ export class User {
   @Column({ default: false })
   is2FAEnabled: boolean;
 
+  @Column({ default: false })
+  is2FAVerified: boolean;
+
   @Column('simple-array', { nullable: true })
   friendRequest: number[];
 
