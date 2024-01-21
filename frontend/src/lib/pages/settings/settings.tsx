@@ -13,9 +13,8 @@ const Settings = () => {
     const [is2FAEnabled, setIs2FAEnabled] = useState<boolean>(false);
     const [showNotification, setShowNotification] = useState<boolean>(false);
     const [sizeNotification, setSizeNotification] = useState<boolean>(false);
-    const [codeInput, setcodeInput] = useState('');
     const [qrCodeUrl, setQrCodeUrl] = useState(null);
-    const [validCode, setValidCode] = useState<boolean>(false);
+    const [validCode,] = useState<boolean>(false);
     validCode;
 
     useEffect(() => {
@@ -160,33 +159,6 @@ const Settings = () => {
         handleQrCode();
       };
 
-      const handleValidationClick = async () => {
-        //GET secret with user id (in user[0].id)
-        console.log("code input = ", codeInput);
-        try {
-          const response = await fetch('http://127.0.0.1:3001/auth/verify-2fa', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ userId: user[0].id, codeinput: codeInput }),
-          });
-          if (response.ok) {
-            console.log("valid code");
-            setValidCode(true);
-            navigate('/');
-          }
-          else {
-            setValidCode(false);
-            console.log("code not valid");
-          }
-        } catch (error) {
-          console.log("error");
-        }
-      };
-
-
     return (
         <div>
             <UserNav/>
@@ -246,19 +218,6 @@ const Settings = () => {
                     {qrCodeUrl && (
             <div className="qr-code-container">
               <img src={qrCodeUrl} alt="QR Code" className="my-4 w-30 h-30" />
-              <div className="input-container my-4">
-                <input 
-                  type="text"
-                  value={codeInput}
-                  onChange={(e) => setcodeInput(e.target.value)}
-                  placeholder="code"
-                  className="input-small" 
-                  style={{ color: 'red' }} // Ajoutez cette ligne pour le texte en rouge
-                />
-                <button onClick={handleValidationClick} className="validate-button">
-                  Valider
-                </button>
-              </div>
             </div>
           )}
                 </div>

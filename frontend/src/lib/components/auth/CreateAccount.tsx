@@ -16,9 +16,7 @@ import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 
 export function CreateAccount() {
   const navigate = useNavigate();
-  const [user, setUser] = useState<any | null>(null);
-  const [codeInput, setcodeInput] = useState('');
-  const [validCode, setValidCode] = useState('');
+  const [, setUser] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,31 +49,6 @@ export function CreateAccount() {
     checkToken(); // This will check the token and handle QR code generation.
   };
 
-  const handleValidationClick = async () => {
-    //GET secret with user id (in user[0].id)
-    try {
-      const response = await fetch('http://127.0.0.1:3001/auth/verify-2fa', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ userId: user[0].id, codeinput: codeInput }),
-      });
-      if (response.ok) {
-        console.log("valid code");
-        setValidCode('valid');
-        navigate('/');
-      }
-      else {
-        setValidCode('invalid');
-        console.log("code not valid");
-      }
-    } catch (error) {
-      console.log("error");
-    }
-  };
-
   return (
     <Card>
       <CardHeader className="space-y-1">
@@ -89,26 +62,6 @@ export function CreateAccount() {
           <Button variant="outline" onClick={handleCreateAccountClick}>
             <img src='../../../../assets/Final-sigle-seul.svg' className="mr-2 w-10 h-10" />
           </Button>
-            <div className="qr-code-container">
-              <div className="input-container my-4">
-                <input 
-                  type="text"
-                  value={codeInput}
-                  onChange={(e) => setcodeInput(e.target.value)}
-                  placeholder="code"
-                  className="input-small" 
-                  style={{ color: 'red' }} // Ajoutez cette ligne pour le texte en rouge
-                />
-                <button onClick={handleValidationClick} className="validate-button">
-                  Valider
-                </button>
-              </div>
-            </div>
-          {validCode === 'invalid' && (
-            <div className="error-message">
-              Code not valid, retry
-            </div>
-          )}
         </div>
       </CardContent>
       <CardFooter></CardFooter>
