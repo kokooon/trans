@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity'; 
-import { Message } from '../entities/message.entity'; 
+import { chatHistory } from '../entities/chatHistory.entity'; 
 import { Channel } from '../entities/channel.entity'; 
 import { Secret } from '../entities/secret.entity';
 
@@ -11,7 +11,7 @@ const postgresConfig: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [User, Message, Channel, Secret], // Include all entities here
+  entities: [User, chatHistory, Channel, Secret], // Include all entities here
   synchronize: true,
   migrations: [__dirname + '/src/migration/**/*{.ts,.js}'],
 };

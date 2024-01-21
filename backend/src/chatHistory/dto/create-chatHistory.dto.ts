@@ -2,7 +2,7 @@
 
 import { IsNotEmpty, IsOptional, IsString, IsInt } from 'class-validator';
 
-export class CreateMessageDto {
+export class CreatechatHistoryDto {
   @IsNotEmpty()
   @IsString()
   content: string;

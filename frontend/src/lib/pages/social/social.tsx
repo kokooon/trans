@@ -16,8 +16,9 @@ import Box from '@mui/material/Box';
 import "../../styles/social.css"
 
 const social = () => {
+
 	const [inputMessage, setInputMessage] = useState('');
-    const [chatContext, setChatContext] = useState<{ type: 'private' | 'channel', id: number }>({ type: 'private', id: 0 });
+    const [chatContext, setChatContext] = useState<{ id: number, userIds: number[] }>({ id: 0, userIds: [] });
     //const [chatHistory, setChatHistory] = useState<Message[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
@@ -425,12 +426,9 @@ const social = () => {
             credentials: 'include',
             });
             if (response.ok) {
-                //user[0].id
-                //get message history based on message;
-                //setChatHistory(Message[]);
-                const friendId = await response.json();
-				setChatContext({ type: 'private', id: friendId });
-                const userId = user[0].id;
+                const friendId = Number(await response.json());
+                const userId = Number(user[0].id);
+				setChatContext({ id: 0, userIds: [userId, friendId] });
 				console.log('current user id = ', userId);
 				console.log('friend user id = ', friendId);
 				const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/messages/history/${userId}/${friendId}`, {
@@ -457,18 +455,46 @@ const social = () => {
 		}
 	};
 
-	const sendMessage = () => {
+	const sendMessage = async () => {
         if (inputMessage.trim() === '') return; // Prevent sending empty messages
-
-        const messageData = {
-            content: inputMessage,
-            sender: user[0].id, // Assuming user[0].id is the current user's id
-			createdAt: new Date(),
-            ...(chatContext.type === 'private' ? { recipient: chatContext.id } : { channel: chatContext.id })
-        };
-		messageData;
+		let messagedata;
+        if (chatContext.id === 0) {
+			// It's a private chat
+			messagedata = {
+				content: inputMessage,
+				sender: user[0].id, // Assuming user[0].id is the current user's id
+				createdAt: new Date(),
+				// For private chat, include both user IDs in the recipient field
+				recipient: chatContext.userIds // Array containing both user IDs
+			};
+		} else {
+			// It's a channel chat
+			messagedata = {
+				content: inputMessage,
+				sender: user[0].id, // Assuming user[0].id is the current user's id
+				createdAt: new Date(),
+				// For channel chat, include the channel ID
+				channel: chatContext.id
+			};
+		}
+		console.log('message data = ', messagedata);
+        try {
+            const response = await fetch('http://127.0.0.1:3001/chatHistory/newPrivateMessage', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                credentials: 'include', // if you're including credentials like cookies
+                body: JSON.stringify({ messageData: messagedata }),
+              });
+              if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+        }
+        catch (error) {
+            console.log("unable to unfriend");
+        }
         // Logic to send messageData to the backend
-
         setInputMessage(''); // Clear input field after sending
     };
 
