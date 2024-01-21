@@ -443,12 +443,23 @@ const social = () => {
 				});
 				if (chatHistoryResponse.ok) {
 					const chathistory = await chatHistoryResponse.json();
-					const formattedChatHistory = chathistory.map((message: ChatMessage) => {
-						return {
-						  ...message,
-						  createdAt: new Date(message.createdAt).toLocaleString(), // Formats the date
-						};
-					  });
+					const formattedChatHistory = chathistory.flatMap((chatData: any) => {
+                        console.log('Raw Chat Data:', chatData);
+                    
+                        // Convertit la chaîne JSON en tableau d'objets
+                        const messagesArray = JSON.parse(chatData.messages);
+                    
+                        // Mappe sur les messages pour formater les dates
+                        const formattedMessages = messagesArray.map((message: ChatMessage) => {
+                            console.log('Message:', message);
+                    
+                            message.createdAt = new Date(message.createdAt).toLocaleString();
+                            return message;
+                        });
+                    
+                        // Return the array of original messages
+                        return formattedMessages;
+                    });
 					setChatHistory(formattedChatHistory);
 					console.log('Chat history:', formattedChatHistory);
 				} else {
@@ -678,7 +689,7 @@ const social = () => {
         {chatHistory && chatHistory.map((message, index) => (
             <div key={index} className="chat-message">
                 <div className="message-info">
-                    <span className="sender-id">User {message.senderId}</span>
+                    <span className="sender-id">User : {message.senderId} at  </span>
                     <span className="message-time">{new Date(message.createdAt).toLocaleTimeString()}</span>
                 </div>
                 <p className="message-content">{message.content}</p>
