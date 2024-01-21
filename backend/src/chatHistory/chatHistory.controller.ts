@@ -25,15 +25,25 @@ export class chatHistoryController {
   }
 
   @Get('history/:userId/:friendId')
-  async getFriendHistory(@Param('userId') userId: Number, @Req() req, @Res() res): Promise<chatHistory | void> {
-      ;
+  async getFriendHistory(@Param('userId') userId: number, @Param('friendId') friendId: number): Promise<chatHistory[]> {
+      console.log('UserID:', userId, 'FriendID:', friendId);
+  
+      try {
+          const chatHistories = await this.chatHistoryService.getFriendHistory(userId, friendId);
+          if (!chatHistories) {
+              throw new HttpException('Chat history not found', HttpStatus.NOT_FOUND);
+          }
+          return chatHistories;
+      } catch (error) {
+          throw new HttpException('Error fetching chat history', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
   }
 
   @Post('newPrivateMessage')
-  async addMessage(@Body() createMessageDto: CreateMessageDto): Promise<void> {
+  async addMessage(@Body() createMessageDto: CreateMessageDto): Promise<chatHistory> {
       try {
           const updatedChatHistory = await this.chatHistoryService.addOrUpdateMessage(createMessageDto);
-          //return updatedChatHistory;
+          return updatedChatHistory;
       } catch (error) {
           throw new HttpException('Error processing message', HttpStatus.BAD_REQUEST);
       }

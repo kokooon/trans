@@ -16,10 +16,15 @@ import Box from '@mui/material/Box';
 import "../../styles/social.css"
 
 const social = () => {
-
+	type ChatMessage = {
+		senderId: number;
+		content: string;
+		createdAt: string; // assuming createdAt is a string that needs to be converted to a Date
+		// add any other properties that are included in your message objects
+	  };
 	const [inputMessage, setInputMessage] = useState('');
-    const [chatContext, setChatContext] = useState<{ id: number, userIds: number[] }>({ id: 0, userIds: [] });
-    //const [chatHistory, setChatHistory] = useState<Message[]>([]);
+    const [chatContext, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
+    const [chatHistory, setChatHistory] = useState<any[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
@@ -428,10 +433,8 @@ const social = () => {
             if (response.ok) {
                 const friendId = Number(await response.json());
                 const userId = Number(user[0].id);
-				setChatContext({ id: 0, userIds: [userId, friendId] });
-				console.log('current user id = ', userId);
-				console.log('friend user id = ', friendId);
-				const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/messages/history/${userId}/${friendId}`, {
+				setChatContext({ id: 0, userIds: friendId });
+				const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${userId}/${friendId}`, {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json',
@@ -439,9 +442,15 @@ const social = () => {
 					credentials: 'include',
 				});
 				if (chatHistoryResponse.ok) {
-					//const chatHistory = await chatHistoryResponse.json();
-					//setChatHistory(chatHistory); // Update the chat history state
-					console.log('chatHistory.ok');
+					const chathistory = await chatHistoryResponse.json();
+					const formattedChatHistory = chathistory.map((message: ChatMessage) => {
+						return {
+						  ...message,
+						  createdAt: new Date(message.createdAt).toLocaleString(), // Formats the date
+						};
+					  });
+					setChatHistory(formattedChatHistory);
+					console.log('Chat history:', formattedChatHistory);
 				} else {
 					// Handle errors in fetching chat history
 					console.error('Error fetching chat history');
@@ -462,22 +471,21 @@ const social = () => {
 			// It's a private chat
 			messagedata = {
 				content: inputMessage,
-				sender: user[0].id, // Assuming user[0].id is the current user's id
+				senderId: user[0].id, // Assuming user[0].id is the current user's id
 				createdAt: new Date(),
 				// For private chat, include both user IDs in the recipient field
-				recipient: chatContext.userIds // Array containing both user IDs
+				recipientId: chatContext.userIds // Array containing both user IDs
 			};
 		} else {
 			// It's a channel chat
 			messagedata = {
 				content: inputMessage,
-				sender: user[0].id, // Assuming user[0].id is the current user's id
+				senderId: user[0].id, // Assuming user[0].id is the current user's id
 				createdAt: new Date(),
 				// For channel chat, include the channel ID
-				channel: chatContext.id
+				channelId: chatContext.id
 			};
 		}
-		console.log('message data = ', messagedata);
         try {
             const response = await fetch('http://127.0.0.1:3001/chatHistory/newPrivateMessage', {
                 method: 'POST',
@@ -485,14 +493,14 @@ const social = () => {
                   'Content-Type': 'application/json',
                 },
                 credentials: 'include', // if you're including credentials like cookies
-                body: JSON.stringify({ messageData: messagedata }),
+                body: JSON.stringify(messagedata)
               });
               if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
             }
         }
         catch (error) {
-            console.log("unable to unfriend");
+            console.log("unable to add message");
         }
         // Logic to send messageData to the backend
         setInputMessage(''); // Clear input field after sending
@@ -665,25 +673,34 @@ const social = () => {
             </div>
         </div>
         <div className="chat-container">
-            <div className="message-thread">
-                {/* Les messages du chat seront affichés ici */}
+    <div className="message-thread">
+        {/* Rendering chat messages */}
+        {chatHistory && chatHistory.map((message, index) => (
+            <div key={index} className="chat-message">
+                <div className="message-info">
+                    <span className="sender-id">User {message.senderId}</span>
+                    <span className="message-time">{new Date(message.createdAt).toLocaleTimeString()}</span>
+                </div>
+                <p className="message-content">{message.content}</p>
             </div>
-            <div className="chat-input-container">
-                <input 
-                    type="text" 
-                    placeholder="Type a message..." 
-                    className="chat-input"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                />
-                <button 
-                    className="chat-send-button"
-                    onClick={sendMessage}
-                >
-                    Send
-                </button>
-            </div>
-        </div>
+        ))}
+    </div>
+    <div className="chat-input-container">
+        <input 
+            type="text" 
+            placeholder="Type a message..." 
+            className="chat-input"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+        />
+        <button 
+            className="chat-send-button"
+            onClick={sendMessage}
+        >
+            Send
+        </button>
+    </div>
+</div>
     </div>
     );
 }
