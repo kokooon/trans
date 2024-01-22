@@ -188,8 +188,19 @@ export class UserController {
     //social
     @Get('friends/:userId') // Définissez le paramètre dans l'URL comme ":userId"
     async findPseudoById(@Param('userId') userId: number): Promise<string> {
-      const user = await this.userService.findById(userId);
-      return user.pseudo;
+      try {
+        const user = await this.userService.findById(userId);
+    
+        if (user && user.pseudo) {
+          return user.pseudo;
+        } else {
+          // Handle the case where user or user.pseudo is null or undefined
+          return 'User not found or missing pseudo';
+        }
+      } catch (error) {
+        console.error('Error finding user by ID:', error);
+        return 'Error finding user by ID';
+      }
     }
 
     //end of social call

@@ -19,6 +19,18 @@ export class UserService {
     private readonly myConfigService: MyConfigService,
   ) {}
 
+  async getFriends(userId: number): Promise<number[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+  
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+  
+    return user.friends || [];
+  }
+
     //social
     async unfriend(userId: number, unfriendId: number): Promise<void> {
       const user = await this.findById(userId);

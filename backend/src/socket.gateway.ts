@@ -31,14 +31,37 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    // This will be called when a client disconnects from the gateway
     console.log(`Client disconnected: ${client.id}`);
     const userId = getUserIdBySocketId(client.id);
+  
     if (userId) {
-      // Remove the user and socket ID from the map
       removeUserSocketPair(userId);
+  
+      try {
+        const friends = await this.userService.getFriends(userId);
+        console.log('Friends:', friends);
+  
+        if (friends.length > 0) {
+          const disconnectedUserData = { userId, disconnected: true };
+  
+          for (const friendId of friends) {
+            const friendSocketId = getSocketIdByUserId(Number(friendId));
+  
+            if (friendSocketId) {
+              console.log(`J'emets un signal de deconnection au front a: ${friendId}`);
+              this.server.to(friendSocketId).emit('friendDisconnected', disconnectedUserData);
+            }
+            else {
+              console.log(`No friendSocketId found for friend: ${friendId}`);
+            }
+        }
+      } 
+      }catch (error) {
+        console.error('Error handling disconnect:', error);
+      }
     }
   }
+  
   // You can add more event handlers and business logic as needed
   private async authenticateUser(client: Socket, args: any[]): Promise<number | null> {
     // Implement authentication logic here and return the user ID if successful, null otherwise
