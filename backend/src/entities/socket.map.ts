@@ -13,6 +13,10 @@ function addUserSocketPair(userId: number, socketId: string): void {
     userSocketMap.delete(userId);
   }
 
+  function findUserById(userId: number): boolean {
+	return userSocketMap.has(userId);
+  }
+
   function getUserIdBySocketId(socketId: string): number | undefined {
     for (const [userId, sockId] of userSocketMap.entries()) {
       if (sockId === socketId) {
@@ -27,4 +31,4 @@ function addUserSocketPair(userId: number, socketId: string): void {
   }
 
   export { addUserSocketPair, getSocketIdByUserId, removeUserSocketPair };
-  export { getUserIdBySocketId };
+  export { getUserIdBySocketId, findUserById };

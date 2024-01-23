@@ -7,6 +7,8 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from '../auth-42/auth.service';
 //import { ChangePseudoDto } from './dto/change-pseudo.dto';
 import { Request, Response } from 'express';
+import { findUserById } from '../entities/socket.map';
+import { getSocketIdByUserId } from '../entities/socket.map';
 
 @Controller('users')
 export class UserController {
@@ -15,10 +17,18 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+	@Get('getSocket/:userId')
+	async findSocketById(@Param('userId') userId: number, @Req() req, @Res() res): Promise<string | void> {
+    	const userSocket = getSocketIdByUserId(userId);
+		if (userSocket)
+			return res.status(201).json(userSocket);
+		else
+			return res.status(409).json({ error: 'can\'t find id' });
+    }
+
     //social
     @Get('getId/:pseudo')
     async findidByPseudo(@Param('pseudo') pseudo: string, @Req() req, @Res() res): Promise<Number | void> {
-		console.log('pseudo = ', pseudo);
     	const id = await this.userService.findIdByPseudo(pseudo);
     	if (id)
 			return res.status(201).json(id);
@@ -244,6 +254,8 @@ export class UserController {
   @Post('changePseudo')
   async changePseudo(@Req() req, @Res() res) {
     try {
+        console.log('userid = ', req.body.userId);
+        console.log('userid = ', req.body.newPseudo);
         const userId = req.body.userId;
         if (isNaN(userId)) {
             return res.status(500).send('invalid userId');
@@ -252,6 +264,8 @@ export class UserController {
         if (!newPseudo) {
             return res.status(400).send('no new pseudo provided');
         }
+        //console.log('userid = ', req.body.userId);
+        //console.log('userid = ', req.body.newPseudo);
         await this.userService.updatePseudo(userId, newPseudo);
         return res.status(200).json({ status: 'success' });
     } catch (error) {
@@ -288,6 +302,29 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('check/socket')
+  async checkSocket(@Req() req, @Res() res) {
+	try {
+		const jwtCookie = req.cookies.jwt;
+		const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+		const userid = parseInt(decodedData.userId, 10);
+		const user = await this.userService.checkById(userid);
+		if (user) {
+			if (findUserById(userid)) {
+				res.status(404).json({ userId: userid });
+			}
+			else {
+				res.status(201).json({ userId: userid });
+			}
+		} else {
+			res.status(404).send("no token/no socket");
+		}
+  	}catch (error) {
+		console.error('Error processing socket in map:', error);
+		res.status(500).json({ isValid: false });
+	  }
+}
+
   @Get('check')
   async checkId(@Req() req, @Res() res) {
     try {
@@ -308,7 +345,7 @@ export class UserController {
         if (user) {
           res.status(200).json({ userId: userid });
         } else {
-          res.status(404).send("no token");
+        	res.status(404).send("no token");
         }
       } else {
         res.status(404).send("no token");

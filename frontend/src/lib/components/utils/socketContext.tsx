@@ -14,23 +14,26 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
-        console.log("test effects");
         const verifyTokenAndConnectSocket = async () => {
           const response = await fetch('http://127.0.0.1:3001/users/check', {
             method: 'GET',
             credentials: 'include',
           });
-    
           if (response.ok) {
-            setIsAuthenticated(true);
             const data = await response.json(); // Assuming this contains the user ID
             const userId = data.userId; // Extract the user ID from the response
-    
-            const newSocket = io('http://127.0.0.1:3001', {
-              withCredentials: true,
-              query: { userId }, // Include the user ID in the query
+            const responsetwo = await fetch('http://127.0.0.1:3001/users/check/socket', {
+              method: 'GET',
+              credentials: 'include',
             });
+            if (responsetwo.ok) {
+                const newSocket = io('http://127.0.0.1:3001', {
+                withCredentials: true,
+                query: { userId }, // Include the user ID in the query
+              });
             setSocket(newSocket);
+            setIsAuthenticated(true);
+            }
           } else {
             setIsAuthenticated(false);
           }

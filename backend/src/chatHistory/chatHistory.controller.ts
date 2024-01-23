@@ -26,8 +26,6 @@ export class chatHistoryController {
 
   @Get('history/:userId/:friendId')
   async getFriendHistory(@Param('userId') userId: number, @Param('friendId') friendId: number): Promise<chatHistory[]> {
-      console.log('UserID:', userId, 'FriendID:', friendId);
-  
       try {
           const chatHistories = await this.chatHistoryService.getFriendHistory(userId, friendId);
           if (!chatHistories) {

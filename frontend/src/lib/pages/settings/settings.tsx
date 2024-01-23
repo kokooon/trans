@@ -124,7 +124,7 @@ const Settings = () => {
     
     const handleChangePseudo = async (event: React.ChangeEvent<HTMLInputElement>) => {
         try {
-            console.log(username)
+            console.log('front username = ', username)
             // Envoyer le nouveau pseudo au backend
             const response = await fetch('http://127.0.0.1:3001/users/changePseudo', {
                 method: 'POST',

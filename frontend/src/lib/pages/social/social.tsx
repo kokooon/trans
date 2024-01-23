@@ -14,6 +14,9 @@ import Avatar from '@mui/material/Avatar';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import "../../styles/social.css"
+//import io from 'socket.io-client';
+
+//const socket = io('http://127.0.0.1:3001');
 
 const social = () => {
 	type ChatMessage = {
@@ -54,13 +57,13 @@ const social = () => {
         justifyContent: 'center'
       };
 
-    useEffect(() => {
+      useEffect(() => {
         const fetchData = async () => {
           const userData = await fetchUserDetails();
           setUser(userData); 
         };
         fetchData();
-    }, []);
+      });
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -443,16 +446,11 @@ const social = () => {
 				});
 				if (chatHistoryResponse.ok) {
 					const chathistory = await chatHistoryResponse.json();
-					const formattedChatHistory = chathistory.flatMap((chatData: any) => {
-                        console.log('Raw Chat Data:', chatData);
-                    
+					const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
                         // Convertit la chaîne JSON en tableau d'objets
                         const messagesArray = JSON.parse(chatData.messages);
-                    
                         // Mappe sur les messages pour formater les dates
                         const formattedMessages = messagesArray.map((message: ChatMessage) => {
-                            console.log('Message:', message);
-                    
                             message.createdAt = new Date(message.createdAt).toLocaleString();
                             return message;
                         });
@@ -461,7 +459,6 @@ const social = () => {
                         return formattedMessages;
                     });
 					setChatHistory(formattedChatHistory);
-					console.log('Chat history:', formattedChatHistory);
 				} else {
 					// Handle errors in fetching chat history
 					console.error('Error fetching chat history');
@@ -509,7 +506,23 @@ const social = () => {
               if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
             }
-        }
+            const userId = Number(user[0].id);
+            const responsetwo = await fetch (`http://127.0.0.1:3001/users/getSocket/${userId}`, {
+                method: 'GET',
+				headers: {
+						'Content-Type': 'application/json',
+					},
+					credentials: 'include',
+				});
+				if (responsetwo.ok) {
+                    const userSocket = await responsetwo.json();
+                    console.log('socket in sendMessage = ', userSocket);
+                    userSocket.emit('new_message', { 
+                    chatType: chatContext.id === 0 ? 'private' : 'channel',
+                    chatId: chatContext.id === 0 ? chatContext.userIds : chatContext.id
+                    });
+                }
+            }
         catch (error) {
             console.log("unable to add message");
         }

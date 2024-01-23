@@ -23,7 +23,6 @@ export class chatHistoryService {
           { user1Id: friendId, user2Id: userId }
       ]
       });
-      console.log('chathistory = ', chatHistories);
     // Transform the data into a cleaner format
     /*const transformedChatHistory = rawChatHistory.map(message => {
         return {
@@ -44,7 +43,6 @@ export class chatHistoryService {
     let userIds: number[] | undefined;
     const user = await this.userService.findById(senderId);
     const userPseudo = user.pseudo;
-    console.log('userps = ', userPseudo);
     let chatHistory: chatHistory;
     if (channelId) {
       // It's a channel chat

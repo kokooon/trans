@@ -1,4 +1,4 @@
-import { WebSocketGateway, SubscribeMessage, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { WebSocketGateway, SubscribeMessage, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect, MessageBody } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UserService } from './user/user.service'; // Import UserService
 import { addUserSocketPair, getSocketIdByUserId, removeUserSocketPair } from './entities/socket.map';
@@ -17,6 +17,27 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   constructor(private userService: UserService) {}
+
+  @SubscribeMessage('new_message')
+  async handleNewMessage(@MessageBody() data: { chatType: string; chatId: number | number[] }): Promise<void> {
+    // Notify clients to fetch the latest messages
+    console.log('im in gateway new_message after send pressed')
+    if (data.chatType === 'private') {
+      console.log('chatType = private');
+      (data.chatId as number[]).forEach(userId => {
+        // Assuming you have a way to get the socket ID from the user ID
+        const socketId = getSocketIdByUserId(userId);
+        console.log('userid = ', userId);
+        console.log('socketid = ', socketId);
+		if (socketId && this.server.sockets.sockets.has(socketId)) {
+			console.log('connected socket');
+			this.server.to(socketId).emit('chat_updated', { chatId: data.chatId });
+		  } else {
+			console.log('Attempted to emit to a non-existent or disconnected socket ID:', socketId);
+		  }
+      });
+    }
+  }
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
