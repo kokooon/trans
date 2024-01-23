@@ -254,9 +254,12 @@ export class UserController {
   @Post('changePseudo')
   async changePseudo(@Req() req, @Res() res) {
     try {
-        console.log('userid = ', req.body.userId);
-        console.log('userid = ', req.body.newPseudo);
-        const userId = req.body.userId;
+        //console.log('userid = ', req.body.newPseudo);
+        const jwtCookie = req.cookies.jwt;
+        const decodedData = await this.authService.verifyJwtCookie(jwtCookie);
+        if (decodedData === null)
+          return null;
+        const userId = parseInt(decodedData.userId, 10);
         if (isNaN(userId)) {
             return res.status(500).send('invalid userId');
         }
