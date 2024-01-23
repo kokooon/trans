@@ -5,6 +5,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ default: 0 })
+  connectionCount: number;
+
   @Column({ nullable: true })
   pseudo: string;
 

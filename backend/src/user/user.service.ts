@@ -312,4 +312,19 @@ async validate2FA(userId: number, is2FAValidate: boolean): Promise<void> {
       throw new Error('Failed to add secret');
     }
   }
+
+  async updateConnectionCount(userId: number, newCount: number): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new Error(`User with ID ${userId} not found`);
+      }
+      user.connectionCount = newCount;
+      await this.userRepository.save(user);
+    } catch (error) {
+      console.error(`Failed to update connectionCount: ${error.message}`);
+      throw new Error(`Failed to update connectionCount: ${error.message}`);
+    }
+  }
+
 }

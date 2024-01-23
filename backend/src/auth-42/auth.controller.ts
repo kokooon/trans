@@ -28,7 +28,12 @@ export class AuthController {
         throw new Error('Invalid user data');
       }
       const jwtToken = this.authService.getJwtToken();
-
+      await this.userService.updateConnectionCount(user.id, user.connectionCount + 1);
+      if (user && user.connectionCount === 0) {
+        console.log('i pass here for settings');
+        res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
+        return res.redirect('http://127.0.0.1:3000/settings');
+      }
       if (user.is2FAEnabled) {
         console.log('i pass here for 2fa');
         res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
