@@ -41,14 +41,37 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
-    // This will be called when a client connects to the gateway
     const userId = await this.authenticateUser(client, args);
+  
     if (userId) {
       addUserSocketPair(userId, client.id);
+  
+      try {
+        const friends = await this.userService.getFriends(userId);
+        console.log('Friends:', friends);
+  
+        if (friends.length > 0) {
+          const connectedUserData = { userId, disconnected: false };
+  
+          for (const friendId of friends) {
+            const friendSocketId = getSocketIdByUserId(Number(friendId));
+  
+            if (friendSocketId) {
+              console.log(`J'emets un signal de connection au front a: ${friendId}`);
+              this.server.to(friendSocketId).emit('friendConnected', connectedUserData);
+            } else {
+              console.log(`No friendSocketId found for friend: ${friendId}`);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error handling connection:', error);
+      }
+  
       console.log("map = ", getCurrentMapState());
-    }
-    else
+    } else {
       console.log("userId null in gateway");
+    }
   }
 
   async handleDisconnect(client: Socket) {
