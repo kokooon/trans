@@ -146,7 +146,7 @@ const getChannel = async () => {
               <Sidebar position="left" scrollable={true}>
               {currentView === 'Notifications' && (
                 <ConversationList>                                                     
-                  <Conversation name="Beau Gosse" lastSenderName="Beau Gosse" info="Veux-tu être mon ami ?">
+                  <Conversation name="Beau Gosse" info="Veux-tu être mon ami ?">
                   <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" status="available"/>
                   </Conversation>                
                 </ConversationList>
