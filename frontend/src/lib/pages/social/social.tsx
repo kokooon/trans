@@ -144,14 +144,13 @@ const getChannel = async () => {
             <Button variant="outline" className={currentView === 'Channel' ? 'button-small button-small-selected' : 'button-small'} onClick={getChannel}>Channel</Button>
             <MainContainer responsive>                
               <Sidebar position="left" scrollable={true}>
+              {currentView === 'Notifications' && (
                 <ConversationList>                                                     
-                  <Conversation name="test" lastSenderName="test2" info="Yes i can do it for you">
-                  <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" status="invisible"/>
-                  </Conversation>
-                  <Conversation name="test2" lastSenderName="test" info="Yes i can do it for you">
+                  <Conversation name="Beau Gosse" lastSenderName="Beau Gosse" info="Veux-tu être mon ami ?">
                   <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" status="available"/>
                   </Conversation>                
                 </ConversationList>
+              )}
               </Sidebar>
               <ChatContainer>
                 <ConversationHeader>
