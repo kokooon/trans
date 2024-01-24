@@ -63,7 +63,7 @@ const social = () => {
           setUser(userData); 
         };
         fetchData();
-      });
+      }, []);
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
