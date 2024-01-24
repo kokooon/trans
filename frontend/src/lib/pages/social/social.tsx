@@ -1,6 +1,6 @@
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
 
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {
   MainContainer,
   ChatContainer,
@@ -18,6 +18,7 @@ import {
 } from "@chatscope/chat-ui-kit-react";
 import { Button } from "@/lib/components/ui/button";
 import { fetchUserDetails } from '../../components/utils/UtilsFetch';
+import { UserNav } from '@/lib/components/ui/user-nav';
 import "../../styles/social.css"
 
 const social = () => {
@@ -27,7 +28,7 @@ const social = () => {
     // const [chatHistory, setChatHistory] = useState<any[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
     const [, setLists] = useState<string[]>([]);
-    const [user, ] = useState<any | null>(null);
+    const [user, setUser] = useState<any | null>(null);
     // const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     // const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
     // const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
@@ -38,6 +39,14 @@ const social = () => {
     // const [open, setOpen] = useState(false);
     // const handleOpen = () => setOpen(true);
     // const handleClose = () => setOpen(false);
+
+    useEffect(() => {
+      const fetchData = async () => {
+        const userData = await fetchUserDetails();
+        setUser(userData); 
+      };
+      fetchData();
+    }, []);
 
 
   const getNotifications = async () => {
@@ -138,10 +147,13 @@ const getChannel = async () => {
 
   return (
             <div style={{height: "600px",position: "relative"}}>
-            <Button variant="outline" className={currentView === 'Notifications' ? 'button-small button-small-selected' : 'button-small'} onClick={getNotifications}>Notifications</Button>
-            <Button variant="outline" className={currentView === 'Friends' ? 'button-small button-small-selected' : 'button-small'} onClick={getFriends}>Friends</Button>
-            <Button variant="outline" className={currentView === 'Blocked' ? 'button-small button-small-selected' : 'button-small'} onClick={getBlock}>Blocked</Button>
-            <Button variant="outline" className={currentView === 'Channel' ? 'button-small button-small-selected' : 'button-small'} onClick={getChannel}>Channel</Button>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Button variant="outline" className={currentView === 'Notifications' ? 'button-small button-small-selected' : 'button-small'} onClick={getNotifications}>Notifications</Button>
+              <Button variant="outline" className={currentView === 'Friends' ? 'button-small button-small-selected' : 'button-small'} onClick={getFriends}>Friends</Button>
+              <Button variant="outline" className={currentView === 'Blocked' ? 'button-small button-small-selected' : 'button-small'} onClick={getBlock}>Blocked</Button>
+              <Button variant="outline" className={currentView === 'Channel' ? 'button-small button-small-selected' : 'button-small'} onClick={getChannel}>Channel</Button>
+              <UserNav />
+            </div>
             <MainContainer responsive>                
               <Sidebar position="left" scrollable={true}>
               {currentView === 'Notifications' && (
