@@ -19,15 +19,17 @@ import {
 import { Button } from "@/lib/components/ui/button";
 import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 import { UserNav } from '@/lib/components/ui/user-nav';
+import { useSocket } from '../../components/utils/socketContext';
 import "../../styles/social.css"
 
 const social = () => {
 
+    const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
     // const [chatContext, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
-    // const [chatHistory, setChatHistory] = useState<any[]>([]);
+    const [chatHistory, setChatHistory] = useState<any[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
-    const [, setLists] = useState<string[]>([]);
+    const [Lists, setLists] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
     // const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     // const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
@@ -39,6 +41,13 @@ const social = () => {
     // const [open, setOpen] = useState(false);
     // const handleOpen = () => setOpen(true);
     // const handleClose = () => setOpen(false);
+    
+
+    type ChatMessage = {
+      senderPseudo: string;
+      content: string;
+      createdAt: string;
+      };
 
     useEffect(() => {
       const fetchData = async () => {
@@ -46,8 +55,20 @@ const social = () => {
         setUser(userData); 
       };
       fetchData();
-    }, []);
-
+      console.log('in useEffects');
+      if (socket) {
+          console.log('socket exist');
+          socket.on('new_message', (message: any) => {
+              console.log('in new message listener');
+              fetchChat(message);
+              
+          });
+          // Clean up the listener
+          return () => {
+            socket.off('new_message');
+          };
+        }
+      }, [socket, chatHistory]);
 
   const getNotifications = async () => {
     setCurrentView('Notifications');
@@ -144,6 +165,36 @@ const getChannel = async () => {
   }
 }
 
+const fetchChat = async (messageData: any) => {
+  console.log('in fetchchat');
+  const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${messageData.senderId}/${messageData.recipientId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+  if (chatHistoryResponse.ok) {
+    const chathistory = await chatHistoryResponse.json();
+    const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
+                  // Convertit la chaîne JSON en tableau d'objets
+                  const messagesArray = JSON.parse(chatData.messages);
+                  // Mappe sur les messages pour formater les dates
+                  const formattedMessages = messagesArray.map((message: ChatMessage) => {
+                      message.createdAt = new Date(message.createdAt).toLocaleString();
+                      return message;
+                  });
+              
+                  // Return the array of original messages
+                  return formattedMessages;
+              });
+    setChatHistory(formattedChatHistory);
+  } else {
+    // Handle errors in fetching chat history
+    console.error('Error fetching chat history');
+      }
+}
+
 
   return (
             <div style={{height: "600px",position: "relative"}}>
@@ -157,10 +208,12 @@ const getChannel = async () => {
             <MainContainer responsive>                
               <Sidebar position="left" scrollable={true}>
               {currentView === 'Notifications' && (
-                <ConversationList> 
-                  <Conversation name="Beau Gosse" info="Veux-tu être mon ami ?" onClick={() => console.log('clique')}>
-                  <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" status="available"/>
-                  </Conversation> 
+                <ConversationList>
+                 {Lists.map((notification,index) => (
+                        <Conversation name={notification} info="Veux-tu être mon ami ?" onClick={() => console.log('clique')} key={index}>
+                        <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" status="available"/>
+                        </Conversation>
+                    ))}
                 </ConversationList>
               )}
               </Sidebar>
