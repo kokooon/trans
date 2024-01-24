@@ -18,44 +18,41 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(private userService: UserService) {}
 
+// Handle 'new message' event
   @SubscribeMessage('new_message')
-  async handleNewMessage(@MessageBody() data: { chatType: string; chatId: number | number[] }): Promise<void> {
-    // Notify clients to fetch the latest messages
-    console.log('im in gateway new_message after send pressed')
-    if (data.chatType === 'private') {
-      console.log('chatType = private');
-      (data.chatId as number[]).forEach(userId => {
-        // Assuming you have a way to get the socket ID from the user ID
-        const socketId = getSocketIdByUserId(userId);
-        console.log('userid = ', userId);
-        console.log('socketid = ', socketId);
-		if (socketId && this.server.sockets.sockets.has(socketId)) {
-			console.log('connected socket');
-			this.server.to(socketId).emit('chat_updated', { chatId: data.chatId });
-		  } else {
-			console.log('Attempted to emit to a non-existent or disconnected socket ID:', socketId);
-		  }
-      });
-    }
+  async handleNewMessage(@MessageBody() data: any, client: Socket): Promise<void> {
+  // Process the message data
+  // ...
+  // Example: Emitting the message to the recipient
+  console.log('Received data in gateway for message:', data);
+  console.log('in gateway for message');
+  const recipientSocketId = getSocketIdByUserId(data.recipientId);
+  console.log('recipient socker id = ', recipientSocketId)
+  const senderSocketId = getSocketIdByUserId(data.senderId);
+  console.log('sender socker id = ', senderSocketId)
+  if (senderSocketId) {
+    //this.server.to(recipientSocketId).emit('new_message', data);
+    this.server.to(senderSocketId).emit('new_message', data);
+    //client.to(senderSocketId).emit('new_message', data)
   }
+  if (recipientSocketId) {
+      this.server.to(recipientSocketId).emit('new_message', data);
+  }
+}
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
+    client.join(client.id)
     const userId = await this.authenticateUser(client, args);
-  
     if (userId) {
       addUserSocketPair(userId, client.id);
-  
       try {
         const friends = await this.userService.getFriends(userId);
         console.log('Friends:', friends);
-  
         if (friends.length > 0) {
           const connectedUserData = { userId, disconnected: false };
-  
           for (const friendId of friends) {
             const friendSocketId = getSocketIdByUserId(Number(friendId));
-  
             if (friendSocketId) {
               console.log(`J'emets un signal de connection au front a: ${friendId}`);
               this.server.to(friendSocketId).emit('friendConnected', connectedUserData);
@@ -67,7 +64,6 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
       } catch (error) {
         console.error('Error handling connection:', error);
       }
-  
       console.log("map = ", getCurrentMapState());
     } else {
       console.log("userId null in gateway");

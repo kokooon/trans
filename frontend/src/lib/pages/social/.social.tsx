@@ -14,11 +14,13 @@ import Avatar from '@mui/material/Avatar';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import "../../styles/social.css"
+import { useSocket } from '../../components/utils/socketContext';
 //import io from 'socket.io-client';
 
 //const socket = io('http://127.0.0.1:3001');
 
 const social = () => {
+    const { socket } = useSocket();
 	type ChatMessage = {
 		senderPseudo: string;
 		content: string;
@@ -63,11 +65,54 @@ const social = () => {
           setUser(userData); 
         };
         fetchData();
-      }, []);
+        console.log('in useEffects');
+        if (socket) {
+            console.log('socket exist');
+            socket.on('new_message', (message: any) => {
+                console.log('in new message listener');
+                fetchChat(message); // Refresh chat history
+            });
+            // Clean up the listener
+            return () => {
+              socket.off('new_message');
+            };
+          }
+        }, [socket, chatHistory]); 
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
       };
+
+
+      const fetchChat = async (messageData: any) => {
+        console.log('in fetchchat');
+        const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${messageData.senderId}/${messageData.recipientId}`, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					credentials: 'include',
+				});
+				if (chatHistoryResponse.ok) {
+					const chathistory = await chatHistoryResponse.json();
+					const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
+                        // Convertit la chaîne JSON en tableau d'objets
+                        const messagesArray = JSON.parse(chatData.messages);
+                        // Mappe sur les messages pour formater les dates
+                        const formattedMessages = messagesArray.map((message: ChatMessage) => {
+                            message.createdAt = new Date(message.createdAt).toLocaleString();
+                            return message;
+                        });
+                    
+                        // Return the array of original messages
+                        return formattedMessages;
+                    });
+					setChatHistory(formattedChatHistory);
+				} else {
+					// Handle errors in fetching chat history
+					console.error('Error fetching chat history');
+            }
+    }
 
    const handleadd = async () => {
         try {
@@ -473,24 +518,21 @@ const social = () => {
 	};
 
 	const sendMessage = async () => {
+        console.log('send');
         if (inputMessage.trim() === '') return; // Prevent sending empty messages
 		let messagedata;
-        if (chatContext.id === 0) {
-			// It's a private chat
+        if (chatContext.id === 0) { // It's a private chat
 			messagedata = {
 				content: inputMessage,
 				senderId: user[0].id, // Assuming user[0].id is the current user's id
 				createdAt: new Date(),
-				// For private chat, include both user IDs in the recipient field
 				recipientId: chatContext.userIds // Array containing both user IDs
 			};
 		} else {
-			// It's a channel chat
-			messagedata = {
+			messagedata = {     // It's a channel chat
 				content: inputMessage,
 				senderId: user[0].id, // Assuming user[0].id is the current user's id
 				createdAt: new Date(),
-				// For channel chat, include the channel ID
 				channelId: chatContext.id
 			};
 		}
@@ -506,27 +548,16 @@ const social = () => {
               if (!response.ok) {
                 throw new Error(`Network response was not ok: ${response.statusText}`);
             }
-            const userId = Number(user[0].id);
-            const responsetwo = await fetch (`http://127.0.0.1:3001/users/getSocket/${userId}`, {
-                method: 'GET',
-				headers: {
-						'Content-Type': 'application/json',
-					},
-					credentials: 'include',
-				});
-				if (responsetwo.ok) {
-                    const userSocket = await responsetwo.json();
-                    console.log('socket in sendMessage = ', userSocket);
-                    userSocket.emit('new_message', { 
-                    chatType: chatContext.id === 0 ? 'private' : 'channel',
-                    chatId: chatContext.id === 0 ? chatContext.userIds : chatContext.id
-                    });
-                }
-            }
+            // Emit the 'new message' event to the server with the messageData
+            if (socket)
+                socket.emit('new_message', messagedata)
+            // Handle the acknowledgment from the server
+            // Optionally add the message to the chat history state directly
+            //fetchFriendChatHistory(chatContext.userIds);
+        }
         catch (error) {
             console.log("unable to add message");
         }
-        // Logic to send messageData to the backend
         setInputMessage(''); // Clear input field after sending
     };
 

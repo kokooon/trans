@@ -1,18 +1,14 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import io from 'socket.io-client';
 import { Socket } from 'socket.io-client';
-
 const SocketContext = createContext<{ socket: Socket | null, isAuthenticated: boolean }>({
     socket: null,
     isAuthenticated: false
   });
-
 export const useSocket = () => useContext(SocketContext);
-
 export const SocketProvider = ({ children }: { children: ReactNode }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-
     useEffect(() => {
         const verifyTokenAndConnectSocket = async () => {
           const response = await fetch('http://127.0.0.1:3001/users/check', {
@@ -38,19 +34,17 @@ export const SocketProvider = ({ children }: { children: ReactNode }) => {
             setIsAuthenticated(false);
           }
         };
-    
         verifyTokenAndConnectSocket();
-    
         return () => {
           if (socket) {
             socket.disconnect();
           }
         };
       }, []);
-    
       return (
         <SocketContext.Provider value={{ socket, isAuthenticated }}>
           {children}
         </SocketContext.Provider>
       );
     };
+
