@@ -24,9 +24,14 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import "../../styles/social.css"
 
+type Friend = {
+  pseudo: string;
+  avatar: string;
+  status: boolean; // true for online, false for offline
+};
 
 const social = () => {
-
+    const [friendsList, setFriendsList] = useState<Friend[]>([]);
     const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
     const [chatContext, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
@@ -114,7 +119,7 @@ const getFriends  = async () => {
   setCurrentView('Friends');
   const userData = await fetchUserDetails();
   try {
-      const List = []; // Créez une nouvelle liste pour les amis
+    const newFriendsList = []; // Créez une nouvelle liste pour les amis
       for (let i = 0; i < userData[0].friends.length; i++) {
           const friendId = userData[0].friends[i];
           const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
@@ -123,13 +128,14 @@ const getFriends  = async () => {
           });
 
           if (response.ok) {
-              const responseData = await response.text();
-              List.push(responseData);
+            const friendData = await response.json();
+            newFriendsList.push(friendData);
           } else {
               console.error('Get friends failed for friendId:', friendId);
           }
       }
-      setLists([...List]);
+      setFriendsList(newFriendsList);
+      console.log('friend list = ', newFriendsList);
   } catch (error) {
       console.error('Error during get friends:', error);
   }
@@ -203,6 +209,7 @@ const fetchChat = async (messageData: any) => {
                   return formattedMessages;
               });
     setChatHistory(formattedChatHistory);
+    console.log('chat refreshed = ', formattedChatHistory);
   } else {
     // Handle errors in fetching chat history
     console.error('Error fetching chat history');
@@ -302,7 +309,6 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
   };
 
   const sendMessage = async () => {
-    console.log('send');
     if (inputMessage.trim() === '') return; // Prevent sending empty messages
 let messagedata;
     if (chatContext.id === 0) { // It's a private chat
@@ -374,16 +380,23 @@ let messagedata;
                 </ConversationList>
               )}
               {currentView === 'Friends' && (
-                <ConversationList>
-                 {Lists.map((friend,index) => (
+                    <ConversationList>
+                    {friendsList.map((friend, index) => (
                         <div key={index}>
-                        <Conversation name={friend} info="{dernier message recu" onClick={() => {setActiveFriend(friend);fetchFriendChatHistory(friend);}} active={friend === activeFriend}>
-                        <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" status="available"/>
-                        </Conversation>
-                        </div>
-                    ))}
-                  
-                </ConversationList>
+                        <Conversation 
+                    name={friend.pseudo} 
+                    info="dernier message reçu" 
+                    onClick={() => {
+                    setActiveFriend(friend.pseudo);
+                    fetchFriendChatHistory(friend.pseudo);
+                      }} 
+                      active={friend.pseudo === activeFriend}
+                      >
+                    <Avatar src={friend.avatar} status={friend.status ? "available" : "offline"}/>
+                </Conversation>
+              </div>
+                ))}
+              </ConversationList>
               )}
               </Sidebar>
               <ChatContainer>

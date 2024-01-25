@@ -197,12 +197,16 @@ export class UserController {
 
     //social
     @Get('friends/:userId') // Définissez le paramètre dans l'URL comme ":userId"
-    async findPseudoById(@Param('userId') userId: number): Promise<string> {
+    async findPseudoById(@Param('userId') userId: number): Promise<any> {
       try {
         const user = await this.userService.findById(userId);
-    
-        if (user && user.pseudo) {
-          return user.pseudo;
+        if (user) {
+          const friend = {
+            pseudo: user.pseudo,
+            avatar: user.avatar,
+            status: false // Assuming default status is false
+          };
+          return friend;
         } else {
           // Handle the case where user or user.pseudo is null or undefined
           return 'User not found or missing pseudo';
