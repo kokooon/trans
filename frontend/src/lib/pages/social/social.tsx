@@ -20,17 +20,23 @@ import { Button } from "@/lib/components/ui/button";
 import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 import { UserNav } from '@/lib/components/ui/user-nav';
 import { useSocket } from '../../components/utils/socketContext';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import "../../styles/social.css"
+
 
 const social = () => {
 
     const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
-    // const [chatContext, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
+    const [, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
     const [chatHistory, setChatHistory] = useState<any[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
+    const [anchorEl, setAnchorEl] = useState<React.SetStateAction<HTMLElement | null>>(null);
+    const [activeFriend, setActiveFriend] = useState<string | null>(null);
+
     // const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     // const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
     // const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
@@ -69,6 +75,10 @@ const social = () => {
           };
         }
       }, [socket, chatHistory]);
+
+      const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+      };
 
   const getNotifications = async () => {
     setCurrentView('Notifications');
@@ -195,6 +205,92 @@ const fetchChat = async (messageData: any) => {
       }
 }
 
+const handleAccept = async (friend: string) => {
+  try {
+      const response = await fetch('http://127.0.0.1:3001/users/AcceptFriend', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ friendPseudo: friend, userId: user[0].id }),
+      });
+      if (!response.ok) {
+          throw new Error('La réponse du réseau n’était pas correcte');
+      }
+  } catch (error) {
+      console.error('Erreur lors de l\'ajout du friend :', error);
+ }
+ getNotifications();
+}
+
+const handleDecline = async (friend: string) => {
+  try {
+      const response = await fetch('http://127.0.0.1:3001/users/RefuseFriend', {
+          method: 'POST',
+          headers: {
+             'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+         body: JSON.stringify({ friendPseudo: friend, userId: user[0].id }),
+      });
+      if (!response.ok) {
+          throw new Error('La réponse du réseau n’était pas correcte');
+      }
+  } catch (error) {
+      console.error('Erreur lors de l\'ajout du friend :', error);
+  }
+ getNotifications();
+}
+
+const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
+  try {
+      const response = await fetch(`http://127.0.0.1:3001/users/getId/${friendPseudo}`, {
+      method: 'GET',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      });
+      if (response.ok) {
+          const friendId = Number(await response.json());
+          const userId = Number(user[0].id);
+  setChatContext({ id: 0, userIds: friendId });
+  const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${userId}/${friendId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+      if (chatHistoryResponse.ok) {
+        const chathistory = await chatHistoryResponse.json();
+        const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
+                      // Convertit la chaîne JSON en tableau d'objets
+                      const messagesArray = JSON.parse(chatData.messages);
+                      // Mappe sur les messages pour formater les dates
+                      const formattedMessages = messagesArray.map((message: ChatMessage) => {
+                          message.createdAt = new Date(message.createdAt).toLocaleString();
+                          return message;
+                      });
+                  
+                      // Return the array of original messages
+                      return formattedMessages;
+                  });
+        setChatHistory(formattedChatHistory);
+      } else {
+        // Handle errors in fetching chat history
+        console.error('Error fetching chat history');
+      }
+    } else {
+      // Handle errors in fetching friend's user ID
+      console.error('Error fetching friend\'s user ID');
+    }
+    } catch (error) {
+    console.error('Unable to fetch chat history', error);
+    }
+  };
+
 
   return (
             <div style={{height: "600px",position: "relative"}}>
@@ -210,10 +306,29 @@ const fetchChat = async (messageData: any) => {
               {currentView === 'Notifications' && (
                 <ConversationList>
                  {Lists.map((notification,index) => (
-                        <Conversation name={notification} info="Veux-tu être mon ami ?" onClick={() => console.log('clique')} key={index}>
+                        <div key={index}>
+                        <Conversation name={notification} info="Veux-tu être mon ami ?" onClick={handleClick}>
+                        <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg"/>
+                        </Conversation>
+                        <Menu anchorEl={anchorEl as Element | undefined} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
+                        <MenuItem style={{ color: 'green' }} onClick={() => handleAccept(notification)}>Accepter</MenuItem>
+                        <MenuItem style={{ color: 'red' }} onClick={() => handleDecline(notification)}>Supprimer</MenuItem>
+                        </Menu>
+                        </div>
+                    ))}
+                  
+                </ConversationList>
+              )}
+              {currentView === 'Friends' && (
+                <ConversationList>
+                 {Lists.map((friend,index) => (
+                        <div key={index}>
+                        <Conversation name={friend} info="{dernier message recu}" onClick={() => {setActiveFriend(friend);fetchFriendChatHistory(friend);}} active={friend === activeFriend}>
                         <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" status="available"/>
                         </Conversation>
+                        </div>
                     ))}
+                  
                 </ConversationList>
               )}
               </Sidebar>
