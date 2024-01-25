@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/lib/components/ui/button";
 import { UserNav } from '@/lib/components/ui/user-nav';
-import { isTokenValid } from '@/lib/components/utils/UtilsFetch';
+import { isTokenValid, isUserConnected, fetchUserDetails } from '@/lib/components/utils/UtilsFetch';
 //import io from 'socket.io-client';
 //import { fetchUserDetails } from '../../components/utils/UtilsFetch';
 import { useSocket } from '../../components/utils/socketContext'; 
@@ -16,16 +16,28 @@ const Home = () => {
     // Example: socket.on('gameEvent', handleGameEvent);
 
     // Placeholder for future token validation logic
-    const checkTokenAndSetUpGame = async () => {
-      const isValid = await isTokenValid();
-      if (!isValid) {
-        navigate('/login');
+    const checkToken = async () => {
+      try {
+          const isValid = await isTokenValid();
+          if (!isValid) {
+              navigate('/login');
+              return;
+          }
+
+          const userData = await fetchUserDetails();
+
+          if (userData[0].is2FAEnabled !== false) {
+              const isConnected = await isUserConnected();
+              console.log(isConnected);
+              if (!isConnected) {
+                  navigate('/2fa');
+              }
+          }
+      } catch (error) {
+          console.error('Error:', error);
       }
-
-      // Future setup for game-related socket events
-    };
-
-    checkTokenAndSetUpGame();
+  };
+  checkToken();
 
     // Clean up function for removing event listeners specific to the Home component
     return () => {
