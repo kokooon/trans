@@ -37,7 +37,7 @@ export class ChannelController {
   async findChannelByName(@Param('channelName') channelName: string,  @Req() req, @Res() res): Promise<Channel | void> {
     const channel = await this.channelService.findChannelByName(channelName);
     if (channel)
-      return res.status(201).json(channel);
+      return channel;
     else
       return res.status(409).json({ error: 'can\'t find channel' });
   }

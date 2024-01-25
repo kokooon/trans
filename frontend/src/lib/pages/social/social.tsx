@@ -199,7 +199,6 @@ const getChannel = async () => {
           }
     }
     channelList;
-    console.log('channel list = ', List);
     setChannelList(List);
 }
 
@@ -348,7 +347,28 @@ let messagedata;
 
 
  const fetchChannelChatHistory = async (channelName: string) => {
-  channelName;
+      console.log('in fetch channel history', channelName);
+      try {
+        const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${channelName}`, {
+        method: 'GET',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        });
+        console.log('context = ');
+        if (response.ok) {
+            console.log('context = ');
+            const channel = await response.json();
+            setChatContext({ id: channel.id, userIds: 0 });
+            console.log('context = ', channel);
+        }
+        else {
+          console.log('no context');
+        }
+    }catch(error){
+        console.log('error while fetching channel data', error);
+    }
  }
 
   return (
