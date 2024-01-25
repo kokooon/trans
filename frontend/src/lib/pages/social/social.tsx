@@ -23,7 +23,30 @@ import { UserNav } from '@/lib/components/ui/user-nav';
 import { useSocket } from '../../components/utils/socketContext';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Fab from '@mui/material/Fab';
+import ConstructionIcon from '@mui/icons-material/Construction';
+import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import { TextField, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import "../../styles/social.css"
+const style = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+  display: 'flex',
+  flexDirection: 'column', // Utilisez 'row' pour un alignement horizontal
+  alignItems: 'center',    // Centre horizontalement dans un conteneur 'flex'
+  justifyContent: 'center'
+};
+
 
 type UserStatus = 'available' | 'invisible';
 
@@ -55,17 +78,21 @@ const social = () => {
     const [anchorElArray, setAnchorElArray] = useState<(HTMLElement | null)[]>([]);
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
     const [isTyping, setIsTyping] = useState(false);
+    
     Lists;
     // const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     // const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
-    // const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
-    // const [passwordInput, setPasswordInput] = useState('');
-    // const [joinChannel, setJoinChannel] = useState('');
-    // const [channelVisibility, setChannelVisibility] = useState('public');
-    // const [showPassword, setShowPassword] = useState<boolean>(false);
-    // const [open, setOpen] = useState(false);
-    // const handleOpen = () => setOpen(true);
-    // const handleClose = () => setOpen(false);
+    const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
+    const [passwordInput, setPasswordInput] = useState('');
+    const [joinChannel, setJoinChannel] = useState('');
+    const [channelVisibility, setChannelVisibility] = useState('public');
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [open, setOpen] = useState(false);
+    const [secondOpen, setSecondOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const handleSecondOpen = () => setSecondOpen(true);
+    const handleSecondClose = () => setSecondOpen(false);
     useEffect(() => {
       const fetchData = async () => {
         try {
@@ -138,6 +165,11 @@ const social = () => {
         newAnchorElArray[currentIndex] = event.currentTarget;
         setAnchorElArray(newAnchorElArray);
     };
+    
+    const togglePasswordVisibility = () => {
+      setShowPassword(!showPassword);
+    };
+
 
   const getNotifications = async () => {
     setCurrentView('Notifications');
@@ -448,6 +480,147 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
     }
  }
 
+ const handleCreateChannel = async () => {
+  try {
+    const channelData = {
+      name: ChannelName, // From your state
+      password: passwordInput, // From your state, could be empty if not private
+      visibility: channelVisibility, // From your state
+      admin: user[0].id,
+      owner: user[0].id,
+      memberIds: user[0].id // The current user's ID
+    };
+    if (!ChannelName){
+      console.log("need a name for the channel");
+      return ;
+    }
+    const response = await fetch('http://127.0.0.1:3001/channels/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // if you're including credentials like cookies
+      body: JSON.stringify(channelData),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error while creating channel:', errorData.error);
+      if (response.status === 409) {
+          console.log("channel name already taken");
+          return;
+        }
+    }
+    const newChannel = await response.json();
+    const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // if you're including credentials like cookies
+      body: JSON.stringify({ channelId: newChannel.id, userId: user[0].id }),
+    });
+    if (!responsetwo.ok) {
+      throw new Error(`Network response was not ok: ${response.statusText}`);
+    }
+  } catch (error) {
+    console.error('Error during channel creation:', error);
+  }
+  setChannelName('');
+  setPasswordInput('');
+  if (currentView === 'Channel') {
+      getChannel();
+  }
+};
+
+const handleJoinChannel  = async () => {
+  try {
+      const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${ChannelName}`, {
+      method: 'GET',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      });
+      if (response.ok){
+          const responseData = await response.json();
+          if (responseData.password) {
+              if (!passwordInput || (passwordInput !== responseData.password)){
+                  console.log("wrong password or password missing1")
+                  return;
+              }
+          const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json',
+          },
+          credentials: 'include', // if you're including credentials like cookies
+          body: JSON.stringify({ channelId: responseData.id, userId: user[0].id }),
+          });
+          if (!responsetwo.ok) {
+              throw new Error(`Network response was not ok: ${response.statusText}`);
+          }
+          const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json',
+          },
+          credentials: 'include', // if you're including credentials like cookies
+          body: JSON.stringify({ channelName: responseData.name }),
+          });
+          if (!responsethree.ok) {
+              throw new Error(`Network response was not ok: ${response.statusText}`);
+          }
+          }
+          else {
+              if (passwordInput){
+                  console.log("wrong password or password missing");
+                  return ;
+              }
+              else {
+                  const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
+                  method: 'POST',
+                  headers: {
+                  'Content-Type': 'application/json',
+                  },
+                  credentials: 'include', // if you're including credentials like cookies
+                  body: JSON.stringify({ channelId: responseData.id, userId: user[0].id }),
+                  });
+                  if (!responsetwo.ok) {
+                      throw new Error(`Network response was not ok: ${response.statusText}`);
+                  }
+                  try {
+                      const responsefor = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
+                      method: 'POST',
+                      headers: {
+                      'Content-Type': 'application/json',
+                      },
+                      credentials: 'include',
+                      body: JSON.stringify({ channelName: responseData.name }),
+                      });
+                      if (!responsefor.ok) {
+                      throw new Error(`Network response was not ok: ${responsefor.statusText}`);
+                      }
+                          // ... autres traitements ...
+                  }catch (error) {
+                      console.log("Caught an error:", error);
+                  }  
+              }
+          }
+      }
+      else {
+          console.log('unable to find channel:', ChannelName);
+          return;
+      }
+  } catch (error) {
+      console.log('Error during join channel:', error);
+  }
+  setPasswordInput('');
+  setChannelName('');
+  if (currentView === 'Channel') {
+      getChannel();
+  }
+};
+
   return (
             <div style={{height: "600px",position: "relative"}}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -541,6 +714,99 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
         onBlur={() => setIsTyping(false)} />
               </ChatContainer>                         
             </MainContainer>
+            {currentView === 'Channel' && (
+              <div>
+            <Fab color="secondary" aria-label="add" style={{ position: 'fixed', bottom: '8rem', right: '4rem' }} onClick={handleSecondOpen}>
+              <ConnectWithoutContactIcon />
+            </Fab>
+            <Fab color="primary" aria-label="add" style={{ position: 'fixed', bottom: '4rem', right: '4rem' }} onClick={handleOpen}>
+              <ConstructionIcon />
+            </Fab>
+            <Modal
+                open={secondOpen}
+                onClose={handleSecondClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description">
+                  <div>
+                     <Box sx={style}>
+                     <input
+                        type="text"
+                        value={joinChannel}
+                        onChange={(e) => setJoinChannel(e.target.value)}
+                        placeholder="Channel Name"
+                        className="input-small"
+                    />
+                    <Button variant="outline" className="button-small" onClick={handleJoinChannel}>Join Channel</Button>
+                    </Box>
+                  </div>
+            </Modal>
+            <Modal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                     <Box sx={style}>
+                     <div className="flex items-center justify-center">
+                          <input
+                        type="text"
+                        value={ChannelName}
+                        onChange={(e) => setChannelName(e.target.value)}
+                        placeholder="Channel Name"
+                        className="input-small"
+                        />
+                        </div>
+                        <div>
+                     <input
+                        type="radio"
+                        id="public"
+                        name="visibility"
+                        value="public"
+                        checked={channelVisibility === 'public'}
+                        onChange={(e) => setChannelVisibility(e.target.value)}
+                    />
+                    <label htmlFor="public" className="mr-4">Public</label>
+                    <input
+                        type="radio"
+                        id="private"
+                        name="visibility"
+                        value="private"
+                        checked={channelVisibility === 'private'}
+                        onChange={(e) => setChannelVisibility(e.target.value)}
+                    />
+                    <label htmlFor="private">Private</label>
+                    </div>
+                    {channelVisibility === 'private' && (
+                    <div className="mt-4">
+                    <TextField
+                      type={showPassword ? 'text' : 'password'}
+                      value={passwordInput}
+                      onChange={(e) => setPasswordInput(e.target.value)}
+                      placeholder="Channel password"
+                      required
+                      fullWidth
+                      style={{ width: '200px' }}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <button
+                              type="button"
+                              onClick={togglePasswordVisibility}
+                              style={{ border: 'none', background: 'none', cursor: 'pointer' }}
+                            >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </button>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  </div>
+                    )}
+                    <Button variant="outline" className="button-small mt-4" onClick={handleCreateChannel}>Create Channel</Button>
+                    </Box>
+            </Modal>
+            </div>
+            )}
           </div>
 );
 }
