@@ -47,7 +47,7 @@ const social = () => {
     const [friendsRequestList, setFriendsRequestList] = useState<Friend[]>([]);
     const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
-    const [chatContext, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
+    const [chatContext, setChatContext] = useState<{ channelname: string, id: number, userIds: number }>({ channelname: 'null', id: 0, userIds: 0 });
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
@@ -93,11 +93,16 @@ const social = () => {
       if (socket) {
           console.log('socket exist');
           socket.on('new_message', (message: any) => {
-              console.log('in new message listener');
-              if (currentView === 'Friends' && chatContext.userIds === message.senderId) {
+              if (currentView === 'Friends' && (chatContext.userIds === message.senderId) || message.senderId === user[0].id) {
                 fetchChat(message);
               }
           });
+
+		  socket.on('new_channel_message', (message: any) => {
+            console.log('in new_channel_message listener = ', message.channelName);
+            if (currentView === 'Channel' && chatContext.id === message.channelId)
+				fetchChannelChatHistory(message.channelName.toString());
+        });
 
           socket.on('friendConnected', () => {
             console.log('in friendConnected listener');
@@ -123,6 +128,7 @@ const social = () => {
             socket.off('new_message');
             socket.off('friendDisconnected');
             socket.off('new_friend');
+			socket.off('new_channel_message');
           };
         }
       }, [socket, chatHistory, friendsList]);
@@ -307,7 +313,7 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
       if (response.ok) {
           const friendId = Number(await response.json());
           const userId = Number(user[0].id);
-  setChatContext({ id: 0, userIds: friendId });
+  setChatContext({ channelname: 'null', id: 0, userIds: friendId });
   const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${userId}/${friendId}`, {
     method: 'GET',
     headers: {
@@ -332,23 +338,47 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
   };
 
   const sendMessage = async () => {
+	let membersIDS;
     if (inputMessage.trim() === '') return; // Prevent sending empty messages
-let messagedata;
+	if (chatContext.id) {
+		try {
+		const response = await fetch(`http://127.0.0.1:3001/channels/returnMembers/${chatContext.id}`, {
+    	method: 'GET',
+    	headers: {
+      	'Content-Type': 'application/json',
+    	},
+    	credentials: 'include',
+  		});
+    	if (response.ok) {
+			const membersId = await response.json();
+			membersIDS = membersId.map((id: string) => parseInt(id, 10));
+			console.log('returned members = ', membersIDS);
+		}
+		else {
+			console.log('reponse not ok');
+		}
+		}catch(error) {
+		console.log('unable to get membersId from channel', error);
+		}
+	}
+	let messagedata;
     if (chatContext.id === 0) { // It's a private chat
-  messagedata = {
+  	messagedata = {
     content: inputMessage,
     senderId: user[0].id, // Assuming user[0].id is the current user's id
     avatar: user[0].avatar,
     createdAt: new Date(),
     recipientId: chatContext.userIds // Array containing both user IDs
-  };
-} else {
-  messagedata = {     // It's a channel chat
+  	};
+	} else {
+  	messagedata = {     // It's a channel chat
     content: inputMessage,
     senderId: user[0].id, // Assuming user[0].id is the current user's id
-    avatar: user[0].id,
+    avatar: user[0].avatar,
     createdAt: new Date(),
-    channelId: chatContext.id
+    channelId: chatContext.id,
+	recipientId: membersIDS,
+	channelName: chatContext.channelname
   };
 }
     try {
@@ -364,8 +394,13 @@ let messagedata;
             throw new Error(`Network response was not ok: ${response.statusText}`);
         }
         // Emit the 'new message' event to the server with the messageData
-        if (socket)
-            socket.emit('new_message', messagedata)
+        if (socket) {
+			if (!chatContext.id)
+				socket.emit('new_message', messagedata);
+			else{
+				socket.emit('new_channel_message', messagedata);
+			}
+		}
         // Handle the acknowledgment from the server
         // Optionally add the message to the chat history state directly
         //fetchFriendChatHistory(chatContext.userIds);
@@ -387,15 +422,26 @@ let messagedata;
         },
         credentials: 'include',
         });
-        console.log('context = ');
         if (response.ok) {
-            console.log('context = ');
             const channel = await response.json();
-            setChatContext({ id: channel.id, userIds: 0 });
-            console.log('context = ', channel);
+            setChatContext({ channelname: channelName, id: channel.id, userIds: 0 });
+			const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${channel.id}`, {
+    		method: 'GET',
+    		headers: {
+      		'Content-Type': 'application/json',
+    		},
+    		credentials: 'include',
+  		});
+      	if (chatHistoryResponse.ok) {
+        	const chathistory = await chatHistoryResponse.json();
+        	setChatHistory(chathistory);
+      } else {
+        // Handle errors in fetching chat history
+        console.error('Error fetching chat history');
+      }
         }
         else {
-          console.log('no context');
+          console.log('no channel found');
         }
     }catch(error){
         console.log('error while fetching channel data', error);

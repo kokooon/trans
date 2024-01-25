@@ -31,6 +31,36 @@ export class chatHistoryController {
       }
   }
 
+  @Get('history/:channelId')
+  async getChannelHistory(@Param('channelId') channelId: number): Promise<ChatMessage[]> {
+      try {
+        const chatMessages: ChatMessage[] = [];
+          const chatHistories = await this.chatHistoryService.getChannelHistory(channelId);
+          if (!chatHistories) {
+              throw new HttpException('Chat history not found', HttpStatus.NOT_FOUND);
+          }else {
+            chatHistories.forEach(chatHistory => {
+                // Parse the JSON string in the messages field
+                const messages = JSON.parse(chatHistory.messages);
+                // messages is now an array of message objects
+                // Access the content property of each message
+                messages.forEach(message => {
+                    const messageToAdd: ChatMessage = { // Ensure the object matches ChatMessage type
+                        content: message.content,
+                        avatar: message.avatar,
+                        senderPseudo: message.userPseudo,
+                        createdAt: message.createdAt
+                      };
+                      chatMessages.push(messageToAdd);
+                });
+              });
+            return chatMessages;
+          }
+      } catch (error) {
+          throw new HttpException('Error fetching chat history', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+  }
+
   @Get('history/:userId/:friendId')
   async getFriendHistory(@Param('userId') userId: number, @Param('friendId') friendId: number): Promise<ChatMessage[]> {
       try {

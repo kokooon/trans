@@ -50,6 +50,23 @@ async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
       this.server.to(recipientSocketId).emit('new_friend', data);
   }
 }
+// Handle 'new message' event
+@SubscribeMessage('new_channel_message')
+async handleNewChannelMessage(@MessageBody() data: any, client: Socket): Promise<void> {
+const senderSocketId = getSocketIdByUserId(data.senderId);
+if (senderSocketId) {
+  this.server.to(senderSocketId).emit('new_channel_message', data);
+}
+data.recipientId.forEach(recipientId => {
+  const recipientSocketId = getSocketIdByUserId(recipientId);
+
+  if (recipientSocketId) {
+    this.server.to(recipientSocketId).emit('new_channel_message', data);
+  }
+});
+}
+//loop in data.recipientId[] and emit event if socket of this user exist
+
 
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);

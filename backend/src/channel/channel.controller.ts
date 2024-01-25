@@ -37,7 +37,7 @@ export class ChannelController {
   async findChannelByName(@Param('channelName') channelName: string,  @Req() req, @Res() res): Promise<Channel | void> {
     const channel = await this.channelService.findChannelByName(channelName);
     if (channel)
-      return channel;
+    return res.status(201).json(channel);
     else
       return res.status(409).json({ error: 'can\'t find channel' });
   }
@@ -49,4 +49,15 @@ export class ChannelController {
       await this.channelService.addUserId(userId, channel);
     }
   // Add other endpoints as needed for updating, deleting, or listing channels
+
+@Get('returnMembers/:channelId') // Définissez le paramètre dans l'URL comme ":userId"
+    async returnChannelMembers(@Param('channelId') channelId: number,  @Req() req, @Res() res): Promise<number[] | void> {
+  const channel = await this.channelService.findChannelById(channelId);
+  console.log('channel members id = ', channel.memberIds);
+    if (channel) {
+      return res.status(201).json(channel.memberIds);
+    }
+    else
+      return res.status(409).json({ error: 'can\'t find channel' });
+  }
 }

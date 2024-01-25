@@ -23,18 +23,15 @@ export class chatHistoryService {
           { user1Id: friendId, user2Id: userId }
       ]
       });
-    /* Transform the data into a cleaner format
-    const transformedChatHistory = 
-        return {
-            messageId: message.id,
-            senderId: message.senderId,
-            content: message.content,
-            timestamp: message.createdAt, // Format date if needed
-            // Include other necessary fields
-        };
-    });*/
-
     return chatHistories;
+}
+
+async getChannelHistory(channelid: number): Promise<any> {
+  // Fetch the raw chat history data
+  const chatHistories = await this.chatHistoryRepository.find({
+    where: [{ channelId: channelid}]
+    });
+  return chatHistories;
 }
 
   async addOrUpdateMessage(createMessageDto: CreateMessageDto): Promise<chatHistory> {
