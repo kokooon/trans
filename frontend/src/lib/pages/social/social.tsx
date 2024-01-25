@@ -111,11 +111,18 @@ const social = () => {
             getFriends();
         });
 
+        socket.on('new_friend', () => {
+          console.log('new friend');
+          if (currentView === 'Friends')
+            getFriends();
+        });
+
           // Clean up the listener
           return () => {
             socket.off('friendConnected');
             socket.off('new_message');
             socket.off('friendDisconnected');
+            socket.off('new_friend');
           };
         }
       }, [socket, chatHistory, friendsList]);
@@ -254,6 +261,11 @@ const handleAccept = async (friend: string, index: number) => {
       }
   } catch (error) {
       console.error('Erreur lors de l\'ajout du friend :', error);
+ }
+ if (socket)
+ {
+   const data = {recipientId: friend };
+   socket.emit('new_friend', data)
  }
  getNotifications();
  const newAnchorElArray = [...anchorElArray];

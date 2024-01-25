@@ -39,6 +39,18 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 }
 
+@SubscribeMessage('new_friend')
+async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
+
+  console.log('Received data in gateway for message:', data);
+  const friendid = await this.userService.findIdByPseudo(data.recipientId);
+  const recipientSocketId = getSocketIdByUserId(friendid);
+  console.log('recipient socker id = ', recipientSocketId)
+  if (recipientSocketId) {
+      this.server.to(recipientSocketId).emit('new_friend', data);
+  }
+}
+
   async handleConnection(client: Socket, ...args: any[]) {
     console.log(`Client connected: ${client.id}`);
     client.join(client.id)
