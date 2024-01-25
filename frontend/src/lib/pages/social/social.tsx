@@ -41,6 +41,7 @@ type Friend = {
 
 const social = () => {
     const [friendsList, setFriendsList] = useState<Friend[]>([]);
+    const [friendsRequestList, setFriendsRequestList] = useState<Friend[]>([]);
     const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
     const [chatContext, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
@@ -51,6 +52,7 @@ const social = () => {
     const [anchorElArray, setAnchorElArray] = useState<(HTMLElement | null)[]>([]);
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
     const [isTyping, setIsTyping] = useState(false);
+    Lists;
     // const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     // const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
     // const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
@@ -72,8 +74,9 @@ const social = () => {
           console.log('socket exist');
           socket.on('new_message', (message: any) => {
               console.log('in new message listener');
-              fetchChat(message);
-              
+              if (currentView === 'Friends' && chatContext.userIds === message.senderId) {
+                fetchChat(message);
+              }
           });
 
           socket.on('friendConnected', () => {
@@ -107,7 +110,7 @@ const social = () => {
     setCurrentView('Notifications');
     const userData = await fetchUserDetails();
     try {
-        const friendsList = []; // Créez une nouvelle liste pour les amis
+        const friendsRequestList = []; // Créez une nouvelle liste pour les amis
 
         for (let i = 0; i < userData[0].friendNotif.length; i++) {
             const friendId = userData[0].friendNotif[i];
@@ -117,13 +120,13 @@ const social = () => {
                 credentials: 'include',
             });
             if (response.ok) {
-                const responseData = await response.text();
-                friendsList.push(responseData);
+                const responseData = await response.json();
+                friendsRequestList.push(responseData);
             } else {
                 console.error('Get friends failed for friendId:', friendId);
             }
         }
-        setLists([...friendsList]);
+        setFriendsRequestList(friendsRequestList);
     } catch (error) {
         console.error('Error during get notifs:', error);
     }
@@ -216,6 +219,7 @@ const fetchChat = async (messageData: any) => {
 }
 
 const handleAccept = async (friend: string, index: number) => {
+  console.log('param of accept = ', friend);
   try {
       const response = await fetch('http://127.0.0.1:3001/users/AcceptFriend', {
           method: 'POST',
@@ -354,14 +358,14 @@ let messagedata;
               <Sidebar position="left" scrollable={true}>
               {currentView === 'Notifications' && (
                 <ConversationList>
-                 {Lists.map((notification,index) => (
+                 {friendsRequestList.map((user,index) => (
                         <div key={index}>
-                        <Conversation name={notification} info="Veux-tu être mon ami ?" onClick={handleClick(index)}>
-                        <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg"/>
+                        <Conversation name={user.pseudo} info="Veux-tu être mon ami ?" onClick={handleClick(index)}>
+                        <Avatar src={user.avatar}/>
                         </Conversation>
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
-                        <MenuItem style={{ color: 'green' }} onClick={() => handleAccept(notification, index)}>Accepter</MenuItem>
-                        <MenuItem style={{ color: 'red' }} onClick={() => handleDecline(notification, index)}>Supprimer</MenuItem>
+                        <MenuItem style={{ color: 'green' }} onClick={() => handleAccept(user.pseudo, index)}>Accepter</MenuItem>
+                        <MenuItem style={{ color: 'red' }} onClick={() => handleDecline(user.pseudo, index)}>Supprimer</MenuItem>
                         </Menu>
                         </div>
                     ))}
