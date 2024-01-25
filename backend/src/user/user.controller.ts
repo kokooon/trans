@@ -10,6 +10,8 @@ import { Request, Response } from 'express';
 import { findUserById } from '../entities/socket.map';
 import { getSocketIdByUserId } from '../entities/socket.map';
 
+type UserStatus = 'available' | 'invisible';
+
 @Controller('users')
 export class UserController {
   constructor(
@@ -214,7 +216,7 @@ export class UserController {
               const friend = {
                 pseudo: user.pseudo,
                 avatar: user.avatar,
-                status: 'offline' // Assuming default status is false
+                status: 'invisible' // Assuming default status is false
               };
               return friend;
             }

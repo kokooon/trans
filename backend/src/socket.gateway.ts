@@ -49,12 +49,12 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
         const friends = await this.userService.getFriends(userId);
         console.log('Friends:', friends);
         if (friends.length > 0) {
-          const connectedUserData = { userId, disconnected: false };
+          //const connectedUserData = { userId, disconnected: false };
           for (const friendId of friends) {
             const friendSocketId = getSocketIdByUserId(Number(friendId));
             if (friendSocketId) {
               console.log(`J'emets un signal de connection au front a: ${friendId}`);
-              this.server.to(friendSocketId).emit('friendConnected', connectedUserData);
+              this.server.to(friendSocketId).emit('friendConnected');
             } else {
               console.log(`No friendSocketId found for friend: ${friendId}`);
             }
@@ -88,7 +88,7 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
             if (friendSocketId) {
               console.log(`J'emets un signal de deconnection au front a: ${friendId}`);
-              this.server.to(friendSocketId).emit('friendDisconnected', disconnectedUserData);
+              this.server.to(friendSocketId).emit('friendDisconnected');
             }
             else {
               console.log(`No friendSocketId found for friend: ${friendId}`);

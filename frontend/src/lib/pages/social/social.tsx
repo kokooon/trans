@@ -24,6 +24,8 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import "../../styles/social.css"
 
+type UserStatus = 'available' | 'invisible';
+
 type ChatMessage = {
   senderPseudo: string;
   content: string;
@@ -34,7 +36,7 @@ type ChatMessage = {
 type Friend = {
   pseudo: string;
   avatar: string;
-  status: string;
+  status: UserStatus;
 };
 
 const social = () => {
@@ -73,12 +75,27 @@ const social = () => {
               fetchChat(message);
               
           });
+
+          socket.on('friendConnected', () => {
+            console.log('in friendConnected listener');
+            if (currentView === 'Friends')
+              getFriends();
+        });
+
+        socket.on('friendDisconnected', () => {
+          console.log('in friendDisconnected listener');
+          if (currentView === 'Friends')
+            getFriends();
+        });
+
           // Clean up the listener
           return () => {
+            socket.off('friendConnected');
             socket.off('new_message');
+            socket.off('friendDisconnected');
           };
         }
-      }, [socket, chatHistory]);
+      }, [socket, chatHistory, friendsList]);
 
       const handleClick = (currentIndex: number) => (event: React.MouseEvent<HTMLElement>) => {
         const newAnchorElArray = [...anchorElArray];
@@ -364,7 +381,7 @@ let messagedata;
                       }} 
                       active={friend.pseudo === activeFriend}
                       >
-                    <Avatar src={friend.avatar} status={'available'}/>
+                    <Avatar src={friend.avatar} status={friend.status}/>
                 </Conversation>
               </div>
                 ))}
