@@ -40,7 +40,8 @@ type Friend = {
 };
 
 const social = () => {
-    const [friendsList, setFriendsList] = useState<Friend[]>([]);
+    const [channelList, setChannelList] = useState<string[]>([]);
+    const [friendsList, setFriendsList] = useState<Friend[]>([]); 
     const [friendsRequestList, setFriendsRequestList] = useState<Friend[]>([]);
     const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
@@ -185,7 +186,6 @@ const getBlock  = async () => {
 const getChannel = async () => {
   setCurrentView('Channel');
   const userData = await fetchUserDetails();
-  console.log(userData[0].channels);
   const List = [];
   for (let i = 0; i < userData[0].channels.length; i++) {
       const channelId = userData[0].channels[i];
@@ -197,8 +197,10 @@ const getChannel = async () => {
               const responseData = await response.text();
               List.push(responseData);
           }
-      setLists([...List]);
-  }
+    }
+    channelList;
+    console.log('channel list = ', List);
+    setChannelList(List);
 }
 
 const fetchChat = async (messageData: any) => {
@@ -345,6 +347,10 @@ let messagedata;
 };
 
 
+ const fetchChannelChatHistory = async (channelName: string) => {
+  channelName;
+ }
+
   return (
             <div style={{height: "600px",position: "relative"}}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -391,6 +397,22 @@ let messagedata;
                 ))}
               </ConversationList>
               )}
+              {currentView === 'Channel' && (
+                    <ConversationList>
+                    {channelList.map((channel, index) => (
+                        <div key={index}>
+                        <Conversation 
+                    name={channel} 
+                    info="dernier message reçu" 
+                    onClick={() => {
+                    fetchChannelChatHistory(channel);
+                      }} 
+                      >
+                </Conversation>
+              </div>
+                ))}
+              </ConversationList>
+              )}
               </Sidebar>
               <ChatContainer>
                 <ConversationHeader>
@@ -402,9 +424,9 @@ let messagedata;
                   </ConversationHeader.Actions>          
                 </ConversationHeader>
                 <MessageList typingIndicator={isTyping ? <TypingIndicator content={`${activeFriend} is typing`} /> : null}>
-                  <MessageSeparator content="Saturday, 30 November 2077" />
+                  <MessageSeparator content={`26 janvier 2024`} />
                   {chatHistory.map((chatMessage, index) => (
-                  <Message 
+                  <Message
                   key={index}
                   model={{
                   message: chatMessage.content,
