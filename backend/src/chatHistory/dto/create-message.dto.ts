@@ -9,6 +9,10 @@ export class CreateMessageDto {
   @IsInt()
   senderId: number; // The ID of the user sending the message
 
+  @IsNotEmpty()
+  @IsInt()
+  avatar: string; // The ID of the user sending the message
+
   @IsOptional()
   @IsInt()
   recipientId?: number; // Optional: The ID of the user to whom the message is sent directly (for private chats)

@@ -11,6 +11,7 @@ type ChatMessage = {
     senderPseudo: string;
     content: string;
     createdAt: string;
+    avatar: string;
     };
 
 @Controller('chatHistory')
@@ -46,6 +47,7 @@ export class chatHistoryController {
                 messages.forEach(message => {
                     const messageToAdd: ChatMessage = { // Ensure the object matches ChatMessage type
                         content: message.content,
+                        avatar: message.avatar,
                         senderPseudo: message.userPseudo,
                         createdAt: message.createdAt
                       };

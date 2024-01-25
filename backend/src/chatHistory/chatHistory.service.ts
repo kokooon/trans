@@ -38,7 +38,7 @@ export class chatHistoryService {
 }
 
   async addOrUpdateMessage(createMessageDto: CreateMessageDto): Promise<chatHistory> {
-    const { senderId, recipientId, channelId, content, createdAt } = createMessageDto;
+    const { senderId, recipientId, channelId, content, createdAt, avatar } = createMessageDto;
 
     let userIds: number[] | undefined;
     const user = await this.userService.findById(senderId);
@@ -66,12 +66,12 @@ export class chatHistoryService {
         channelId, 
         user1Id: userIds ? userIds[0] : null,
         user2Id: userIds ? userIds[1] : null,
-        messages: JSON.stringify([{ userPseudo, content, createdAt }])
+        messages: JSON.stringify([{ userPseudo, content, createdAt, avatar }])
       });
     } else {
       // Update existing chat history
       const messages = chatHistory.messages ? JSON.parse(chatHistory.messages) : [];
-      messages.push({ userPseudo, content, createdAt });
+      messages.push({ userPseudo, content, createdAt, avatar });
       chatHistory.messages = JSON.stringify(messages);
     }
   

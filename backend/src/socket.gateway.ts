@@ -25,7 +25,6 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // ...
   // Example: Emitting the message to the recipient
   console.log('Received data in gateway for message:', data);
-  console.log('in gateway for message');
   const recipientSocketId = getSocketIdByUserId(data.recipientId);
   console.log('recipient socker id = ', recipientSocketId)
   const senderSocketId = getSocketIdByUserId(data.senderId);

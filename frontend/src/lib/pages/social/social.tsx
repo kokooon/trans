@@ -28,12 +28,13 @@ type ChatMessage = {
   senderPseudo: string;
   content: string;
   createdAt: string;
+  avatar: string;
   };
 
 type Friend = {
   pseudo: string;
   avatar: string;
-  status: string; 
+  status: string;
 };
 
 const social = () => {
@@ -122,7 +123,6 @@ const getFriends  = async () => {
               method: 'GET',
               credentials: 'include',
           });
-
           if (response.ok) {
             const friendData = await response.json();
             newFriendsList.push(friendData);
@@ -182,7 +182,6 @@ const getChannel = async () => {
 }
 
 const fetchChat = async (messageData: any) => {
-  console.log('in fetchchat');
   const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${messageData.senderId}/${messageData.recipientId}`, {
     method: 'GET',
     headers: {
@@ -192,20 +191,7 @@ const fetchChat = async (messageData: any) => {
   });
   if (chatHistoryResponse.ok) {
     const chathistory = await chatHistoryResponse.json();
-    /*const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
-                  // Convertit la chaîne JSON en tableau d'objets
-                  const messagesArray = JSON.parse(chatData.messages);
-                  // Mappe sur les messages pour formater les dates
-                  const formattedMessages = messagesArray.map((message: ChatMessage) => {
-                      message.createdAt = new Date(message.createdAt).toLocaleString();
-                      return message;
-                  });
-              
-                  // Return the array of original messages
-                  return formattedMessages;
-              });*/
     setChatHistory(chathistory);
-    //console.log('chat refreshed = ', formattedChatHistory);
   } else {
     // Handle errors in fetching chat history
     console.error('Error fetching chat history');
@@ -278,18 +264,6 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
   });
       if (chatHistoryResponse.ok) {
         const chathistory = await chatHistoryResponse.json();
-        /*const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
-                      // Convertit la chaîne JSON en tableau d'objets
-                      const messagesArray = JSON.parse(chatData.messages);
-                      // Mappe sur les messages pour formater les dates
-                      const formattedMessages = messagesArray.map((message: ChatMessage) => {
-                          message.createdAt = new Date(message.createdAt).toLocaleString();
-                          return message;
-                      });
-                  
-                      // Return the array of original messages
-                      return formattedMessages;
-                  });*/
         setChatHistory(chathistory);
       } else {
         // Handle errors in fetching chat history
@@ -311,6 +285,7 @@ let messagedata;
   messagedata = {
     content: inputMessage,
     senderId: user[0].id, // Assuming user[0].id is the current user's id
+    avatar: user[0].avatar,
     createdAt: new Date(),
     recipientId: chatContext.userIds // Array containing both user IDs
   };
@@ -318,6 +293,7 @@ let messagedata;
   messagedata = {     // It's a channel chat
     content: inputMessage,
     senderId: user[0].id, // Assuming user[0].id is the current user's id
+    avatar: user[0].id,
     createdAt: new Date(),
     channelId: chatContext.id
   };
@@ -417,7 +393,7 @@ let messagedata;
                   position: 0 // Adjust position as necessary
                   }}
                   >
-                  <Avatar src="https://example.com/avatar.jpg" size="sm" /> {/* Replace with actual avatar logic */}
+                  <Avatar src={chatMessage.avatar} size="sm" /> {/* Replace with actual avatar logic */}
                   </Message>
                   ))}
                   </MessageList>
