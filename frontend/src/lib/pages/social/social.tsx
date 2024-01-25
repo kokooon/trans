@@ -16,8 +16,9 @@ import {
   TypingIndicator,
   Avatar,
 } from "@chatscope/chat-ui-kit-react";
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/lib/components/ui/button";
-import { fetchUserDetails } from '../../components/utils/UtilsFetch';
+import { fetchUserDetails, isTokenValid, isUserConnected } from '../../components/utils/UtilsFetch';
 import { UserNav } from '@/lib/components/ui/user-nav';
 import { useSocket } from '../../components/utils/socketContext';
 import Menu from '@mui/material/Menu';
@@ -40,6 +41,7 @@ type Friend = {
 };
 
 const social = () => {
+    const navigate = useNavigate();
     const [channelList, setChannelList] = useState<string[]>([]);
     const [friendsList, setFriendsList] = useState<Friend[]>([]); 
     const [friendsRequestList, setFriendsRequestList] = useState<Friend[]>([]);
@@ -66,8 +68,25 @@ const social = () => {
     // const handleClose = () => setOpen(false);
     useEffect(() => {
       const fetchData = async () => {
-        const userData = await fetchUserDetails();
-        setUser(userData); 
+        try {
+          const isValid = await isTokenValid();
+          if (!isValid) {
+              navigate('/login');
+              return;
+          }
+          const userData = await fetchUserDetails();
+          if (userData[0].is2FAEnabled !== false) {
+              const isConnected = await isUserConnected();
+              console.log(isConnected);
+              if (!isConnected) {
+                  navigate('/2fa');
+              }
+          }
+          setUser(userData);
+          }
+          catch (error) {
+              console.error('Error:', error);
+          }
       };
       fetchData();
       console.log('in useEffects');
