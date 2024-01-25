@@ -529,7 +529,7 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
                   message: chatMessage.content,
                   sentTime: chatMessage.createdAt,
                   sender: chatMessage.senderPseudo,
-                  direction: chatMessage.senderPseudo === activeFriend ? 1 : 0, // Adjust direction based on sender
+                  direction: chatMessage.senderPseudo === activeFriend ? 0 : 1, // Adjust direction based on sender
                   position: 0 // Adjust position as necessary
                   }}
                   >
