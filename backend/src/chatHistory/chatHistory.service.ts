@@ -23,8 +23,8 @@ export class chatHistoryService {
           { user1Id: friendId, user2Id: userId }
       ]
       });
-    // Transform the data into a cleaner format
-    /*const transformedChatHistory = rawChatHistory.map(message => {
+    /* Transform the data into a cleaner format
+    const transformedChatHistory = 
         return {
             messageId: message.id,
             senderId: message.senderId,

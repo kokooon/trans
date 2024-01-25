@@ -24,10 +24,16 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import "../../styles/social.css"
 
+type ChatMessage = {
+  senderPseudo: string;
+  content: string;
+  createdAt: string;
+  };
+
 type Friend = {
   pseudo: string;
   avatar: string;
-  status: boolean; // true for online, false for offline
+  status: string; 
 };
 
 const social = () => {
@@ -35,15 +41,13 @@ const social = () => {
     const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
     const [chatContext, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
-    const [chatHistory, setChatHistory] = useState<any[]>([]);
+    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
     const [anchorElArray, setAnchorElArray] = useState<(HTMLElement | null)[]>([]);
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
     const [isTyping, setIsTyping] = useState(false);
-  
-
     // const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     // const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
     // const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
@@ -54,14 +58,6 @@ const social = () => {
     // const [open, setOpen] = useState(false);
     // const handleOpen = () => setOpen(true);
     // const handleClose = () => setOpen(false);
-    
-
-    type ChatMessage = {
-      senderPseudo: string;
-      content: string;
-      createdAt: string;
-      };
-
     useEffect(() => {
       const fetchData = async () => {
         const userData = await fetchUserDetails();
@@ -196,7 +192,7 @@ const fetchChat = async (messageData: any) => {
   });
   if (chatHistoryResponse.ok) {
     const chathistory = await chatHistoryResponse.json();
-    const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
+    /*const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
                   // Convertit la chaîne JSON en tableau d'objets
                   const messagesArray = JSON.parse(chatData.messages);
                   // Mappe sur les messages pour formater les dates
@@ -207,9 +203,9 @@ const fetchChat = async (messageData: any) => {
               
                   // Return the array of original messages
                   return formattedMessages;
-              });
-    setChatHistory(formattedChatHistory);
-    console.log('chat refreshed = ', formattedChatHistory);
+              });*/
+    setChatHistory(chathistory);
+    //console.log('chat refreshed = ', formattedChatHistory);
   } else {
     // Handle errors in fetching chat history
     console.error('Error fetching chat history');
@@ -282,7 +278,7 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
   });
       if (chatHistoryResponse.ok) {
         const chathistory = await chatHistoryResponse.json();
-        const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
+        /*const formattedChatHistory = chathistory.flatMap((chatData: any) => {     
                       // Convertit la chaîne JSON en tableau d'objets
                       const messagesArray = JSON.parse(chatData.messages);
                       // Mappe sur les messages pour formater les dates
@@ -293,8 +289,8 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
                   
                       // Return the array of original messages
                       return formattedMessages;
-                  });
-        setChatHistory(formattedChatHistory);
+                  });*/
+        setChatHistory(chathistory);
       } else {
         // Handle errors in fetching chat history
         console.error('Error fetching chat history');
@@ -392,7 +388,7 @@ let messagedata;
                       }} 
                       active={friend.pseudo === activeFriend}
                       >
-                    <Avatar src={friend.avatar} status={friend.status ? "available" : "offline"}/>
+                    <Avatar src={friend.avatar} status={'available'}/>
                 </Conversation>
               </div>
                 ))}
@@ -410,16 +406,21 @@ let messagedata;
                 </ConversationHeader>
                 <MessageList typingIndicator={isTyping ? <TypingIndicator content={`${activeFriend} is typing`} /> : null}>
                   <MessageSeparator content="Saturday, 30 November 2077" />
-                  <Message model={{
-                    message: "exemple\nde\nmessage",
-                    sentTime: "15 mins ago",
-                    sender: "Zoe",
-                    direction: 1,
-                    position: 0
-                  }} avatarPosition="br">
-                    <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" size="sm"/>
-                    </Message>
-                </MessageList>
+                  {chatHistory.map((chatMessage, index) => (
+                  <Message 
+                  key={index}
+                  model={{
+                  message: chatMessage.content,
+                  sentTime: chatMessage.createdAt,
+                  sender: chatMessage.senderPseudo,
+                  direction: chatMessage.senderPseudo === activeFriend ? 1 : 0, // Adjust direction based on sender
+                  position: 0 // Adjust position as necessary
+                  }}
+                  >
+                  <Avatar src="https://example.com/avatar.jpg" size="sm" /> {/* Replace with actual avatar logic */}
+                  </Message>
+                  ))}
+                  </MessageList>
                 <MessageInput attachButton={false} placeholder="Type message here" value={inputMessage} onChange={(value: string) => setInputMessage(value)} onSend={sendMessage} onFocus={() => setIsTyping(true)}
         onBlur={() => setIsTyping(false)} />
               </ChatContainer>                         

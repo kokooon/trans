@@ -201,12 +201,23 @@ export class UserController {
       try {
         const user = await this.userService.findById(userId);
         if (user) {
-          const friend = {
-            pseudo: user.pseudo,
-            avatar: user.avatar,
-            status: false // Assuming default status is false
-          };
-          return friend;
+          const friendSocketId = getSocketIdByUserId(Number(userId));
+            if (friendSocketId) {
+              const friend = {
+                pseudo: user.pseudo,
+                avatar: user.avatar,
+                status: 'available' // Assuming default status is false
+              };
+              return friend;
+            }
+            else {
+              const friend = {
+                pseudo: user.pseudo,
+                avatar: user.avatar,
+                status: 'offline' // Assuming default status is false
+              };
+              return friend;
+            }
         } else {
           // Handle the case where user or user.pseudo is null or undefined
           return 'User not found or missing pseudo';
