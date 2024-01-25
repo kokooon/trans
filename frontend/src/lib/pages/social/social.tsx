@@ -34,7 +34,7 @@ const social = () => {
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
-    const [anchorEl, setAnchorEl] = useState<React.SetStateAction<HTMLElement | null>>(null);
+    const [anchorElArray, setAnchorElArray] = useState<(HTMLElement | null)[]>([]);
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
     const [isTyping, setIsTyping] = useState(false);
   
@@ -78,9 +78,11 @@ const social = () => {
         }
       }, [socket, chatHistory]);
 
-      const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-      };
+      const handleClick = (currentIndex: number) => (event: React.MouseEvent<HTMLElement>) => {
+        const newAnchorElArray = [...anchorElArray];
+        newAnchorElArray[currentIndex] = event.currentTarget;
+        setAnchorElArray(newAnchorElArray);
+    };
 
   const getNotifications = async () => {
     setCurrentView('Notifications');
@@ -207,7 +209,7 @@ const fetchChat = async (messageData: any) => {
       }
 }
 
-const handleAccept = async (friend: string) => {
+const handleAccept = async (friend: string, index: number) => {
   try {
       const response = await fetch('http://127.0.0.1:3001/users/AcceptFriend', {
           method: 'POST',
@@ -224,9 +226,12 @@ const handleAccept = async (friend: string) => {
       console.error('Erreur lors de l\'ajout du friend :', error);
  }
  getNotifications();
+ const newAnchorElArray = [...anchorElArray];
+ newAnchorElArray[index] = null;
+ setAnchorElArray(newAnchorElArray);
 }
 
-const handleDecline = async (friend: string) => {
+const handleDecline = async (friend: string, index: number) => {
   try {
       const response = await fetch('http://127.0.0.1:3001/users/RefuseFriend', {
           method: 'POST',
@@ -243,6 +248,9 @@ const handleDecline = async (friend: string) => {
       console.error('Erreur lors de l\'ajout du friend :', error);
   }
  getNotifications();
+ const newAnchorElArray = [...anchorElArray];
+ newAnchorElArray[index] = null;
+ setAnchorElArray(newAnchorElArray);
 }
 
 const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
@@ -353,12 +361,12 @@ let messagedata;
                 <ConversationList>
                  {Lists.map((notification,index) => (
                         <div key={index}>
-                        <Conversation name={notification} info="Veux-tu être mon ami ?" onClick={handleClick}>
+                        <Conversation name={notification} info="Veux-tu être mon ami ?" onClick={handleClick(index)}>
                         <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg"/>
                         </Conversation>
-                        <Menu anchorEl={anchorEl as Element | undefined} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-                        <MenuItem style={{ color: 'green' }} onClick={() => handleAccept(notification)}>Accepter</MenuItem>
-                        <MenuItem style={{ color: 'red' }} onClick={() => handleDecline(notification)}>Supprimer</MenuItem>
+                        <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
+                        <MenuItem style={{ color: 'green' }} onClick={() => handleAccept(notification, index)}>Accepter</MenuItem>
+                        <MenuItem style={{ color: 'red' }} onClick={() => handleDecline(notification, index)}>Supprimer</MenuItem>
                         </Menu>
                         </div>
                     ))}
