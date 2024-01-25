@@ -534,7 +534,7 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
 
 const handleJoinChannel  = async () => {
   try {
-      const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${ChannelName}`, {
+      const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${joinChannel}`, {
       method: 'GET',
       headers: {
       'Content-Type': 'application/json',
@@ -729,14 +729,12 @@ const handleJoinChannel  = async () => {
                 aria-describedby="modal-modal-description">
                   <div>
                      <Box sx={style}>
-                     <input
-                        type="text"
-                        value={joinChannel}
-                        onChange={(e) => setJoinChannel(e.target.value)}
-                        placeholder="Channel Name"
-                        className="input-small"
-                    />
+                     <input type="text" value={joinChannel} onChange={(e) => setJoinChannel(e.target.value)} placeholder="Channel Name" className="input-small"/>
+                     <input type="text" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)} placeholder="password (optional)" className="input-small"/>
+
                     <Button variant="outline" className="button-small" onClick={handleJoinChannel}>Join Channel</Button>
+                    <div>
+                    </div>
                     </Box>
                   </div>
             </Modal>
