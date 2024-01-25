@@ -29,13 +29,15 @@ const social = () => {
 
     const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
-    const [, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
+    const [chatContext, setChatContext] = useState<{ id: number, userIds: number }>({ id: 0, userIds: 0 });
     const [chatHistory, setChatHistory] = useState<any[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
     const [Lists, setLists] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
     const [anchorEl, setAnchorEl] = useState<React.SetStateAction<HTMLElement | null>>(null);
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
+    const [isTyping, setIsTyping] = useState(false);
+  
 
     // const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
     // const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
@@ -291,6 +293,50 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
     }
   };
 
+  const sendMessage = async () => {
+    console.log('send');
+    if (inputMessage.trim() === '') return; // Prevent sending empty messages
+let messagedata;
+    if (chatContext.id === 0) { // It's a private chat
+  messagedata = {
+    content: inputMessage,
+    senderId: user[0].id, // Assuming user[0].id is the current user's id
+    createdAt: new Date(),
+    recipientId: chatContext.userIds // Array containing both user IDs
+  };
+} else {
+  messagedata = {     // It's a channel chat
+    content: inputMessage,
+    senderId: user[0].id, // Assuming user[0].id is the current user's id
+    createdAt: new Date(),
+    channelId: chatContext.id
+  };
+}
+    try {
+        const response = await fetch('http://127.0.0.1:3001/chatHistory/newPrivateMessage', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include', // if you're including credentials like cookies
+            body: JSON.stringify(messagedata)
+          });
+          if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.statusText}`);
+        }
+        // Emit the 'new message' event to the server with the messageData
+        if (socket)
+            socket.emit('new_message', messagedata)
+        // Handle the acknowledgment from the server
+        // Optionally add the message to the chat history state directly
+        //fetchFriendChatHistory(chatContext.userIds);
+    }
+    catch (error) {
+        console.log("unable to add message");
+    }
+    setInputMessage(''); // Clear input field after sending
+};
+
 
   return (
             <div style={{height: "600px",position: "relative"}}>
@@ -323,7 +369,7 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
                 <ConversationList>
                  {Lists.map((friend,index) => (
                         <div key={index}>
-                        <Conversation name={friend} info="{dernier message recu}" onClick={() => {setActiveFriend(friend);fetchFriendChatHistory(friend);}} active={friend === activeFriend}>
+                        <Conversation name={friend} info="{dernier message recu" onClick={() => {setActiveFriend(friend);fetchFriendChatHistory(friend);}} active={friend === activeFriend}>
                         <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" status="available"/>
                         </Conversation>
                         </div>
@@ -336,23 +382,25 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
                 <ConversationHeader>
                   <ConversationHeader.Back />
                 
-                  <ConversationHeader.Content userName="Zoe" info="Active 10 mins ago" />
+                  <ConversationHeader.Content userName={activeFriend} info="Active ?? mins ago" />
                   <ConversationHeader.Actions>
                     <EllipsisButton orientation="vertical" />
                   </ConversationHeader.Actions>          
                 </ConversationHeader>
-                <MessageList typingIndicator={<TypingIndicator content="Zoe is typing" />}>
-                  <MessageSeparator content="Saturday, 30 November 2019" />
+                <MessageList typingIndicator={isTyping ? <TypingIndicator content={`${activeFriend} is typing`} /> : null}>
+                  <MessageSeparator content="Saturday, 30 November 2077" />
                   <Message model={{
-                    message: "Hello my friend",
+                    message: "exemple\nde\nmessage",
                     sentTime: "15 mins ago",
                     sender: "Zoe",
-                    direction: "incoming",
-                    position: "single"
-                  }}>
+                    direction: 1,
+                    position: 0
+                  }} avatarPosition="br">
+                    <Avatar src="https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg" size="sm"/>
                     </Message>
                 </MessageList>
-                <MessageInput placeholder="Type message here" value={inputMessage} onChange={val => setInputMessage(val)} />
+                <MessageInput attachButton={false} placeholder="Type message here" value={inputMessage} onChange={(value: string) => setInputMessage(value)} onSend={sendMessage} onFocus={() => setIsTyping(true)}
+        onBlur={() => setIsTyping(false)} />
               </ChatContainer>                         
             </MainContainer>
           </div>
