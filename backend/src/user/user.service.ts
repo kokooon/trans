@@ -219,6 +219,11 @@ async validate2FA(userId: number, is2FAValidate: boolean): Promise<void> {
     return user.id;
   }
 
+  async findPseudoById(userId: number): Promise<string | undefined> {
+    const user = this.userRepository.findOne({ where: { id: userId } });
+    return (await user).pseudo;
+  }
+
   async findById(userId: number): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { id: userId } });
   }

@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { chatHistoryService } from './chatHistory.service';
+import { UserModule } from '../user/user.module';
 import { chatHistory } from '../entities/chatHistory.entity';
 import { MyConfigModule } from 'src/config/myconfig.module';
 import { chatHistoryController } from './chatHistory.controller';
-import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [

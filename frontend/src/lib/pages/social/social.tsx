@@ -448,6 +448,8 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
 
 
  const fetchChannelChatHistory = async (channelName: string) => {
+		//let membersIDS;
+		let blockedUsers;
       console.log('in fetch channel history', channelName);
       try {
         const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${channelName}`, {
@@ -460,7 +462,38 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
         if (response.ok) {
             const channel = await response.json();
             setChatContext({ channelname: channelName, id: channel.id, userIds: 0 });
-			const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${channel.id}`, {
+			/*const responsethree = await fetch(`http://127.0.0.1:3001/channels/returnMembers/${channel.id}`, {
+    		method: 'GET',
+    		headers: {
+      			'Content-Type': 'application/json',
+    		},
+    		credentials: 'include',
+  			});
+    		if (responsethree.ok) {
+				const membersId = await responsethree.json();
+				membersIDS = membersId.map((id: string) => parseInt(id, 10));
+			}
+			else {
+				console.log('reponse not ok');
+			}*/
+			//get banlist;
+			const responsefor = await fetch(`http://127.0.0.1:3001/users/getBlocked/${user[0].id}`, {
+    		method: 'GET',
+    		headers: {
+      			'Content-Type': 'application/json',
+    		},
+    		credentials: 'include',
+  			});
+    		if (responsefor.ok) {
+				const blockedId = await responsefor.json();
+				blockedUsers = blockedId.map((id: string) => parseInt(id, 10));
+				if (blockedUsers.length === 0)
+					blockedUsers = [0];
+			}
+			else {
+				console.log('reponse not ok');
+			}
+			const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/channel/${channel.id}/${blockedUsers}`, {
     		method: 'GET',
     		headers: {
       		'Content-Type': 'application/json',

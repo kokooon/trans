@@ -28,6 +28,17 @@ export class UserController {
 			return res.status(409).json({ error: 'can\'t find id' });
     }
 
+    @Get('getBlocked/:userId')
+    async getBlockedUsers(@Param('userId') userId: number, @Req() req, @Res() res): Promise<number[] | void> {
+      const user = await this.userService.findById(userId);
+      if (user){
+        return res.status(201).json(user.banlist);
+      }
+      else {
+        return res.status(404).json('cant fetch user in getBlocked/:userId');
+      }
+    }
+
     //social
     @Get('getId/:pseudo')
     async findidByPseudo(@Param('pseudo') pseudo: string, @Req() req, @Res() res): Promise<Number | void> {
