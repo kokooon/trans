@@ -68,13 +68,14 @@ const social = () => {
     const navigate = useNavigate();
     const [channelList, setChannelList] = useState<string[]>([]);
     const [friendsList, setFriendsList] = useState<Friend[]>([]); 
+    const [blockedList, setblockedList] = useState<Friend[]>([]);
     const [friendsRequestList, setFriendsRequestList] = useState<Friend[]>([]);
     const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
     const [chatContext, setChatContext] = useState<{ channelname: string, id: number, userIds: number }>({ channelname: 'null', id: 0, userIds: 0 });
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
-    const [Lists, setLists] = useState<string[]>([]);
+    const [Lists, ] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
     const [anchorElArray, setAnchorElArray] = useState<(HTMLElement | null)[]>([]);
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
@@ -166,6 +167,7 @@ const social = () => {
         newAnchorElArray[currentIndex] = event.currentTarget;
         setAnchorElArray(newAnchorElArray);
     };
+      
     
     const togglePasswordVisibility = () => {
       setShowPassword(!showPassword);
@@ -236,13 +238,13 @@ const getBlock  = async () => {
           });
 
           if (response.ok) {
-              const responseData = await response.text();
+              const responseData = await response.json();
               List.push(responseData);
           } else {
               console.error('Get friends failed for friendId:', friendId);
           }
       }
-      setLists([...List]);
+      setblockedList(List)
   } catch (error) {
       console.error('Error during get friends:', error);
   }
@@ -664,6 +666,25 @@ const handleBlock  = async () => {
   setBlockInput('');
 };
 
+const handleUnblock  = async (unblockPseudo: string) => {
+  try {
+      const response = await fetch(`http://127.0.0.1:3001/users/social/unblock`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ unblockpseudo: unblockPseudo, userId: user[0].id }),
+      });
+      if (!response.ok) {
+          throw new Error('La réponse du réseau n’était pas correcte');
+      }
+  } catch (error) {
+      console.error('Erreur lors du blockage :', error);
+  }
+  getBlock();
+};
+
   return (
             <div style={{height: "600px",position: "relative"}}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -711,6 +732,28 @@ const handleBlock  = async () => {
                 ))}
               </ConversationList>
               )}
+
+              {currentView === 'Blocked' && (
+                    <ConversationList>
+                    {blockedList.map((blocked, index) => (
+                        <div key={index}>
+                        <Conversation 
+                    name={blocked.pseudo} 
+                    info="dernier message reçu" 
+                    onClick={() => {
+                    setActiveFriend(blocked.pseudo);
+                    setBlockInput(blocked.pseudo);
+                    fetchFriendChatHistory(blocked.pseudo);
+                      }} 
+                      active={blocked.pseudo === activeFriend}
+                      >
+                    <Avatar src={blocked.avatar} status={blocked.status}/>
+                </Conversation>
+              </div>
+                ))}
+              </ConversationList>
+              )}
+
               {currentView === 'Channel' && (
                     <ConversationList>
                     {channelList.map((channel, index) => (
@@ -736,10 +779,30 @@ const handleBlock  = async () => {
                   {currentView === 'Friends' && (
                     <div>
                   {friendsList.map((user,index) => (
-                        <div key={index}>
-                        <EllipsisButton orientation="vertical" onClick={handleClick(index)} name={user.pseudo}/>
+                        <div>
+                        {user.pseudo === blockInput && (
+                          <EllipsisButton
+                            orientation="vertical"
+                            onClick={handleClick(index)}/>
+                        )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
-                        <MenuItem style={{ color: 'red' }} onClick={handleBlock}>bloquer</MenuItem>
+                        <MenuItem style={{ color: 'red' }} onClick={handleBlock}>Bloquer</MenuItem>
+                        </Menu>
+                        </div>
+                    ))}
+                    </div>
+                  )}
+                  {currentView === 'Blocked' && (
+                    <div>
+                  {blockedList.map((user,index) => (
+                        <div>
+                        {user.pseudo === blockInput && (
+                          <EllipsisButton
+                            orientation="vertical"
+                            onClick={handleClick(index)}/>
+                        )}
+                        <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
+                        <MenuItem style={{ color: 'green' }} onClick={() => handleUnblock(user.pseudo)}>Debloquer</MenuItem>
                         </Menu>
                         </div>
                     ))}
