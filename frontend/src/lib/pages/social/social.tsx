@@ -81,7 +81,7 @@ const social = () => {
     const [isTyping, setIsTyping] = useState(false);
     
     Lists;
-    // const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
+    const [blockInput, setBlockInput] = useState<string | null>(null); // Valeur de l'entrée de texte pour bloquer
     const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
     const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
     const [passwordInput, setPasswordInput] = useState('');
@@ -642,6 +642,28 @@ const handleadd = async () => {
   setaddInput('');
 };
 
+const handleBlock  = async () => {
+  try {
+      const response = await fetch('http://127.0.0.1:3001/users/Block', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ blockpseudo: blockInput, userId: user[0].id }),
+      });
+      if (!response.ok) {
+          throw new Error('La réponse du réseau n’était pas correcte');
+      }
+  } catch (error) {
+      console.error('Erreur lors du blockage :', error);
+  }
+  if (currentView === 'Blocked'){
+      getBlock();
+  }
+  setBlockInput('');
+};
+
   return (
             <div style={{height: "600px",position: "relative"}}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -678,6 +700,7 @@ const handleadd = async () => {
                     info="dernier message reçu" 
                     onClick={() => {
                     setActiveFriend(friend.pseudo);
+                    setBlockInput(friend.pseudo);
                     fetchFriendChatHistory(friend.pseudo);
                       }} 
                       active={friend.pseudo === activeFriend}
@@ -707,11 +730,21 @@ const handleadd = async () => {
               </Sidebar>
               <ChatContainer>
                 <ConversationHeader>
-                  <ConversationHeader.Back />
-                
+                  <ConversationHeader.Back />              
                   <ConversationHeader.Content userName={activeFriend} info="Active ?? mins ago" />
                   <ConversationHeader.Actions>
-                    <EllipsisButton orientation="vertical" />
+                  {currentView === 'Friends' && (
+                    <div>
+                  {friendsList.map((user,index) => (
+                        <div key={index}>
+                        <EllipsisButton orientation="vertical" onClick={handleClick(index)} name={user.pseudo}/>
+                        <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
+                        <MenuItem style={{ color: 'red' }} onClick={handleBlock}>bloquer</MenuItem>
+                        </Menu>
+                        </div>
+                    ))}
+                    </div>
+                  )}
                   </ConversationHeader.Actions>          
                 </ConversationHeader>
                 <MessageList typingIndicator={isTyping ? <TypingIndicator content={`${activeFriend} is typing`} /> : null}>
