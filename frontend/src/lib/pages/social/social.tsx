@@ -26,6 +26,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Fab from '@mui/material/Fab';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import { TextField, InputAdornment } from '@mui/material';
@@ -81,7 +82,7 @@ const social = () => {
     
     Lists;
     // const [blockInput, setBlockInput] = useState(''); // Valeur de l'entrée de texte pour bloquer
-    // const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
+    const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
     const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
     const [passwordInput, setPasswordInput] = useState('');
     const [joinChannel, setJoinChannel] = useState('');
@@ -621,6 +622,26 @@ const handleJoinChannel  = async () => {
   }
 };
 
+const handleadd = async () => {
+  try {
+    const response = await fetch('http://127.0.0.1:3001/users/FriendRequest', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ addFriend: addInput, userId: user[0].id }),
+    });
+
+    if (!response.ok) {
+      throw new Error('La réponse du réseau n’était pas correcte');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du pseudo :', error);
+  }
+  setaddInput('');
+};
+
   return (
             <div style={{height: "600px",position: "relative"}}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -802,6 +823,31 @@ const handleJoinChannel  = async () => {
                     )}
                     <Button variant="outline" className="button-small mt-4" onClick={handleCreateChannel}>Create Channel</Button>
                     </Box>
+            </Modal>
+            </div>
+            )}
+            {currentView === 'Friends' && (
+              <div>
+            <Fab color="primary" aria-label="add" style={{ position: 'fixed', bottom: '4rem', right: '4rem' }} onClick={handleOpen}>
+              <PersonAddAlt1Icon />
+            </Fab>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description">
+                  <div>
+                     <Box sx={style}>
+                     <input
+                        type="text"
+                        value={addInput}
+                        onChange={(e) => setaddInput(e.target.value)}
+                        placeholder="Add User"
+                        className="input-small"
+                    />
+                    <Button variant="outline" className="button-small" onClick={handleadd}>Add</Button>
+                    </Box>
+                  </div>
             </Modal>
             </div>
             )}
