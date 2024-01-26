@@ -49,7 +49,7 @@ const style = {
 };
 
 
-type UserStatus = 'available' | 'invisible';
+type UserStatus = "available" | "unavailable" | "away" | "dnd" | "invisible" | "eager";
 
 type ChatMessage = {
   senderPseudo: string;
@@ -151,16 +151,23 @@ const social = () => {
             getFriends();
         });
 
+        socket.on('new_notification', () => {
+          console.log('new notification');
+          if (currentView === 'Notifications')
+            getNotifications();
+        });
+
           // Clean up the listener
           return () => {
             socket.off('friendConnected');
             socket.off('new_message');
             socket.off('friendDisconnected');
             socket.off('new_friend');
+            socket.off('new_notification');
 			socket.off('new_channel_message');
           };
         }
-      }, [socket, chatHistory, friendsList]);
+      }, [socket, chatHistory, friendsList, friendsRequestList]);
 
       const handleClick = (currentIndex: number) => (event: React.MouseEvent<HTMLElement>) => {
         const newAnchorElArray = [...anchorElArray];
@@ -641,6 +648,14 @@ const handleadd = async () => {
   } catch (error) {
     console.error('Erreur lors de la mise à jour du pseudo :', error);
   }
+  let messagedata = {
+    recipientId: addInput
+  	};
+    if (socket) {
+      socket.emit('new_notification', messagedata);
+  } else {
+      console.error('Socket is null');
+  }
   setaddInput('');
 };
 
@@ -698,7 +713,7 @@ const handleUnblock  = async (unblockPseudo: string) => {
               <Sidebar position="left" scrollable={true}>
               {currentView === 'Notifications' && (
                 <ConversationList>
-                 {friendsRequestList.map((user,index) => (
+                 {friendsRequestList.map((user, index) => (
                         <div key={index}>
                         <Conversation name={user.pseudo} info="Veux-tu être mon ami ?" onClick={handleClick(index)}>
                         <Avatar src={user.avatar}/>
@@ -726,7 +741,7 @@ const handleUnblock  = async (unblockPseudo: string) => {
                       }} 
                       active={friend.pseudo === activeFriend}
                       >
-                    <Avatar src={friend.avatar} status={friend.status}/>
+                    <Avatar src={friend.avatar} status={friend.status} />
                 </Conversation>
               </div>
                 ))}

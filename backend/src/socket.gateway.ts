@@ -50,6 +50,18 @@ async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
       this.server.to(recipientSocketId).emit('new_friend', data);
   }
 }
+
+@SubscribeMessage('new_notification')
+async handleNewNotif(@MessageBody() data: any, client: Socket): Promise<void> {
+
+  console.log('Received data in gateway for message:', data);
+  const friendid = await this.userService.findIdByPseudo(data.recipientId);
+  const recipientSocketId = getSocketIdByUserId(friendid);
+  console.log('recipient socker id = ', recipientSocketId)
+  if (recipientSocketId) {
+      this.server.to(recipientSocketId).emit('new_notification', data);
+  }
+}
 // Handle 'new message' event
 @SubscribeMessage('new_channel_message')
 async handleNewChannelMessage(@MessageBody() data: any, client: Socket): Promise<void> {
