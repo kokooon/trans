@@ -59,13 +59,19 @@ type ChatMessage = {
   };
 
 type Friend = {
+  id: number;
   pseudo: string;
   avatar: string;
   status: UserStatus;
 };
 
+interface LastMessages {
+	[key: number]: string;
+  }
+
 const social = () => {
     const navigate = useNavigate();
+	const [lastMessages, setLastMessages] = useState<LastMessages>({});
     const [channelList, setChannelList] = useState<string[]>([]);
     const [friendsList, setFriendsList] = useState<Friend[]>([]); 
     const [blockedList, setblockedList] = useState<Friend[]>([]);
@@ -123,7 +129,14 @@ const social = () => {
           console.log('socket exist');
           socket.on('new_message', (message: any) => {
               if (currentView === 'Friends' && (chatContext.userIds === message.senderId) || message.senderId === user[0].id) {
-                fetchChat(message);
+                if (user[0].id === message.senderId){
+					fetchLastMessage(friendsList);
+					fetchFriendChatHistory(message.recipientId);
+				}
+                else{
+					fetchLastMessage(friendsList);
+					fetchFriendChatHistory(message.senderId);
+				}
               }
           });
 
@@ -167,7 +180,7 @@ const social = () => {
 			socket.off('new_channel_message');
           };
         }
-      }, [socket, chatHistory, friendsList, friendsRequestList]);
+      }, [socket, chatHistory, friendsList, friendsRequestList, lastMessages]);
 
       const handleClick = (currentIndex: number) => (event: React.MouseEvent<HTMLElement>) => {
         const newAnchorElArray = [...anchorElArray];
@@ -226,7 +239,7 @@ const getFriends  = async () => {
           }
       }
       setFriendsList(newFriendsList);
-      console.log('friend list = ', newFriendsList);
+	  fetchLastMessage(newFriendsList);
   } catch (error) {
       console.error('Error during get friends:', error);
   }
@@ -274,23 +287,6 @@ const getChannel = async () => {
     }
     channelList;
     setChannelList(List);
-}
-
-const fetchChat = async (messageData: any) => {
-  const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${messageData.senderId}/${messageData.recipientId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  });
-  if (chatHistoryResponse.ok) {
-    const chathistory = await chatHistoryResponse.json();
-    setChatHistory(chathistory);
-  } else {
-    // Handle errors in fetching chat history
-    console.error('Error fetching chat history');
-      }
 }
 
 const handleAccept = async (friend: string, index: number) => {
@@ -343,39 +339,57 @@ const handleDecline = async (friend: string, index: number) => {
  setAnchorElArray(newAnchorElArray);
 }
 
-const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
+const fetchLastMessage = async (friends: Friend[]) => {
+	for (const friend of friends) {
+    	try {
+        // Logic to get last messages
+        	const response = await fetch(`http://127.0.0.1:3001/chatHistory/history/${user[0].id}/${friend.id}?lastOnly=true`, {
+            	method: 'GET',
+            	headers: {
+                	'Content-Type': 'application/json',
+            	},
+            	credentials: 'include',
+        	});
+        	if (response.ok) {
+            	const responseLastMessage = await response.json();
+				setLastMessages((prevMessages: LastMessages) => ({
+					...prevMessages,
+					[friend.id]: responseLastMessage.content,
+				}));
+				//console.log('last message = ', responseLastMessage);
+				//const [lastMessage, setLastMessage] = useState<string | null>(null);
+            	//make use of setLatMessage to push in responseLastMessage
+        	} else {
+            	console.error('Error fetching chat history');
+            	return ; // Return error as a string
+        	}
+    	} catch (error) {
+        	console.log('Unable to fetch last message: ', error);
+        	return ; // Return error as a string
+    	}
+	}
+};
+
+
+const fetchFriendChatHistory  = async (friendPseudo: number) =>  {
   try {
-      const response = await fetch(`http://127.0.0.1:3001/users/getId/${friendPseudo}`, {
-      method: 'GET',
-      headers: {
-      'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      });
-      if (response.ok) {
-          const friendId = Number(await response.json());
-          const userId = Number(user[0].id);
-  setChatContext({ channelname: 'null', id: 0, userIds: friendId });
-  const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${userId}/${friendId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  });
-      if (chatHistoryResponse.ok) {
-        const chathistory = await chatHistoryResponse.json();
-        setChatHistory(chathistory);
-      } else {
-        // Handle errors in fetching chat history
+        const userId = Number(user[0].id);
+  		setChatContext({ channelname: 'null', id: 0, userIds: friendPseudo });
+  		const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${userId}/${friendPseudo}`, {
+    	method: 'GET',
+    	headers: {
+      	'Content-Type': 'application/json',
+    	},
+    	credentials: 'include',
+  		});
+      	if (chatHistoryResponse.ok) {
+        	const chathistory = await chatHistoryResponse.json();
+        	setChatHistory(chathistory);
+      	} else {
         console.error('Error fetching chat history');
-      }
-    } else {
-      // Handle errors in fetching friend's user ID
-      console.error('Error fetching friend\'s user ID');
-    }
+      	}
     } catch (error) {
-    console.error('Unable to fetch chat history', error);
+    	console.error('Unable to fetch chat history', error);
     }
   };
 
@@ -394,7 +408,6 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
     	if (response.ok) {
 			const membersId = await response.json();
 			membersIDS = membersId.map((id: string) => parseInt(id, 10));
-			console.log('returned members = ', membersIDS);
 		}
 		else {
 			console.log('reponse not ok');
@@ -437,8 +450,10 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
         }
         // Emit the 'new message' event to the server with the messageData
         if (socket) {
-			if (!chatContext.id)
+			if (!chatContext.id){
+				console.log('emit here0');
 				socket.emit('new_message', messagedata);
+			}
 			else{
 				socket.emit('new_channel_message', messagedata);
 			}
@@ -455,7 +470,6 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
 
 
  const fetchChannelChatHistory = async (channelName: string) => {
-		//let membersIDS;
 		let blockedUsers;
       console.log('in fetch channel history', channelName);
       try {
@@ -469,22 +483,7 @@ const fetchFriendChatHistory  = async (friendPseudo: string) =>  {
         if (response.ok) {
             const channel = await response.json();
             setChatContext({ channelname: channelName, id: channel.id, userIds: 0 });
-			/*const responsethree = await fetch(`http://127.0.0.1:3001/channels/returnMembers/${channel.id}`, {
-    		method: 'GET',
-    		headers: {
-      			'Content-Type': 'application/json',
-    		},
-    		credentials: 'include',
-  			});
-    		if (responsethree.ok) {
-				const membersId = await responsethree.json();
-				membersIDS = membersId.map((id: string) => parseInt(id, 10));
-			}
-			else {
-				console.log('reponse not ok');
-			}*/
-			//get banlist;
-			const responsefor = await fetch(`http://127.0.0.1:3001/users/getBlocked/${user[0].id}`, {
+			const responsefor = await fetch(`http://127.0.0.1:3001/users/getBlocked/${user[0].id}`, {  //get banlist;
     		method: 'GET',
     		headers: {
       			'Content-Type': 'application/json',
@@ -766,11 +765,11 @@ const handleUnblock  = async (unblockPseudo: string) => {
                         <div key={index}>
                         <Conversation 
                     name={friend.pseudo} 
-                    info="dernier message reçu" 
+                    info={ lastMessages[friend.id] || 'Loading...'}    /*lastMessages[friend.id]*/
                     onClick={() => {
                     setActiveFriend(friend.pseudo);
                     setBlockInput(friend.pseudo);
-                    fetchFriendChatHistory(friend.pseudo);
+                    fetchFriendChatHistory(friend.id);
                       }} 
                       active={friend.pseudo === activeFriend}
                       >
@@ -791,7 +790,7 @@ const handleUnblock  = async (unblockPseudo: string) => {
                     onClick={() => {
                     setActiveFriend(blocked.pseudo);
                     setBlockInput(blocked.pseudo);
-                    fetchFriendChatHistory(blocked.pseudo);
+                    fetchFriendChatHistory(blocked.id);
                       }} 
                       active={blocked.pseudo === activeFriend}
                       >

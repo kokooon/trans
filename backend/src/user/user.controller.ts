@@ -217,6 +217,7 @@ export class UserController {
           const friendSocketId = getSocketIdByUserId(Number(userId));
             if (friendSocketId) {
               const friend = {
+                id: user.id,
                 pseudo: user.pseudo,
                 avatar: user.avatar,
                 status: 'available' // Assuming default status is false
@@ -225,6 +226,7 @@ export class UserController {
             }
             else {
               const friend = {
+                id: user.id,
                 pseudo: user.pseudo,
                 avatar: user.avatar,
                 status: 'unavailable' // Assuming default status is false

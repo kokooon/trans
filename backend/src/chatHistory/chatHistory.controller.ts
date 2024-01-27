@@ -81,7 +81,7 @@ export class chatHistoryController {
   }
 
   @Get('history/:userId/:friendId')
-  async getFriendHistory(@Param('userId') userId: number, @Param('friendId') friendId: number): Promise<ChatMessage[]> {
+  async getFriendHistory(@Param('userId') userId: number, @Param('friendId') friendId: number, @Query('lastOnly') lastOnly: boolean): Promise<ChatMessage[] | ChatMessage > {
       try {
         const chatMessages: ChatMessage[] = [];
           const chatHistories = await this.chatHistoryService.getFriendHistory(userId, friendId);
@@ -103,6 +103,9 @@ export class chatHistoryController {
                       chatMessages.push(messageToAdd);
                 });
               });
+              if (lastOnly) {
+                return chatMessages[chatMessages.length - 1]; // Return only the last message
+            }
             return chatMessages;
           }
       } catch (error) {
