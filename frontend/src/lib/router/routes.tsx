@@ -25,6 +25,7 @@ import Login from '../pages/login';
 import Profile from '../pages/profile';
 import Settings from '../pages/settings/settings';
 import TwoFa from '../pages/2fa/TwoFa';
+import Game from '../pages/game/game';
 
 const AppRoutes = () => {
   return (
@@ -38,6 +39,7 @@ const AppRoutes = () => {
             <Route index element={<Profile />} />
             <Route index element={<Settings />} />
             <Route index element={<TwoFa />} />
+            <Route index element={<Game />} />
           </Layout>
         }
       />
