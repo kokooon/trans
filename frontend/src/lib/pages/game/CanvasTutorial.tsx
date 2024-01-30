@@ -46,10 +46,12 @@ class CanvasTutorial extends Component {
     const { key } = event;
     const { y } = this.state;
     const deltaY = 10; // Increment for vertical movement
+    const minY = 10; // Minimum y position (top boundary)
+    const maxY = 390; // Maximum y position (bottom boundary)
 
-    if (key === 'ArrowUp') {
+    if (key === 'ArrowUp' && y > minY) {
       this.setState({ y: y - deltaY }); // Move the rectangle up
-    } else if (key === 'ArrowDown') {
+    } else if (key === 'ArrowDown' && y < maxY) {
       this.setState({ y: y + deltaY }); // Move the rectangle down
     }
   };
