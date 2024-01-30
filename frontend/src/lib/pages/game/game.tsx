@@ -7,7 +7,7 @@ import { fetchUserDetails, isTokenValid, isUserConnected } from '../../component
 
 function Game() {
   const { socket } = useSocket(); // Récupérer le socket depuis le contexte
-  const [user, setUser] = useState<any | null>(null);
+  //const [user, setUser] = useState<any | null>(null);
   const navigate = useNavigate();
   const [matchmakingStatus, setMatchmakingStatus] = useState('pending');
 
@@ -27,7 +27,7 @@ function Game() {
                 navigate('/2fa');
             }
         }
-        setUser(userData);
+        //setUser(userData);
         }
         catch (error) {
             console.error('Error:', error);
@@ -52,8 +52,8 @@ function Game() {
     if (socket)
     {
       console.log('matchmaking sent');
-      const data = { user };
-      socket.emit('matchmaking:request', data);
+      //const data = { user };
+      socket.emit('matchmaking:request');
     }
   };
 

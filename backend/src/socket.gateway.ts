@@ -52,9 +52,9 @@ async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
 }
 
 @SubscribeMessage('matchmaking:request')
-async handleMatchmaking(@MessageBody() data: any, client: Socket): Promise<void> {
+async handleMatchmaking(client: Socket): Promise<void> {
 
-  console.log('Matchmaking system', data);
+  console.log('Matchmaking system');
   if (client.id) {
       this.server.to(client.id).emit('matchmaking:found');
   }
