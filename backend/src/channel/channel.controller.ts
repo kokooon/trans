@@ -32,7 +32,29 @@ export class ChannelController {
       return res.status(500).json({ error: error.message });
     }
   }
-  
+
+  @Get('lastMessage/:channelId') // Définissez le paramètre dans l'URL comme ":userId"
+  async findPseudoById(@Param('channelId') channelId: number,  @Req() req, @Res() res): Promise<any> {
+	try {
+	  const channel = await this.channelService.findChannelById(channelId)
+	  if (channel) {
+			const Channel = {
+			  id: channel.id,
+			  name: channel.name,
+			  membersIds: channel.memberIds,
+			  owner: channel.owner,
+			  admins: channel.admin
+			};
+			return res.status(201).json(Channel);
+		  }
+	   else {
+		return res.status(404).json('cannot return channel');
+	  }
+	} catch (error) {
+		return res.status(404).json('cannot return channel');
+	}
+  }
+
   @Get('findChannelByName/:channelName') // Définissez le paramètre dans l'URL comme ":userId"
   async findChannelByName(@Param('channelName') channelName: string,  @Req() req, @Res() res): Promise<Channel | void> {
     const channel = await this.channelService.findChannelByName(channelName);

@@ -65,6 +65,14 @@ type Friend = {
   status: UserStatus;
 };
 
+type Channel = {
+	id: number;
+	name: string;
+	membersIds: number[],
+	owner: number,
+	admins: number[];
+}
+
 interface LastMessages {
 	[key: number]: string;
   }
@@ -72,7 +80,7 @@ interface LastMessages {
 const social = () => {
     const navigate = useNavigate();
 	const [lastMessages, setLastMessages] = useState<LastMessages>({});
-    const [channelList, setChannelList] = useState<string[]>([]);
+    const [channelList, setChannelList] = useState<Channel[]>([]);
     const [friendsList, setFriendsList] = useState<Friend[]>([]); 
     const [blockedList, setblockedList] = useState<Friend[]>([]);
     const [friendsRequestList, setFriendsRequestList] = useState<Friend[]>([]);
@@ -143,6 +151,7 @@ const social = () => {
 		  socket.on('new_channel_message', (message: any) => {
             console.log('in new_channel_message listener = ', message.channelName);
             if (currentView === 'Channel' && chatContext.id === message.channelId)
+				fetchLastChannelMessage(channelList);
 				fetchChannelChatHistory(message.channelName.toString());
         });
 
@@ -270,24 +279,71 @@ const getBlock  = async () => {
   }
 };
 
+const fetchLastChannelMessage = async (channels: Channel[]) => {
+	let blockedUsers;
+	for (const channel of channels) {
+    	try {
+				const responsefor = await fetch(`http://127.0.0.1:3001/users/getBlocked/${user[0].id}`, {  //get banlist;
+    			method: 'GET',
+    			headers: {
+      				'Content-Type': 'application/json',
+    			},
+    			credentials: 'include',
+  				});
+    			if (responsefor.ok) {
+					const blockedId = await responsefor.json();
+					blockedUsers = blockedId.map((id: string) => parseInt(id, 10));
+					if (blockedUsers.length === 0)
+						blockedUsers = [0];
+				}
+				else {
+					console.log('reponse not ok');
+				}
+				const response = await fetch(`http://127.0.0.1:3001/chatHistory/history/channel/${channel.id}/${blockedUsers}?lastOnly=true`, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					credentials: 'include',
+				});
+				if (response.ok) {
+					const responseLastMessage = await response.json();
+					setLastMessages((prevMessages: LastMessages) => ({
+						...prevMessages,
+						[channel.id]: responseLastMessage.content,
+					}));
+				} else {
+					console.error('Error fetching chat history');
+					return ; // Return error as a string
+				}
+    	} catch (error) {
+        	console.log('Unable to fetch last message: ', error);
+        	return ; // Return error as a string
+    	}
+	}
+};
+
 const getChannel = async () => {
   setCurrentView('Channel');
   const userData = await fetchUserDetails();
   const List = [];
   for (let i = 0; i < userData[0].channels.length; i++) {
       const channelId = userData[0].channels[i];
-      const response = await fetch(`http://127.0.0.1:3001/channels/channelNameById/${channelId}`, {
+      const response = await fetch(`http://127.0.0.1:3001/channels/lastMessage/${channelId}`, {
               method: 'GET',
               credentials: 'include',
           });
           if (response.ok) {
-              const responseData = await response.text();
-              List.push(responseData);
-          }
+			const responseData = await response.json();
+			List.push(responseData);
+			console.log('channel = ', responseData);
+		}
     }
-    channelList;
     setChannelList(List);
+    fetchLastChannelMessage(List);
 }
+
+
 
 const handleAccept = async (friend: string, index: number) => {
   console.log('param of accept = ', friend);
@@ -356,9 +412,6 @@ const fetchLastMessage = async (friends: Friend[]) => {
 					...prevMessages,
 					[friend.id]: responseLastMessage.content,
 				}));
-				//console.log('last message = ', responseLastMessage);
-				//const [lastMessage, setLastMessage] = useState<string | null>(null);
-            	//make use of setLatMessage to push in responseLastMessage
         	} else {
             	console.error('Error fetching chat history');
             	return ; // Return error as a string
@@ -469,58 +522,58 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
 };
 
 
- const fetchChannelChatHistory = async (channelName: string) => {
-		let blockedUsers;
-      console.log('in fetch channel history', channelName);
-      try {
-        const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${channelName}`, {
-        method: 'GET',
-        headers: {
-        'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        });
-        if (response.ok) {
-            const channel = await response.json();
-            setChatContext({ channelname: channelName, id: channel.id, userIds: 0 });
-			const responsefor = await fetch(`http://127.0.0.1:3001/users/getBlocked/${user[0].id}`, {  //get banlist;
-    		method: 'GET',
-    		headers: {
-      			'Content-Type': 'application/json',
-    		},
-    		credentials: 'include',
-  			});
-    		if (responsefor.ok) {
-				const blockedId = await responsefor.json();
-				blockedUsers = blockedId.map((id: string) => parseInt(id, 10));
-				if (blockedUsers.length === 0)
-					blockedUsers = [0];
-			}
-			else {
-				console.log('reponse not ok');
-			}
-			const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/channel/${channel.id}/${blockedUsers}`, {
-    		method: 'GET',
-    		headers: {
-      		'Content-Type': 'application/json',
-    		},
-    		credentials: 'include',
-  		});
-      	if (chatHistoryResponse.ok) {
-        	const chathistory = await chatHistoryResponse.json();
-        	setChatHistory(chathistory);
-      } else {
-        // Handle errors in fetching chat history
-        console.error('Error fetching chat history');
-      }
-        }
-        else {
-          console.log('no channel found');
-        }
-    }catch(error){
-        console.log('error while fetching channel data', error);
-    }
- }
+const fetchChannelChatHistory = async (channelName: string) => {
+	let blockedUsers;
+  console.log('in fetch channel history', channelName);
+  try {
+	const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${channelName}`, {
+	method: 'GET',
+	headers: {
+	'Content-Type': 'application/json',
+	},
+	credentials: 'include',
+	});
+	if (response.ok) {
+		const channel = await response.json();
+		setChatContext({ channelname: channelName, id: channel.id, userIds: 0 });
+		const responsefor = await fetch(`http://127.0.0.1:3001/users/getBlocked/${user[0].id}`, {  //get banlist;
+		method: 'GET',
+		headers: {
+			  'Content-Type': 'application/json',
+		},
+		credentials: 'include',
+		  });
+		if (responsefor.ok) {
+			const blockedId = await responsefor.json();
+			blockedUsers = blockedId.map((id: string) => parseInt(id, 10));
+			if (blockedUsers.length === 0)
+				blockedUsers = [0];
+		}
+		else {
+			console.log('reponse not ok');
+		}
+		const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/channel/${channel.id}/${blockedUsers}`, {
+		method: 'GET',
+		headers: {
+		  'Content-Type': 'application/json',
+		},
+		credentials: 'include',
+	  });
+	  if (chatHistoryResponse.ok) {
+		const chathistory = await chatHistoryResponse.json();
+		setChatHistory(chathistory);
+  } else {
+	// Handle errors in fetching chat history
+	console.error('Error fetching chat history');
+  }
+	}
+	else {
+	  console.log('no channel found');
+	}
+}catch(error){
+	console.log('error while fetching channel data', error);
+}
+}
 
  const handleCreateChannel = async () => {
   try {
@@ -788,7 +841,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                         <div key={index}>
                         <Conversation 
                     name={blocked.pseudo} 
-                    info="dernier message reçu" 
+                    info="user blocked" 
                     onClick={() => {
                     setActiveFriend(blocked.pseudo);
                     setBlockInput(blocked.pseudo);
@@ -808,10 +861,10 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                     {channelList.map((channel, index) => (
                         <div key={index}>
                         <Conversation 
-                    name={channel} 
-                    info="dernier message reçu" 
+                    name={channel.name} 
+                    info={ lastMessages[channel.id] || 'Loading...'}
                     onClick={() => {
-                    fetchChannelChatHistory(channel);
+                    fetchChannelChatHistory(channel.name);
                       }} 
                       >
                 </Conversation>

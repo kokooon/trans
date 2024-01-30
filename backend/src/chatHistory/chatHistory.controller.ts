@@ -33,7 +33,7 @@ export class chatHistoryController {
   }
 
   @Get('history/channel/:channelId/:blockedUsers')
-  async getChannelHistory(@Param('channelId') channelId: number, @Param('blockedUsers') blockedUsers: number[]): Promise<ChatMessage[]> {
+  async getChannelHistory(@Param('channelId') channelId: number, @Param('blockedUsers') blockedUsers: number[],  @Query('lastOnly') lastOnly: boolean): Promise<ChatMessage[] | ChatMessage> {
       try {
         const pseudos = new Set<string>();
         for (const id of blockedUsers) {
@@ -64,6 +64,9 @@ export class chatHistoryController {
             chatMessages.push(messageToAdd);
         });
     });
+    if (lastOnly) {
+        return chatMessages[chatMessages.length - 1]; // Return only the last message
+	}
     return chatMessages;
           }
       } catch (error) {
