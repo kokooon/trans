@@ -51,6 +51,15 @@ async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
   }
 }
 
+@SubscribeMessage('matchmaking:request')
+async handleMatchmaking(@MessageBody() data: any, client: Socket): Promise<void> {
+
+  console.log('Matchmaking system', data);
+  if (client.id) {
+      this.server.to(client.id).emit('matchmaking:found');
+  }
+}
+
 @SubscribeMessage('new_notification')
 async handleNewNotif(@MessageBody() data: any, client: Socket): Promise<void> {
 

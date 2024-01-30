@@ -81,6 +81,8 @@ const social = () => {
     const navigate = useNavigate();
 	const [lastMessages, setLastMessages] = useState<LastMessages>({});
     const [channelList, setChannelList] = useState<Channel[]>([]);
+	  const [lastMessages, setLastMessages] = useState<LastMessages>({});
+    const [channelList, setChannelList] = useState<string[]>([]);
     const [friendsList, setFriendsList] = useState<Friend[]>([]); 
     const [blockedList, setblockedList] = useState<Friend[]>([]);
     const [friendsRequestList, setFriendsRequestList] = useState<Friend[]>([]);
