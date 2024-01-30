@@ -1,17 +1,32 @@
 import { Component } from 'react';
 
+function clamp(x: number, _min: number, _max: number)
+{
+  return (Math.max(Math.min(x, _max), _min))
+}
+
 class CanvasTutorial extends Component {
   componentDidMount() {
     this.draw();
     document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
   }
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleKeyDown);
+    document.removeEventListener('keyup', this.handleKeyUp);
   }
 
   state = {
     y: 200, // Initial y position of the rectangle
+
+    mov_down: false,
+    mov_up: false,
+    inertie: 0,
+
+    yMin: 10,
+    yMax: 390,
+
   };
 
   draw() {
@@ -23,6 +38,27 @@ class CanvasTutorial extends Component {
     if (ctx)
     {
       const animate = () => {
+
+        if (this.state.mov_up === true)
+        {
+          this.state.inertie += 1;
+          //this.state.y -= 10
+        }
+        if (this.state.mov_down === true)
+        {
+          this.state.inertie -= 1;
+          //this.state.y += 10
+        }
+        if (this.state.mov_up === false && this.state.mov_down === false)
+        {
+          if (this.state.inertie < 0)
+            this.state.inertie += 0.5;
+            if (this.state.inertie > 0)
+            this.state.inertie -= 0.5;
+        }
+        this.state.inertie = clamp(this.state.inertie, -10, 10)
+
+        this.state.y = clamp(this.state.y - this.state.inertie, this.state.yMin, this.state.yMax)
         ctx.clearRect(0, 0, width, height); // Clear the canvas
 
         ctx.strokeStyle = 'black';
@@ -43,6 +79,23 @@ class CanvasTutorial extends Component {
   }
 
   handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key == 'ArrowUp') {
+      this.state.mov_up = true;
+    } else if (event.key == 'ArrowDown') {
+      this.state.mov_down = true;
+    }
+  }
+
+  handleKeyUp = (event: KeyboardEvent) => {
+    if (event.key == 'ArrowUp') {
+      this.state.mov_up = false;
+    } else if (event.key == 'ArrowDown') {
+      this.state.mov_down = false;
+    }
+  }
+
+  /*
+  handleKeyDown = (event: KeyboardEvent) => {
     const { key } = event;
     const { y } = this.state;
     const deltaY = 10; // Increment for vertical movement
@@ -55,6 +108,7 @@ class CanvasTutorial extends Component {
       this.setState({ y: y + deltaY }); // Move the rectangle down
     }
   };
+  */
 
   render() {
     return (
