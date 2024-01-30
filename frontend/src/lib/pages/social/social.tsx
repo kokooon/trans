@@ -371,11 +371,11 @@ const fetchLastMessage = async (friends: Friend[]) => {
 };
 
 
-const fetchFriendChatHistory  = async (friendPseudo: number) =>  {
+const fetchFriendChatHistory  = async (friendId: number) =>  {
   try {
         const userId = Number(user[0].id);
-  		setChatContext({ channelname: 'null', id: 0, userIds: friendPseudo });
-  		const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${userId}/${friendPseudo}`, {
+  		setChatContext({ channelname: 'null', id: 0, userIds: friendId });
+  		const chatHistoryResponse = await fetch(`http://127.0.0.1:3001/chatHistory/history/${userId}/${friendId}`, {
     	method: 'GET',
     	headers: {
       	'Content-Type': 'application/json',
@@ -691,7 +691,7 @@ const handleadd = async () => {
   setaddInput('');
 };
 
-const handleBlock  = async () => {
+const handleBlock  = async (friendId: number) => {
   try {
       const response = await fetch('http://127.0.0.1:3001/users/Block', {
           method: 'POST',
@@ -711,9 +711,10 @@ const handleBlock  = async () => {
       getBlock();
   }
   setBlockInput('');
+  fetchFriendChatHistory(friendId);
 };
 
-const handleUnblock  = async (unblockPseudo: string) => {
+const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
   try {
       const response = await fetch(`http://127.0.0.1:3001/users/social/unblock`, {
           method: 'POST',
@@ -730,6 +731,7 @@ const handleUnblock  = async (unblockPseudo: string) => {
       console.error('Erreur lors du blockage :', error);
   }
   getBlock();
+  fetchFriendChatHistory(friendId);
 };
 
   return (
@@ -833,7 +835,7 @@ const handleUnblock  = async (unblockPseudo: string) => {
                             onClick={handleClick(index)}/>
                         )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
-                        <MenuItem style={{ color: 'red' }} onClick={handleBlock}>Bloquer</MenuItem>
+                        <MenuItem style={{ color: 'red' }} onClick={() => handleBlock(user.id)}>Bloquer</MenuItem>
                         </Menu>
                         </div>
                     ))}
@@ -849,7 +851,7 @@ const handleUnblock  = async (unblockPseudo: string) => {
                             onClick={handleClick(index)}/>
                         )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
-                        <MenuItem style={{ color: 'green' }} onClick={() => handleUnblock(user.pseudo)}>Debloquer</MenuItem>
+                        <MenuItem style={{ color: 'green' }} onClick={() => handleUnblock(user.pseudo, user.id)}>Debloquer</MenuItem>
                         </Menu>
                         </div>
                     ))}

@@ -35,31 +35,22 @@ export class chatHistoryController {
   @Get('history/channel/:channelId/:blockedUsers')
   async getChannelHistory(@Param('channelId') channelId: number, @Param('blockedUsers') blockedUsers: number[]): Promise<ChatMessage[]> {
       try {
-        //if (blockedUsers[0] !== 0) {
-          console.log('im in the getter = ', blockedUsers);
-        //}
         const pseudos = new Set<string>();
         for (const id of blockedUsers) {
           if (id > 0){
-            console.log('id of blocked = ', id);
             const pseudo = await this.userService.findPseudoById(id);
             if (pseudo) {
               pseudos.add(pseudo);
           }
         }
       }
-        //findPseudoById()
-        console.log('blocked users in string = ', pseudos);
         const chatMessages: ChatMessage[] = [];
           const chatHistories = await this.chatHistoryService.getChannelHistory(channelId);
           if (!chatHistories) {
               throw new HttpException('Chat history not found', HttpStatus.NOT_FOUND);
           }else {
             chatHistories.forEach(chatHistory => {
-                // Parse the JSON string in the messages field
                 const messages = JSON.parse(chatHistory.messages);
-                // messages is now an array of message objects
-                // Access the content property of each message
                 const validMessages = messages.filter(message => !pseudos.has(message.userPseudo));
 
             // Process valid messages
@@ -83,6 +74,13 @@ export class chatHistoryController {
   @Get('history/:userId/:friendId')
   async getFriendHistory(@Param('userId') userId: number, @Param('friendId') friendId: number, @Query('lastOnly') lastOnly: boolean): Promise<ChatMessage[] | ChatMessage > {
       try {
+		let friendPseudo;
+		if (await this.userService.isUserBanned(userId, friendId)){
+			friendPseudo = await this.userService.findPseudoById(friendId);
+		}
+		else
+			friendPseudo = null;
+        //const friendPseudo = this.userService.findPseudoById(friendId);
         const chatMessages: ChatMessage[] = [];
           const chatHistories = await this.chatHistoryService.getFriendHistory(userId, friendId);
           if (!chatHistories) {
@@ -94,13 +92,15 @@ export class chatHistoryController {
                 // messages is now an array of message objects
                 // Access the content property of each message
                 messages.forEach(message => {
-                    const messageToAdd: ChatMessage = { // Ensure the object matches ChatMessage type
-                        content: message.content,
-                        avatar: message.avatar,
-                        senderPseudo: message.userPseudo,
-                        createdAt: message.createdAt
-                      };
-                      chatMessages.push(messageToAdd);
+                    if (friendPseudo !== message.userPseudo) {
+						const messageToAdd: ChatMessage = { // Ensure the object matches ChatMessage type
+							content: message.content,
+							avatar: message.avatar,
+							senderPseudo: message.userPseudo,
+							createdAt: message.createdAt
+						};
+						chatMessages.push(messageToAdd);
+					}
                 });
               });
               if (lastOnly) {

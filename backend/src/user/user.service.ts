@@ -206,6 +206,14 @@ async validate2FA(userId: number, is2FAValidate: boolean): Promise<void> {
   }
 }
 
+async isUserBanned(userId: number, friendId: number): Promise<boolean> {
+  const user = await this.userRepository.findOne({ where: { id: userId } });
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return user.banlist.includes(friendId);
+}
+
   async findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
