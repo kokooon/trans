@@ -15,6 +15,7 @@ import {
   MessageSeparator,
   TypingIndicator,
   Avatar,
+  ExpansionPanel,
 } from "@chatscope/chat-ui-kit-react";
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/lib/components/ui/button";
@@ -94,6 +95,7 @@ const social = () => {
     const [anchorElArray, setAnchorElArray] = useState<(HTMLElement | null)[]>([]);
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
     const [activeChannel, setActiveChannel] = useState<string | null>(null);
+    const [activeUser, setActiveUser] = useState<string | null>(null);
     const [isTyping, setIsTyping] = useState(false);
     
     Lists;
@@ -955,7 +957,34 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                   </MessageList>
                 <MessageInput attachButton={false} placeholder="Type message here" value={inputMessage} onChange={(value: string) => setInputMessage(value)} onSend={sendMessage} onFocus={() => setIsTyping(true)}
         onBlur={() => setIsTyping(false)} />
-              </ChatContainer>                         
+              </ChatContainer>
+              {currentView === 'Channel' && activeChannel &&(
+              <Sidebar position="right">
+                <ExpansionPanel open title="Users">
+                <Conversation 
+                    name={'test'} 
+                    info={ 'Admin' || 'Loading...'}    /*lastMessages[friend.id]*/
+                    onClick={() => {
+                    setActiveUser('lol');
+                      }} 
+                      active={'lol' === activeUser}
+                      >
+                    <Avatar src={'https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg'} status={'available'} />
+                </Conversation>
+                <Conversation 
+                    name={'test2'} 
+                    info={ 'Pas admin' || 'Loading...'}    /*lastMessages[friend.id]*/
+                    onClick={() => {
+                    setActiveUser('not');
+                      }} 
+                      active={'not' === activeUser}
+                      >
+                    <Avatar src={'https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg'} status={'available'} />
+                </Conversation>
+                </ExpansionPanel>
+              </Sidebar>  
+                
+                )}                   
             </MainContainer>
             {currentView === 'Channel' && (
               <div>
