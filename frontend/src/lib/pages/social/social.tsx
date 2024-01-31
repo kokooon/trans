@@ -93,6 +93,7 @@ const social = () => {
     const [user, setUser] = useState<any | null>(null);
     const [anchorElArray, setAnchorElArray] = useState<(HTMLElement | null)[]>([]);
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
+    const [activeChannel, setActiveChannel] = useState<string | null>(null);
     const [isTyping, setIsTyping] = useState(false);
     
     Lists;
@@ -864,6 +865,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                     name={channel.name} 
                     info={ lastMessages[channel.id] || 'Loading...'}
                     onClick={() => {
+                      setActiveChannel(channel.name);
                     fetchChannelChatHistory(channel.name);
                       }} 
                       >
@@ -877,6 +879,9 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                 <ConversationHeader>
                   <ConversationHeader.Back />              
                   <ConversationHeader.Content userName={activeFriend} info="Active ?? mins ago" />
+                  {currentView === 'Channel' && (
+                    <ConversationHeader.Content userName={activeChannel} info="Active ?? mins ago" />
+                  )}
                   <ConversationHeader.Actions>
                   {currentView === 'Friends' && (
                     <div>
@@ -905,6 +910,25 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                         )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
                         <MenuItem style={{ color: 'green' }} onClick={() => handleUnblock(user.pseudo, user.id)}>Debloquer</MenuItem>
+                        </Menu>
+                        </div>
+                    ))}
+                    </div>
+                  )}
+                  {currentView === 'Channel' && (
+                    <div>
+                  {channelList.map((channel,index) => (
+                        <div>
+                        {channel.name === activeChannel && (
+                          <EllipsisButton
+                            orientation="vertical"
+                            onClick={handleClick(index)}/>
+                        )}
+                        <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
+                        <MenuItem style={{ color: 'green' }} >Test</MenuItem>
+                        <MenuItem style={{ color: 'green' }} >Test</MenuItem>
+                        <MenuItem style={{ color: 'green' }} >Test</MenuItem>
+                        <MenuItem style={{ color: 'green' }} >Test</MenuItem>
                         </Menu>
                         </div>
                     ))}
