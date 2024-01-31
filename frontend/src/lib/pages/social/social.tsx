@@ -264,6 +264,7 @@ const getChannelMembersId  = async () => {
       		}
 			console.log('members list = ', newMembersList);
       		setchannelMembersIds(newMembersList);
+			channelMembersIds;
 		}
 		else
 			console.log('cant get channel members ids');
