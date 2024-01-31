@@ -908,8 +908,9 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                     name={channel.name} 
                     info={ lastMessages[channel.id] || 'Loading...'}
                     onClick={() => {
-                      setActiveChannel(channel.name);
+                    setActiveChannel(channel.name);
                     fetchChannelChatHistory(channel.name);
+					getChannelMembersId();
                       }} 
                       >
                 </Conversation>
