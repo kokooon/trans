@@ -80,6 +80,7 @@ interface LastMessages {
 
 const social = () => {
     const navigate = useNavigate();
+	const [channelMembersIds, setchannelMembersIds] = useState<Friend[]>([]);
 	const [lastMessages, setLastMessages] = useState<LastMessages>({});
     const [channelList, setChannelList] = useState<Channel[]>([]);
     const [friendsList, setFriendsList] = useState<Friend[]>([]); 
@@ -231,6 +232,46 @@ const social = () => {
         console.error('Error during get notifs:', error);
     }
 };
+
+//const removePassword  = async () => {
+//}
+//const modifyPassword  = async () => {
+//}
+
+const getChannelMembersId  = async () => {
+	try {
+		const response = await fetch(`http://127.0.0.1:3001/channels/returnMembers/${chatContext.id}`, {
+    		method: 'GET',
+    		headers: {
+      		'Content-Type': 'application/json',
+    		},
+    		credentials: 'include',
+  		});
+		if (response.ok){
+			const membersIds = await response.json(); // === number[]
+			const newMembersList = [];
+			for (const friendId of membersIds) {
+				const responsetwo = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
+              	method: 'GET',
+              	credentials: 'include',
+          		});
+          		if (responsetwo.ok) {
+            		const memberData = await responsetwo.json();
+           			newMembersList.push(memberData);
+          		} else {
+              		console.error('Get member failed for number');
+          		}
+      		}
+			console.log('members list = ', newMembersList);
+      		setchannelMembersIds(newMembersList);
+		}
+		else
+			console.log('cant get channel members ids');
+	}catch(error){
+		console.log('error while getting members Ids');
+	}
+}
+
 
 const getFriends  = async () => {
   setCurrentView('Friends');
@@ -939,7 +980,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                   </ConversationHeader.Actions>          
                 </ConversationHeader>
                 <MessageList typingIndicator={isTyping ? <TypingIndicator content={`${activeFriend} is typing`} /> : null}>
-                  <MessageSeparator content={`26 janvier 2024`} />
+                  <MessageSeparator content={`31 janvier 2024`} />
                   {chatHistory.map((chatMessage, index) => (
                   <Message
                   key={index}

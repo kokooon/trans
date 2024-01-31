@@ -4,6 +4,7 @@ import { Controller, Get, Param, Post, Body, BadRequestException, Query, Req, Re
 import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 // Import additional DTOs as needed
+import { getSocketIdByUserId } from '../entities/socket.map';
 
 @Controller('channels')
 export class ChannelController {
