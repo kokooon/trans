@@ -330,6 +330,12 @@ export class UserController {
     }
   }
 
+  @Get('allIds')
+  async findAllIds(@Req() req, @Res() res): Promise<number[] | void> {
+    const Ids = await this.userService.findAllIds();
+    res.status(201).json(Ids);
+  }
+
   @Get()
   async findAll(): Promise<User[]> {
     return this.userService.findAll();

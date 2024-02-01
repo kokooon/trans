@@ -340,4 +340,12 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
     }
   }
 
+  async findAllIds(): Promise<number[]> {
+    const users = await this.userRepository.find({
+      select: ['id'] // Only fetch the id field
+    });
+
+    // Extract and return just the IDs from the User entities
+    return users.map(user => user.id);
+  }
 }

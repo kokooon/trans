@@ -404,7 +404,6 @@ const getChannel = async () => {
           if (response.ok) {
 			const responseData = await response.json();
 			List.push(responseData);
-			console.log('channel = ', responseData);
 		}
     }
     setChannelList(List);
@@ -644,15 +643,32 @@ const fetchChannelChatHistory = async (channelName: string) => {
 }
 
  const handleCreateChannel = async () => {
+	let channelData;
+	let allUsersIds;
   try {
-    const channelData = {
-      name: ChannelName, // From your state
-      password: passwordInput, // From your state, could be empty if not private
-      visibility: channelVisibility, // From your state
-      admin: user[0].id,
-      owner: user[0].id,
-      memberIds: user[0].id // The current user's ID
-    };
+    if (channelVisibility === 'public'){
+		const responsethree = await fetch ('http://127.0.0.1:3001/users/allIds', {
+			method: 'GET',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      });
+	  if (responsethree.ok) {
+		allUsersIds = await responsethree.json();
+	  }
+	}
+	else
+		allUsersIds = user[0].id;
+	channelData = {
+		name: ChannelName, // From your state
+		password: passwordInput, // From your state, could be empty if not private
+		visibility: channelVisibility, // From your state
+		admin: user[0].id,
+		owner: user[0].id,
+		memberIds: allUsersIds // The current user's ID
+	  }
+	console.log('test data = ', channelData);
     if (!ChannelName){
       console.log("need a name for the channel");
       return ;
@@ -673,18 +689,21 @@ const fetchChannelChatHistory = async (channelName: string) => {
           return;
         }
     }
+	//do this POST to add in each user id inside allUsersIds the channelId;
     const newChannel = await response.json();
-    const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
-      method: 'POST',
-      headers: {
+	for (const userId of allUsersIds) {
+    	const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
+      	method: 'POST',
+      	headers: {
         'Content-Type': 'application/json',
-      },
+      	},
       credentials: 'include', // if you're including credentials like cookies
-      body: JSON.stringify({ channelId: newChannel.id, userId: user[0].id }),
-    });
-    if (!responsetwo.ok) {
-      throw new Error(`Network response was not ok: ${response.statusText}`);
-    }
+      body: JSON.stringify({ channelId: newChannel.id, userId: userId }),
+    	});
+    	if (!responsetwo.ok) {
+      		throw new Error(`Network response was not ok: ${response.statusText}`);
+    	}
+	}
   } catch (error) {
     console.error('Error during channel creation:', error);
   }
