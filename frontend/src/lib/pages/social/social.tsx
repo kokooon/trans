@@ -66,6 +66,14 @@ type Friend = {
   status: UserStatus;
 };
 
+type ChannelMember = {
+	id: number;
+	pseudo: string;
+	avatar: string;
+	status: UserStatus;
+	channelStatus: string;
+};
+
 type Channel = {
 	id: number;
 	name: string;
@@ -80,8 +88,8 @@ interface LastMessages {
 
 const social = () => {
     const navigate = useNavigate();
-	const [channelMembersIds, setchannelMembersIds] = useState<Friend[]>([]);
-	const [lastMessages, setLastMessages] = useState<LastMessages>({});
+	  const [channelMembersIds, setchannelMembersIds] = useState<ChannelMember[]>([]);
+	  const [lastMessages, setLastMessages] = useState<LastMessages>({});
     const [channelList, setChannelList] = useState<Channel[]>([]);
     const [friendsList, setFriendsList] = useState<Friend[]>([]); 
     const [blockedList, setblockedList] = useState<Friend[]>([]);
@@ -238,9 +246,10 @@ const social = () => {
 //const modifyPassword  = async () => {
 //}
 
-const getChannelMembersId  = async (channelid: number) => {
+const getChannelMembersId  = async (channelId: number) => {
+	let ChannelMembers = [];
 	try {
-		const response = await fetch(`http://127.0.0.1:3001/channels/returnMembers/${channelid}`, {
+		const response = await fetch(`http://127.0.0.1:3001/channels/returnMembers/${channelId}`, {
     		method: 'GET',
     		headers: {
       		'Content-Type': 'application/json',
@@ -249,7 +258,6 @@ const getChannelMembersId  = async (channelid: number) => {
   		});
 		if (response.ok){
 			const membersIds = await response.json(); // === number[]
-			const newMembersList = [];
 			for (const friendId of membersIds) {
 				const responsetwo = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
               	method: 'GET',
@@ -257,13 +265,28 @@ const getChannelMembersId  = async (channelid: number) => {
           		});
           		if (responsetwo.ok) {
             		const memberData = await responsetwo.json();
-           			newMembersList.push(memberData);
+					//returnMemberStatus/:userId/:channelId
+					const responsethree = await fetch(`http://127.0.0.1:3001/channels/returnMemberStatus/${friendId}/${channelId}`, {
+						method: 'GET',
+						credentials: 'include',
+					});
+					if (responsethree.ok){
+						 const status = await responsethree.text();
+						 const member = {
+							id: memberData.id,
+							pseudo: memberData.pseudo,
+							avatar: memberData.avatar,
+							status: memberData.status,
+							channelStatus: status
+						}
+						ChannelMembers.push(member);
+					}
           		} else {
               		console.error('Get member failed for number');
           		}
       		}
-			console.log('members list = ', newMembersList);
-      		setchannelMembersIds(newMembersList);
+			console.log('channel test list = ', ChannelMembers);
+      		setchannelMembersIds(ChannelMembers);
 			channelMembersIds;
 		}
 		else
@@ -1006,7 +1029,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                       <div key={index}>
                         <Conversation 
                           name={member.pseudo} 
-                          info={ lastMessages[member.id] || 'Loading...'}
+                          info={ member.channelStatus || 'Loading...'}
                           onClick={() => {
                           setActiveUser(member.pseudo);
                             }}

@@ -73,6 +73,18 @@ export class ChannelController {
     }
   // Add other endpoints as needed for updating, deleting, or listing channels
 
+@Get('returnMemberStatus/:userId/:channelId') // Définissez le paramètre dans l'URL comme ":userId"
+	async returnMembersStatus(@Param('userId') userId: number, @Param('channelId') channelId: number): Promise<string> {
+  	const channel = await this.channelService.findChannelById(channelId);
+	if (channel) {
+  		const status = this.channelService.MemberStatus(userId, channel)
+		console.log('status = ', status);
+  		return status;
+  	}
+  	else
+    	return 'error';
+}
+
 @Get('returnMembers/:channelId') // Définissez le paramètre dans l'URL comme ":userId"
     async returnChannelMembers(@Param('channelId') channelId: number,  @Req() req, @Res() res): Promise<number[] | void> {
   const channel = await this.channelService.findChannelById(channelId);

@@ -34,6 +34,16 @@ export class ChannelService {
     }
   }
 
+  async MemberStatus(userId: number, channel: Channel): Promise<string> {
+    console.log('channel test= ', channel.owner, userId);
+    if (String(channel.owner) === String(userId))
+        return ('Owner');
+    else if (channel.admin.includes(userId))
+        return ('Admin');
+    else
+        return ('Member');
+  }
+
   async findChannelByName(Name: string): Promise<Channel | undefined> {
     return this.channelRepository.findOne({ where: { name: Name } });
   }
