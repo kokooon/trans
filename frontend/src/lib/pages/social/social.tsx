@@ -964,7 +964,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                     <div>
                   {channelList.map((channel,index) => (
                         <div>
-                        {channel.name === activeChannel && (
+                        {channel.name === activeChannel && channel.owner == user[0].id && (
                           <EllipsisButton
                             orientation="vertical"
                             onClick={handleClick(index)}/>
