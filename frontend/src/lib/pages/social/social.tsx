@@ -970,10 +970,8 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                             onClick={handleClick(index)}/>
                         )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
-                        <MenuItem style={{ color: 'green' }} >Test</MenuItem>
-                        <MenuItem style={{ color: 'green' }} >Test</MenuItem>
-                        <MenuItem style={{ color: 'green' }} >Test</MenuItem>
-                        <MenuItem style={{ color: 'green' }} >Test</MenuItem>
+                        <MenuItem style={{ color: 'orange' }} >change Password</MenuItem>
+                        <MenuItem style={{ color: 'red' }} >Delete Channel</MenuItem>
                         </Menu>
                         </div>
                     ))}
