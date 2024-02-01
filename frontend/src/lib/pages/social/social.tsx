@@ -238,9 +238,9 @@ const social = () => {
 //const modifyPassword  = async () => {
 //}
 
-const getChannelMembersId  = async () => {
+const getChannelMembersId  = async (channelid: number) => {
 	try {
-		const response = await fetch(`http://127.0.0.1:3001/channels/returnMembers/${chatContext.id}`, {
+		const response = await fetch(`http://127.0.0.1:3001/channels/returnMembers/${channelid}`, {
     		method: 'GET',
     		headers: {
       		'Content-Type': 'application/json',
@@ -909,9 +909,9 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                     name={channel.name} 
                     info={ lastMessages[channel.id] || 'Loading...'}
                     onClick={() => {
-                    setActiveChannel(channel.name);
-                    fetchChannelChatHistory(channel.name);
-					getChannelMembersId();
+                      setActiveChannel(channel.name);
+                      fetchChannelChatHistory(channel.name);
+                      getChannelMembersId(channel.id);
                       }} 
                       >
                 </Conversation>
@@ -967,7 +967,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                         {channel.name === activeChannel && channel.owner == user[0].id && (
                           <EllipsisButton
                             orientation="vertical"
-                            onClick={handleClick(index)}/>
+                          onClick={handleClick(index)}/>
                         )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
                         <MenuItem style={{ color: 'orange' }} >change Password</MenuItem>
@@ -999,33 +999,26 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                 <MessageInput attachButton={false} placeholder="Type message here" value={inputMessage} onChange={(value: string) => setInputMessage(value)} onSend={sendMessage} onFocus={() => setIsTyping(true)}
         onBlur={() => setIsTyping(false)} />
               </ChatContainer>
-              {currentView === 'Channel' && activeChannel &&(
-              <Sidebar position="right">
-                <ExpansionPanel open title="Users">
-                <Conversation 
-                    name={'test'} 
-                    info={ 'Admin' || 'Loading...'}    /*lastMessages[friend.id]*/
-                    onClick={() => {
-                    setActiveUser('lol');
-                      }} 
-                      active={'lol' === activeUser}
-                      >
-                    <Avatar src={'https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg'} status={'available'} />
-                </Conversation>
-                <Conversation 
-                    name={'test2'} 
-                    info={ 'Pas admin' || 'Loading...'}    /*lastMessages[friend.id]*/
-                    onClick={() => {
-                    setActiveUser('not');
-                      }} 
-                      active={'not' === activeUser}
-                      >
-                    <Avatar src={'https://cdn.intra.42.fr/users/16123060394c02d5c6823dd5962b0cfd/joberle.jpg'} status={'available'} />
-                </Conversation>
-                </ExpansionPanel>
-              </Sidebar>  
-                
-                )}                   
+              {currentView === 'Channel' && activeChannel && (
+                <Sidebar position="right">
+                  <ExpansionPanel open title="Users">
+                    {channelMembersIds.map((member, index) => (
+                      <div key={index}>
+                        <Conversation 
+                          name={member.pseudo} 
+                          info={ lastMessages[member.id] || 'Loading...'}
+                          onClick={() => {
+                          setActiveUser(member.pseudo);
+                            }}
+                            active={member.pseudo === activeUser} 
+                            >
+                          <Avatar src={member.avatar} status={member.status}/>
+                      </Conversation>
+                      </div>
+                    ))}
+                  </ExpansionPanel>
+                </Sidebar>
+              )}              
             </MainContainer>
             {currentView === 'Channel' && (
               <div>
