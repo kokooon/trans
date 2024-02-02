@@ -88,8 +88,9 @@ interface LastMessages {
 
 const social = () => {
     const navigate = useNavigate();
-	  const [channelMembersIds, setchannelMembersIds] = useState<ChannelMember[]>([]);
-	  const [lastMessages, setLastMessages] = useState<LastMessages>({});
+	const [userChannelStatus, setUserChannelStatus] = useState<string | null>(null);
+	const [channelMembersIds, setchannelMembersIds] = useState<ChannelMember[]>([]);
+	const [lastMessages, setLastMessages] = useState<LastMessages>({});
     const [channelList, setChannelList] = useState<Channel[]>([]);
     const [friendsList, setFriendsList] = useState<Friend[]>([]); 
     const [blockedList, setblockedList] = useState<Friend[]>([]);
@@ -251,11 +252,6 @@ const social = () => {
     }
 };
 
-//const removePassword  = async () => {
-//}
-//const modifyPassword  = async () => {
-//}
-
 const getChannelMembersId  = async (channelId: number) => {
 	let ChannelMembers = [];
 	try {
@@ -282,6 +278,8 @@ const getChannelMembersId  = async (channelId: number) => {
 					});
 					if (responsethree.ok){
 						 const status = await responsethree.text();
+						 if (user[0].id === memberData.id)
+						 	setUserChannelStatus(status);
 						 const member = {
 							id: memberData.id,
 							pseudo: memberData.pseudo,
@@ -295,7 +293,6 @@ const getChannelMembersId  = async (channelId: number) => {
               		console.error('Get member failed for number');
           		}
       		}
-			console.log('channel test list = ', ChannelMembers);
       		setchannelMembersIds(ChannelMembers);
 			channelMembersIds;
 		}
@@ -578,7 +575,6 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
           if (!response.ok) {
             throw new Error(`Network response was not ok: ${response.statusText}`);
         }
-        // Emit the 'new message' event to the server with the messageData
         if (socket) {
 			if (!chatContext.id){
 				console.log('emit here0');
@@ -588,9 +584,6 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
 				socket.emit('new_channel_message', messagedata);
 			}
 		}
-        // Handle the acknowledgment from the server
-        // Optionally add the message to the chat history state directly
-        //fetchFriendChatHistory(chatContext.userIds);
     }
     catch (error) {
         console.log("unable to add message");
@@ -601,7 +594,6 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
 
 const fetchChannelChatHistory = async (channelName: string) => {
 	let blockedUsers;
-  console.log('in fetch channel history', channelName);
   try {
 	const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${channelName}`, {
 	method: 'GET',
@@ -640,7 +632,6 @@ const fetchChannelChatHistory = async (channelName: string) => {
 		const chathistory = await chatHistoryResponse.json();
 		setChatHistory(chathistory);
   } else {
-	// Handle errors in fetching chat history
 	console.error('Error fetching chat history');
   }
 	}
@@ -678,7 +669,6 @@ const fetchChannelChatHistory = async (channelName: string) => {
 		owner: user[0].id,
 		memberIds: allUsersIds // The current user's ID
 	  }
-	console.log('test data = ', channelData);
     if (!ChannelName){
       console.log("need a name for the channel");
       return ;
@@ -699,7 +689,6 @@ const fetchChannelChatHistory = async (channelName: string) => {
           return;
         }
     }
-	//do this POST to add in each user id inside allUsersIds the channelId;
     const newChannel = await response.json();
     	const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
       	method: 'POST',
@@ -1077,14 +1066,38 @@ const handleDeletePassword  = async (channel: Channel) => {
                           info={ member.channelStatus || 'Loading...'}
                           onClick={handleClick(index, 'member')}>
                           <Avatar src={member.avatar} status={member.status}/>
-                      </Conversation>
-                      <Menu anchorEl={memberAnchorElArray[index]} open={Boolean(memberAnchorElArray[index])} onClose={() => {const newAnchorElArray = [...memberAnchorElArray]; newAnchorElArray[index] = null; setMemberAnchorElArray(newAnchorElArray);}}>
-                      <MenuItem style={{ color: 'orange' }} >Bloquer</MenuItem>
-                      <MenuItem style={{ color: 'red' }} >Mute</MenuItem>
-                      <MenuItem style={{ color: 'red' }} >kick</MenuItem>
-                        </Menu>
-                      </div>
-                    ))}
+						  </Conversation>
+      						<Menu 
+        						anchorEl={memberAnchorElArray[index]} 
+        						open={Boolean(memberAnchorElArray[index])} 
+        						onClose={() => {
+          						const newAnchorElArray = [...memberAnchorElArray]; 
+          						newAnchorElArray[index] = null; 
+          						setMemberAnchorElArray(newAnchorElArray);
+        						}}>
+								<MenuItem>profile</MenuItem>
+								{(user[0].id !== member.id )&& (
+          						<>
+        						<MenuItem>invite game</MenuItem>
+        						<MenuItem>Block</MenuItem>
+								</>
+								)}
+								{(userChannelStatus === 'Owner' && (member.channelStatus === 'Member'))&& (
+          						<>
+        						<MenuItem>set as admin</MenuItem>
+								</>
+								)}
+        						{/* Only show the following buttons for Admins/Owners clicking on Members */}
+        						{(user[0].id !== member.id && member.channelStatus === 'Member' && 
+         						(userChannelStatus === 'Admin' || userChannelStatus === 'Owner')) && (
+          						<>
+            					<MenuItem style={{ color: 'red' }}>Mute</MenuItem>
+            					<MenuItem style={{ color: 'red' }}>Kick</MenuItem>
+          						</>
+        						)}
+      						</Menu>
+    					</div>
+ 					))}
                   </ExpansionPanel>
                 </Sidebar>
               )}              

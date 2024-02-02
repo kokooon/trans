@@ -55,13 +55,11 @@ export class UserController {
     async AddChannelId(@Req() req, @Res() res) {
     try {
         const userIds = Array.isArray(req.body.userId) ? req.body.userId : [req.body.userId];
-        console.log('test 8 = ', userIds);
       for (const userId of userIds) {
         if (isNaN(userId)) {
             return res.status(500).send('invalid userId');
         }
         const user = await this.userService.findById(userId);
-        console.log('test user 8 = ', user);
         await this.userService.addChannelId(req.body.channelId, user);
         }
       } catch (error) {
@@ -237,7 +235,6 @@ export class UserController {
               return friend;
             }
         } else {
-          // Handle the case where user or user.pseudo is null or undefined
           return 'User not found or missing pseudo';
         }
       } catch (error) {
@@ -300,8 +297,6 @@ export class UserController {
         if (!newPseudo) {
             return res.status(400).send('no new pseudo provided');
         }
-        //console.log('userid = ', req.body.userId);
-        //console.log('userid = ', req.body.newPseudo);
         await this.userService.updatePseudo(userId, newPseudo);
         return res.status(200).json({ status: 'success' });
     } catch (error) {

@@ -43,7 +43,6 @@ export class ChannelService {
   }
 
   async MemberStatus(userId: number, channel: Channel): Promise<string> {
-    console.log('channel test= ', channel.owner, userId);
     if (String(channel.owner) === String(userId))
         return ('Owner');
     else if (channel.admin.includes(userId))

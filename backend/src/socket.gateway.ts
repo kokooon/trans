@@ -24,15 +24,10 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
   // Process the message data
   // ...
   // Example: Emitting the message to the recipient
-  console.log('Received data in gateway for message:', data);
   const recipientSocketId = getSocketIdByUserId(data.recipientId);
-  console.log('recipient socker id = ', recipientSocketId)
   const senderSocketId = getSocketIdByUserId(data.senderId);
-  console.log('sender socker id = ', senderSocketId)
   if (senderSocketId) {
-    //this.server.to(recipientSocketId).emit('new_message', data);
     this.server.to(senderSocketId).emit('new_message', data);
-    //client.to(senderSocketId).emit('new_message', data)
   }
   if (recipientSocketId) {
       this.server.to(recipientSocketId).emit('new_message', data);
@@ -42,10 +37,8 @@ export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
 @SubscribeMessage('new_friend')
 async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
 
-  console.log('Received data in gateway for message:', data);
   const friendid = await this.userService.findIdByPseudo(data.recipientId);
   const recipientSocketId = getSocketIdByUserId(friendid);
-  console.log('recipient socker id = ', recipientSocketId)
   if (recipientSocketId) {
       this.server.to(recipientSocketId).emit('new_friend', data);
   }
@@ -63,10 +56,8 @@ async handleMatchmaking(client: Socket): Promise<void> {
 @SubscribeMessage('new_notification')
 async handleNewNotif(@MessageBody() data: any, client: Socket): Promise<void> {
 
-  console.log('Received data in gateway for message:', data);
   const friendid = await this.userService.findIdByPseudo(data.recipientId);
   const recipientSocketId = getSocketIdByUserId(friendid);
-  console.log('recipient socker id = ', recipientSocketId)
   if (recipientSocketId) {
       this.server.to(recipientSocketId).emit('new_notification', data);
   }
@@ -90,20 +81,17 @@ data.recipientId.forEach(recipientId => {
 
 
   async handleConnection(client: Socket, ...args: any[]) {
-    console.log(`Client connected: ${client.id}`);
     client.join(client.id)
     const userId = await this.authenticateUser(client, args);
     if (userId) {
       addUserSocketPair(userId, client.id);
       try {
         const friends = await this.userService.getFriends(userId);
-        console.log('Friends:', friends);
         if (friends.length > 0) {
           //const connectedUserData = { userId, disconnected: false };
           for (const friendId of friends) {
             const friendSocketId = getSocketIdByUserId(Number(friendId));
             if (friendSocketId) {
-              console.log(`J'emets un signal de connection au front a: ${friendId}`);
               this.server.to(friendSocketId).emit('friendConnected');
             } else {
               console.log(`No friendSocketId found for friend: ${friendId}`);
@@ -120,30 +108,22 @@ data.recipientId.forEach(recipientId => {
   }
 
   async handleDisconnect(client: Socket) {
-    console.log(`Client disconnected: ${client.id}`);
     const userId = getUserIdBySocketId(client.id);
-  
     if (userId) {
       removeUserSocketPair(userId);
-  
       try {
         const friends = await this.userService.getFriends(userId);
-        console.log('Friends:', friends);
-  
         if (friends.length > 0) {
           const disconnectedUserData = { userId, disconnected: true };
-  
           for (const friendId of friends) {
             const friendSocketId = getSocketIdByUserId(Number(friendId));
-  
             if (friendSocketId) {
-              console.log(`J'emets un signal de deconnection au front a: ${friendId}`);
               this.server.to(friendSocketId).emit('friendDisconnected');
             }
             else {
               console.log(`No friendSocketId found for friend: ${friendId}`);
             }
-        }
+          }
       } 
       }catch (error) {
         console.error('Error handling disconnect:', error);
