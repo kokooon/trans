@@ -701,19 +701,17 @@ const fetchChannelChatHistory = async (channelName: string) => {
     }
 	//do this POST to add in each user id inside allUsersIds the channelId;
     const newChannel = await response.json();
-	for (const userId of allUsersIds) {
     	const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
       	method: 'POST',
       	headers: {
         'Content-Type': 'application/json',
       	},
       credentials: 'include', // if you're including credentials like cookies
-      body: JSON.stringify({ channelId: newChannel.id, userId: userId }),
+      body: JSON.stringify({ channelId: newChannel.id, userId: allUsersIds }),
     	});
     	if (!responsetwo.ok) {
       		throw new Error(`Network response was not ok: ${response.statusText}`);
     	}
-	}
   } catch (error) {
     console.error('Error during channel creation:', error);
   }
@@ -884,6 +882,24 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
   fetchFriendChatHistory(friendId);
 };
 
+const handleDeletePassword  = async (channel: Channel) => {
+	try {
+		const response = await fetch(`http://127.0.0.1:3001/channels/deletePassword`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ channelid: channel.id}),
+      });
+      if (!response.ok) {
+          throw new Error('La réponse du réseau n’était pas correcte');
+      }
+	}catch(error){
+		console.log('unable to delete password', error);
+	}
+}
+
   return (
             <div style={{height: "600px",position: "relative"}}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1023,7 +1039,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                         )}
                         <Menu anchorEl={channelAnchorElArray[index]} open={Boolean(channelAnchorElArray[index])} onClose={() => {const newAnchorElArray = [...channelAnchorElArray]; newAnchorElArray[index] = null; setChannelAnchorElArray(newAnchorElArray);}}>
                         <MenuItem style={{ color: 'orange' }} >change Password</MenuItem>
-                        <MenuItem style={{ color: 'red' }} >Delete Channel</MenuItem>
+                        <MenuItem style={{ color: 'red' }} onClick={() => handleDeletePassword(channel)}>Delete Password</MenuItem>
                         </Menu>
                         </div>
                     ))}

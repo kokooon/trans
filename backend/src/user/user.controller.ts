@@ -54,13 +54,16 @@ export class UserController {
     @Post('/channel/AddInUser')
     async AddChannelId(@Req() req, @Res() res) {
     try {
-        const userId = req.body.userId;
+        const userIds = Array.isArray(req.body.userId) ? req.body.userId : [req.body.userId];
+        console.log('test 8 = ', userIds);
+      for (const userId of userIds) {
         if (isNaN(userId)) {
             return res.status(500).send('invalid userId');
         }
         const user = await this.userService.findById(userId);
+        console.log('test user 8 = ', user);
         await this.userService.addChannelId(req.body.channelId, user);
-        return res.status(200).json({ status: 'success' });
+        }
       } catch (error) {
         console.error('Error adding channel:', error);
         return res.status(500).json({
@@ -68,7 +71,7 @@ export class UserController {
             message: 'Failed to add channel',
         });
       }
-    }
+  }
 
     //social
     @Post('social/unblock')

@@ -78,7 +78,6 @@ export class ChannelController {
   	const channel = await this.channelService.findChannelById(channelId);
 	if (channel) {
   		const status = this.channelService.MemberStatus(userId, channel)
-		console.log('status = ', status);
   		return status;
   	}
   	else
@@ -88,11 +87,18 @@ export class ChannelController {
 @Get('returnMembers/:channelId') // Définissez le paramètre dans l'URL comme ":userId"
     async returnChannelMembers(@Param('channelId') channelId: number,  @Req() req, @Res() res): Promise<number[] | void> {
   const channel = await this.channelService.findChannelById(channelId);
-  console.log('channel members id = ', channel.memberIds);
     if (channel) {
       return res.status(201).json(channel.memberIds);
     }
     else
       return res.status(409).json({ error: 'can\'t find channel' });
   }
+
+  @Post('deletePassword')
+  async deletePassword(@Req() req, @Res() res): Promise<void> {
+    const channelId = req.body.channelid;
+    const channel = await this.channelService.findChannelById(channelId);
+    await this.channelService.deletePassword(channel);
+  }
+
 }

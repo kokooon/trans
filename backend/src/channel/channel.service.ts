@@ -29,6 +29,11 @@ export class ChannelService {
     return this.channelRepository.save(channel);
   }
 
+  async deletePassword(channel: Channel){
+      channel.password = null;
+      await this.channelRepository.save(channel);
+  }
+
   async addUserId(userId: number, channel: Channel){
     if (!channel.memberIds.includes(userId))
     {
