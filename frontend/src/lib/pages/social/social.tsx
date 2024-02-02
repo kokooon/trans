@@ -102,9 +102,11 @@ const social = () => {
     const [Lists, ] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
     const [anchorElArray, setAnchorElArray] = useState<(HTMLElement | null)[]>([]);
+    const [channelAnchorElArray, setChannelAnchorElArray] = useState(new Array(channelList.length).fill(null));
+    const [memberAnchorElArray, setMemberAnchorElArray] = useState(new Array(channelMembersIds.length).fill(null)); 
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
     const [activeChannel, setActiveChannel] = useState<string | null>(null);
-    const [activeUser, setActiveUser] = useState<string | null>(null);
+    // const [activeUser, setActiveUser] = useState<string | null>(null);
     const [isTyping, setIsTyping] = useState(false);
     
     Lists;
@@ -203,12 +205,20 @@ const social = () => {
         }
       }, [socket, chatHistory, friendsList, friendsRequestList, lastMessages]);
 
-      const handleClick = (currentIndex: number) => (event: React.MouseEvent<HTMLElement>) => {
+      const handleClick = (index: number, type: string) => (event: React.MouseEvent<HTMLElement>) => {
+        const anchorElArray = type === 'channel' ? channelAnchorElArray : memberAnchorElArray;
         const newAnchorElArray = [...anchorElArray];
-        newAnchorElArray[currentIndex] = event.currentTarget;
-        setAnchorElArray(newAnchorElArray);
-    };
-      
+        newAnchorElArray[index] = event.currentTarget;
+        
+        // Update the corresponding state array based on the type
+        if (type === 'channel') {
+          setChannelAnchorElArray(newAnchorElArray);
+        } else if(type === 'member'){
+          setMemberAnchorElArray(newAnchorElArray);
+        } else {
+          setAnchorElArray(newAnchorElArray);
+        }
+      };      
     
     const togglePasswordVisibility = () => {
       setShowPassword(!showPassword);
@@ -889,7 +899,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                 <ConversationList>
                  {friendsRequestList.map((user, index) => (
                         <div key={index}>
-                        <Conversation name={user.pseudo} info="Veux-tu être mon ami ?" onClick={handleClick(index)}>
+                        <Conversation name={user.pseudo} info="Veux-tu être mon ami ?" onClick={handleClick(index, 'notification')}>
                         <Avatar src={user.avatar}/>
                         </Conversation>
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
@@ -907,7 +917,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                         <div key={index}>
                         <Conversation 
                     name={friend.pseudo} 
-                    info={ lastMessages[friend.id] || 'Loading...'}    /*lastMessages[friend.id]*/
+                    info={ lastMessages[friend.id] || ''}    /*lastMessages[friend.id]*/
                     onClick={() => {
                     setActiveFriend(friend.pseudo);
                     setBlockInput(friend.pseudo);
@@ -977,7 +987,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                         {user.pseudo === blockInput && (
                           <EllipsisButton
                             orientation="vertical"
-                            onClick={handleClick(index)}/>
+                            onClick={handleClick(index, 'friends')}/>
                         )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
                         <MenuItem style={{ color: 'red' }} onClick={() => handleBlock(user.id)}>Bloquer</MenuItem>
@@ -993,7 +1003,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                         {user.pseudo === blockInput && (
                           <EllipsisButton
                             orientation="vertical"
-                            onClick={handleClick(index)}/>
+                            onClick={handleClick(index, 'blocked')}/>
                         )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
                         <MenuItem style={{ color: 'green' }} onClick={() => handleUnblock(user.pseudo, user.id)}>Debloquer</MenuItem>
@@ -1009,9 +1019,9 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                         {channel.name === activeChannel && channel.owner == user[0].id && (
                           <EllipsisButton
                             orientation="vertical"
-                          onClick={handleClick(index)}/>
+                          onClick={handleClick(index, 'channel')}/>
                         )}
-                        <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
+                        <Menu anchorEl={channelAnchorElArray[index]} open={Boolean(channelAnchorElArray[index])} onClose={() => {const newAnchorElArray = [...channelAnchorElArray]; newAnchorElArray[index] = null; setChannelAnchorElArray(newAnchorElArray);}}>
                         <MenuItem style={{ color: 'orange' }} >change Password</MenuItem>
                         <MenuItem style={{ color: 'red' }} >Delete Channel</MenuItem>
                         </Menu>
@@ -1049,13 +1059,14 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
                         <Conversation 
                           name={member.pseudo} 
                           info={ member.channelStatus || 'Loading...'}
-                          onClick={() => {
-                          setActiveUser(member.pseudo);
-                            }}
-                            active={member.pseudo === activeUser} 
-                            >
+                          onClick={handleClick(index, 'member')}>
                           <Avatar src={member.avatar} status={member.status}/>
                       </Conversation>
+                      <Menu anchorEl={memberAnchorElArray[index]} open={Boolean(memberAnchorElArray[index])} onClose={() => {const newAnchorElArray = [...memberAnchorElArray]; newAnchorElArray[index] = null; setMemberAnchorElArray(newAnchorElArray);}}>
+                      <MenuItem style={{ color: 'orange' }} >Bloquer</MenuItem>
+                      <MenuItem style={{ color: 'red' }} >Mute</MenuItem>
+                      <MenuItem style={{ color: 'red' }} >kick</MenuItem>
+                        </Menu>
                       </div>
                     ))}
                   </ExpansionPanel>
