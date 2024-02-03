@@ -736,7 +736,8 @@ const handleJoinChannel  = async () => {
           body: JSON.stringify({ channelId: responseData.id, userId: user[0].id }),
           });
           if (!responsetwo.ok) {
-              throw new Error(`Network response was not ok: ${response.statusText}`);
+              console.log('cant add channel id in user');
+			  return ;
           }
           const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
           method: 'POST',
@@ -748,7 +749,7 @@ const handleJoinChannel  = async () => {
           });
           if (!responsethree.ok) {
               throw new Error(`Network response was not ok: ${response.statusText}`);
-          }
+          	}
           }
           else {
               if (passwordInput){
@@ -829,6 +830,7 @@ const handleadd = async () => {
 };
 
 const handleBlock  = async (friendId: number) => {
+	console.log('input = ', blockInput);
   try {
       const response = await fetch('http://127.0.0.1:3001/users/Block', {
           method: 'POST',
@@ -1061,10 +1063,11 @@ const handleDeletePassword  = async (channel: Channel) => {
                   <ExpansionPanel open title="Users">
                     {channelMembersIds.map((member, index) => (
                       <div key={index}>
-                        <Conversation 
+                        <Conversation
                           name={member.pseudo} 
                           info={ member.channelStatus || 'Loading...'}
-                          onClick={handleClick(index, 'member')}>
+                          onClick={
+							handleClick(index, 'member')}>
                           <Avatar src={member.avatar} status={member.status}/>
 						  </Conversation>
       						<Menu 
@@ -1074,12 +1077,14 @@ const handleDeletePassword  = async (channel: Channel) => {
           						const newAnchorElArray = [...memberAnchorElArray]; 
           						newAnchorElArray[index] = null; 
           						setMemberAnchorElArray(newAnchorElArray);
+								//SET WHAT U NEED
+								setBlockInput(member.pseudo);
         						}}>
 								<MenuItem>profile</MenuItem>
 								{(user[0].id !== member.id )&& (
           						<>
         						<MenuItem>invite game</MenuItem>
-        						<MenuItem>Block</MenuItem>
+        						<MenuItem onClick={() => {handleBlock(member.id);}}>Block</MenuItem>
 								</>
 								)}
 								{(userChannelStatus === 'Owner' && (member.channelStatus === 'Member'))&& (

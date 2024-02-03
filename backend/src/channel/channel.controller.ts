@@ -68,8 +68,21 @@ export class ChannelController {
 
   @Post('addUserId/:userId')
     async addUserId(@Param('userId') userId: number, @Req() req, @Res() res): Promise<void> {
-      const channel = await this.channelService.findChannelByName(req.body.channelName);
-      await this.channelService.addUserId(userId, channel);
+      try {
+        const channel = await this.channelService.findChannelByName(req.body.channelName);
+        await this.channelService.addUserId(userId, channel);
+        
+        return res.status(201).json({
+          status: 'success',
+          message: 'User added to channel successfully',
+        });
+      } catch (error) {
+        console.error('Error adding user to channel:', error);
+        return res.status(500).json({
+          status: 'error',
+          message: 'Failed to add user to channel',
+        });
+      }
     }
   // Add other endpoints as needed for updating, deleting, or listing channels
 

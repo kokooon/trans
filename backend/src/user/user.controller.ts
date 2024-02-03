@@ -51,7 +51,7 @@ export class UserController {
     }
 
     //social
-    @Post('/channel/AddInUser')
+    @Post('channel/AddInUser')
     async AddChannelId(@Req() req, @Res() res) {
     try {
         const userIds = Array.isArray(req.body.userId) ? req.body.userId : [req.body.userId];
@@ -62,6 +62,10 @@ export class UserController {
         const user = await this.userService.findById(userId);
         await this.userService.addChannelId(req.body.channelId, user);
         }
+        return res.status(201).json({
+          status: 'success',
+          message: 'Channel added successfully',
+        });
       } catch (error) {
         console.error('Error adding channel:', error);
         return res.status(500).json({

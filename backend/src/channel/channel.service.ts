@@ -35,8 +35,10 @@ export class ChannelService {
   }
 
   async addUserId(userId: number, channel: Channel){
+    console.log('ici0');
     if (!channel.memberIds.includes(userId))
     {
+      console.log('ici1');
       channel.memberIds.push(userId);
       await this.channelRepository.save(channel);
     }
