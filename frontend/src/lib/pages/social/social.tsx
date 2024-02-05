@@ -87,6 +87,7 @@ interface LastMessages {
   }
 
 const social = () => {
+	const [activeChannelId, setActiveChannelId] = useState<number>(0);
     const navigate = useNavigate();
 	const [userChannelStatus, setUserChannelStatus] = useState<string | null>(null);
 	const [channelMembersIds, setchannelMembersIds] = useState<ChannelMember[]>([]);
@@ -294,7 +295,6 @@ const getChannelMembersId  = async (channelId: number) => {
           		}
       		}
       		setchannelMembersIds(ChannelMembers);
-			channelMembersIds;
 		}
 		else
 			console.log('cant get channel members ids');
@@ -873,6 +873,65 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
   fetchFriendChatHistory(friendId);
 };
 
+//setAsAdmin(member.id)
+const setAsAdmin  = async (newadmin: number, channeL: string, channEL: number) => {
+	try {
+		const response = await fetch(`http://127.0.0.1:3001/channels/setAsAdmin`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ newAdmin: newadmin, channel: channeL}),
+      });
+	  if (response.ok){
+			console.log('sucessfully set as admin');
+	  }
+	  else{
+			console.log('failed to set as admin');
+	  }
+	}catch(error){
+		console.log('cant set as admin', error)
+	}
+	getChannelMembersId(channEL);
+}
+
+//Kick(member.id, activeChannel, activeChannelId)
+const Kick  = async (kickid: number, channelname: string, channelid: number) => {
+	try {
+		const response = await fetch(`http://127.0.0.1:3001/channels/kick`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ kickId: kickid, channel: channelname}),
+      });
+	  if (response.ok){
+			console.log('sucessfully set as admin');
+	  }
+	  else{
+			console.log('failed to set as admin');
+	  }
+    const responsetwo = await fetch('http://127.0.0.1:3001/users/leaveChannel', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		credentials: 'include', // Inclure les cookies avec la requête
+		body: JSON.stringify({ kickId: kickid, channelId: channelid}),
+	});
+	if (responsetwo.ok){
+		console.log('sucessfully kicked');
+  	}
+  	else{
+		console.log('failed to kick');
+  	}
+	}catch(error){
+		console.log('cant kick the user, ', error);
+	}
+}
+
 const handleDeletePassword  = async (channel: Channel) => {
 	try {
 		const response = await fetch(`http://127.0.0.1:3001/channels/deletePassword`, {
@@ -969,6 +1028,7 @@ const handleDeletePassword  = async (channel: Channel) => {
                     info={ lastMessages[channel.id] || 'Loading...'}
                     onClick={() => {
                       setActiveChannel(channel.name);
+					  setActiveChannelId(channel.id);
                       fetchChannelChatHistory(channel.name);
                       getChannelMembersId(channel.id);
                       }} 
@@ -1089,7 +1149,12 @@ const handleDeletePassword  = async (channel: Channel) => {
 								)}
 								{(userChannelStatus === 'Owner' && (member.channelStatus === 'Member'))&& (
           						<>
-        						<MenuItem>set as admin</MenuItem>
+        						<MenuItem onClick={() => {setAsAdmin(member.id, activeChannel, activeChannelId);}}>set as admin</MenuItem>
+								</>
+								)}
+								{(userChannelStatus === 'Owner' && (user[0].id !== member.id))&& (
+          						<>
+        						<MenuItem onClick={() => {Kick(member.id, activeChannel, activeChannelId);}}>Kick</MenuItem>
 								</>
 								)}
         						{/* Only show the following buttons for Admins/Owners clicking on Members */}

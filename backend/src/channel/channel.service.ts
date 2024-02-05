@@ -35,13 +35,23 @@ export class ChannelService {
   }
 
   async addUserId(userId: number, channel: Channel){
-    console.log('ici0');
     if (!channel.memberIds.includes(userId))
     {
-      console.log('ici1');
       channel.memberIds.push(userId);
       await this.channelRepository.save(channel);
     }
+  }
+
+  async kick(channel: Channel, kickId: number) {
+		channel.memberIds = channel.memberIds.filter(id => Number(id) !== kickId)
+		await this.channelRepository.save(channel);
+		return;
+  }
+
+  async setAdmin(channel: Channel, newAdmin: number) {
+		channel.admin.push(newAdmin);
+		await this.channelRepository.save(channel);
+		return;
   }
 
   async MemberStatus(userId: number, channel: Channel): Promise<string> {

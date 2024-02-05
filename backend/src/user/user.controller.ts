@@ -50,6 +50,16 @@ export class UserController {
 
     }
 
+    @Post('leaveChannel')
+    async leaveChannel(@Req() req) {
+		const user = await this.userService.findById(req.body.kickId);
+		try {
+			await this.userService.leaveChannel(user, req.body.channelId)
+		}catch(error){
+			console.log('failed to remove channel id in user leave post');
+		}
+    }
+
     //social
     @Post('channel/AddInUser')
     async AddChannelId(@Req() req, @Res() res) {

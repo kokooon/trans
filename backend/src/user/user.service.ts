@@ -56,6 +56,12 @@ export class UserService {
       await this.userRepository.save(usertwo);
     }
   
+    async leaveChannel(user: User, channelId: number) {
+		user.channels = user.channels.filter(id => Number(id) !== channelId);
+		await this.userRepository.save(user);
+		return;
+    }
+
     //social
     async unblockUser(userId: number, Friendtwo: string): Promise<void>{
       const user = await this.findById(userId);

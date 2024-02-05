@@ -107,11 +107,24 @@ export class ChannelController {
       return res.status(409).json({ error: 'can\'t find channel' });
   }
 
+  @Post('kick')
+  async kick(@Req() req): Promise<void> {
+    const channelName = req.body.channel;
+    const channel = await this.channelService.findChannelByName(channelName);
+    await this.channelService.kick(channel, req.body.kickId);
+  }
+
+  @Post('setAsAdmin')
+  async setAdmin(@Req() req, @Res() res): Promise<void> {
+    const channelName = req.body.channel;
+    const channel = await this.channelService.findChannelByName(channelName);
+    await this.channelService.setAdmin(channel, req.body.newAdmin);
+  }
+
   @Post('deletePassword')
   async deletePassword(@Req() req, @Res() res): Promise<void> {
     const channelId = req.body.channelid;
     const channel = await this.channelService.findChannelById(channelId);
     await this.channelService.deletePassword(channel);
   }
-
 }
