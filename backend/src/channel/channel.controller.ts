@@ -5,6 +5,7 @@ import { ChannelService } from './channel.service';
 import { CreateChannelDto } from './dto/create-channel.dto';
 // Import additional DTOs as needed
 import { getSocketIdByUserId } from '../entities/socket.map';
+import bcrypt from 'bcryptjs';
 
 @Controller('channels')
 export class ChannelController {
@@ -56,14 +57,26 @@ export class ChannelController {
 	}
   }
 
-  @Get('findChannelByName/:channelName') // Définissez le paramètre dans l'URL comme ":userId"
-  async findChannelByName(@Param('channelName') channelName: string,  @Req() req, @Res() res): Promise<Channel | void> {
-    const channel = await this.channelService.findChannelByName(channelName);
-    if (channel)
-    return res.status(201).json(channel);
-    else
-      return res.status(409).json({ error: 'can\'t find channel' });
+  @Post('findChannelByName/:channelName')
+async findChannelByName(
+  @Param('channelName') channelName: string,
+  @Body() body: { passwordInput: string },  // Changez le nom du paramètre
+  @Res() res
+): Promise<Channel | void> {
+  const channel = await this.channelService.findChannelByName(channelName);
+
+  if (channel) {
+    const isPasswordCorrect = await bcrypt.compareSync(body.passwordInput, channel.password);
+    
+    if (isPasswordCorrect) {
+      return res.status(200).json(channel);
+    } else {
+      return res.status(401).json({ error: 'Mot de passe incorrect' });
+    }
+  } else {
+    return res.status(404).json({ error: 'Can\'t find channel' });
   }
+}
 
 
   @Post('addUserId/:userId')

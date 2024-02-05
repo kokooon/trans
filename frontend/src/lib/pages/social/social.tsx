@@ -713,17 +713,18 @@ const fetchChannelChatHistory = async (channelName: string) => {
 
 const handleJoinChannel  = async () => {
   try {
-      const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${joinChannel}`, {
-      method: 'GET',
+    const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${joinChannel}`, {
+      method: 'POST',  // Changez la méthode pour POST
       headers: {
-      'Content-Type': 'application/json',
+        'Content-Type': 'application/json',
       },
       credentials: 'include',
-      });
+      body: JSON.stringify({ passwordInput }),  // Envoyez un objet avec le mot de passe dans le corps de la requête
+    });
       if (response.ok){
           const responseData = await response.json();
           if (responseData.password) {
-              if (!passwordInput || (passwordInput !== responseData.password)){
+              if (!passwordInput){
                   console.log("wrong password or password missing1")
                   return;
               }
