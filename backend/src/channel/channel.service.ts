@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Channel } from '../entities/channel.entity';
+import bcrypt from 'bcryptjs';
 // import additional services if needed
 
 @Injectable()
@@ -19,7 +20,7 @@ export class ChannelService {
     const channel = new Channel();
     channel.name = createChannelDto.name;
     channel.visibility = createChannelDto.visibility;
-    channel.password = createChannelDto.password;
+    channel.password = bcrypt.hashSync(createChannelDto.password, 10);
     channel.admin = createChannelDto.admin;
     channel.owner = createChannelDto.admin;
     /*if (createChannelDto.visibility === 'public'){
