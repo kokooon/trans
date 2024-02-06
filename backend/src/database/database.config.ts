@@ -3,6 +3,7 @@ import { User } from '../entities/user.entity';
 import { chatHistory } from '../entities/chatHistory.entity'; 
 import { Channel } from '../entities/channel.entity'; 
 import { Secret } from '../entities/secret.entity';
+import { Game } from 'src/entities/game.entity';
 
 const postgresConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -11,7 +12,7 @@ const postgresConfig: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [User, chatHistory, Channel, Secret], // Include all entities here
+  entities: [User, chatHistory, Channel, Secret, Game], // Include all entities here
   synchronize: true,
   migrations: [__dirname + '/src/migration/**/*{.ts,.js}'],
 };

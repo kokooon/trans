@@ -2,8 +2,7 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { postgresConfig } from './database.config';
-import { User } from '../entities/user.entity'; 
+import { postgresConfig } from './database.config'; 
 
 @Module({
   imports: [TypeOrmModule.forRoot(postgresConfig)],

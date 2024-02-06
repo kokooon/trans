@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '../user/user.module';
 import { MyConfigModule } from 'src/config/myconfig.module'
 import { Game } from 'src/entities/game.entity';
+import { GameService } from './game.service';
 
 @Module({
   imports: [
