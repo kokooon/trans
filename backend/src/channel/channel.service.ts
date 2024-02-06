@@ -20,7 +20,10 @@ export class ChannelService {
     const channel = new Channel();
     channel.name = createChannelDto.name;
     channel.visibility = createChannelDto.visibility;
-    channel.password = bcrypt.hashSync(createChannelDto.password, 10);
+    if (createChannelDto.password != '')
+      channel.password = bcrypt.hashSync(createChannelDto.password, 10);
+    else
+    channel.password = createChannelDto.password;
     channel.admin = createChannelDto.admin;
     channel.owner = createChannelDto.admin;
     /*if (createChannelDto.visibility === 'public'){

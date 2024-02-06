@@ -58,25 +58,40 @@ export class ChannelController {
   }
 
   @Post('findChannelByName/:channelName')
-async findChannelByName(
-  @Param('channelName') channelName: string,
-  @Body() body: { passwordInput: string },  // Changez le nom du paramètre
-  @Res() res
-): Promise<Channel | void> {
-  const channel = await this.channelService.findChannelByName(channelName);
+  async findChannelByNamePost(
+    @Param('channelName') channelName: string,
+    @Body('passwordInput') passwordInput: string,
+    @Res() res
+  ): Promise<Channel | void> {
+    const channel = await this.channelService.findChannelByName(channelName);
+    var isPasswordCorrect = true;
+    if (channel) {
+      if (channel.password != '')
+        isPasswordCorrect = await bcrypt.compareSync(passwordInput, channel.password);
 
-  if (channel) {
-    const isPasswordCorrect = await bcrypt.compareSync(body.passwordInput, channel.password);
-    
-    if (isPasswordCorrect) {
+      if (isPasswordCorrect) {
+        return res.status(200).json(channel);
+      } else {
+        return res.status(401).json({ error: 'Mot de passe incorrect' });
+      }
+    } else {
+      return res.status(404).json({ error: 'Can\'t find channel' });
+    }
+  }
+
+  @Get('findChannelByName/:channelName')
+  async findChannelByNameGet(
+    @Param('channelName') channelName: string,
+    @Res() res
+  ): Promise<Channel | void> {
+    const channel = await this.channelService.findChannelByName(channelName);
+
+    if (channel) {
       return res.status(200).json(channel);
     } else {
-      return res.status(401).json({ error: 'Mot de passe incorrect' });
+      return res.status(404).json({ error: 'Can\'t find channel' });
     }
-  } else {
-    return res.status(404).json({ error: 'Can\'t find channel' });
   }
-}
 
 
   @Post('addUserId/:userId')
