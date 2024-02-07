@@ -4,6 +4,7 @@ import { UserService } from './user/user.service'; // Import UserService
 import { addUserSocketPair, getSocketIdByUserId, removeUserSocketPair } from './entities/socket.map';
 import { getUserIdBySocketId } from './entities/socket.map';
 import { getCurrentMapState } from './entities/socket.map';
+import { GameService } from './game/game.service';
 
 @WebSocketGateway({
     cors: {
@@ -13,10 +14,12 @@ import { getCurrentMapState } from './entities/socket.map';
     },
   })
 export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer()
-  server: Server;
-
-  constructor(private userService: UserService) {}
+  @WebSocketServer() server: Server;
+  private matchmakingQueue: string[] = [];
+  constructor(
+    private userService: UserService,
+    private readonly gameService: GameService,
+    ) {}
 
 // Handle 'new message' event
   @SubscribeMessage('new_message')
@@ -44,12 +47,26 @@ async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
   }
 }
 
+
 @SubscribeMessage('matchmaking:request')
 async handleMatchmaking(client: Socket): Promise<void> {
+  console.log('Matchmaking request received from', client.id);
+  
+  // Add player to the matchmaking queue
+  this.matchmakingQueue.push(client.id);
 
-  console.log('Matchmaking system');
-  if (client.id) {
-      this.server.to(client.id).emit('matchmaking:found');
+  // Check if there are at least two players in the queue
+  if (this.matchmakingQueue.length >= 2) {
+    // Pair the first two players in the queue
+    const [playerOne, playerTwo] = this.matchmakingQueue.splice(0, 2);
+    
+    // Notify both players that a match has been found
+    this.server.to(playerOne).emit('matchmaking:found');
+    this.server.to(playerTwo).emit('matchmaking:found');
+    
+    console.log(`Match found between ${playerOne} and ${playerTwo}`);
+
+    await this.gameService.createGame(parseInt(playerOne), parseInt(playerTwo));
   }
 }
 

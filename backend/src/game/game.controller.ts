@@ -1,6 +1,6 @@
+//game.controller.ts
 import { Controller, Get, Param, Post, Body, BadRequestException, Query, Req, Res } from '@nestjs/common';
 import { HttpException, HttpStatus } from '@nestjs/common';
-// Import additional DTOs as needed
 import { UserService } from 'src/user/user.service';
 import { GameService } from './game.service';
 

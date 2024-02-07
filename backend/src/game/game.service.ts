@@ -53,4 +53,11 @@ export class GameService {
     await this.userService.save(user);
   }
 
+  async getGameById(gameId: number): Promise<Game | undefined> {
+    const game = await this.GameRepository.findOne({ where: { id: gameId } });
+    if (!game) {
+      throw new NotFoundException(`Game with ID ${gameId} not found`);
+    }
+    return game;
+  }
 }

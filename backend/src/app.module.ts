@@ -9,9 +9,10 @@ import { Auth42Module } from './auth-42/auth-42.module';
 import { AuthController } from './auth-42/auth.controller';
 import { DatabaseModule } from './database/database.module';
 import { SocialGateway } from './socket.gateway';
+import { GameModule } from './game/game.module';
 
 @Module({
-  imports: [DatabaseModule, UserModule, Auth42Module, ChannelModule, chatHistoryModule],
+  imports: [DatabaseModule, UserModule, Auth42Module, ChannelModule, chatHistoryModule, GameModule],
   controllers: [AppController, AuthController],
   providers: [AppService, SocialGateway],
 })
