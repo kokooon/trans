@@ -5,7 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { GameService } from './game.service';
 
 
-@Controller('chatHistory')
+@Controller('Game')
 export class GameController {
     constructor(private readonly GameService: GameService, private readonly userService: UserService) {
       // Inject other services if needed
