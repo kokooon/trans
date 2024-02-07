@@ -40,10 +40,14 @@ function Game() {
     socket.on('matchmaking:found', () => {
       setMatchmakingStatus('found');
     });
+    socket.on('matchmaking:searching', () => {
+      setMatchmakingStatus('searching');
+    });
 
     return () => {
       // Nettoyage des écouteurs d'événements lors du démontage du composant
       socket.off('matchmaking:found');
+      socket.off('matchmaking:searching');
     };
   }, [socket]);
 

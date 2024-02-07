@@ -54,7 +54,6 @@ async handleMatchmaking(client: Socket): Promise<void> {
   
   // Add player to the matchmaking queue
   this.matchmakingQueue.push(client.id);
-
   // Check if there are at least two players in the queue
   if (this.matchmakingQueue.length >= 2) {
     // Pair the first two players in the queue
@@ -66,7 +65,17 @@ async handleMatchmaking(client: Socket): Promise<void> {
     
     console.log(`Match found between ${playerOne} and ${playerTwo}`);
 
-    await this.gameService.createGame(parseInt(playerOne), parseInt(playerTwo));
+    const userIdOne = parseInt(playerOne);
+    const userIdTwo = parseInt(playerTwo);
+
+    if (!isNaN(userIdOne) && !isNaN(userIdTwo)) {
+      await this.gameService.createGame(userIdOne, userIdTwo);
+    } else {
+      console.error('Invalid player IDs:', playerOne, playerTwo);
+    }
+  }
+  else {
+    this.server.to(client.id).emit('matchmaking:searching');
   }
 }
 
