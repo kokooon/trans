@@ -54,6 +54,7 @@ async handleMatchmaking(client: Socket): Promise<void> {
   
   // Add player to the matchmaking queue
   this.matchmakingQueue.push(client.id);
+  console.log(this.matchmakingQueue);
   // Check if there are at least two players in the queue
   if (this.matchmakingQueue.length >= 2) {
     // Pair the first two players in the queue
