@@ -15,7 +15,7 @@ export class GameService {
     // ... other dependencies
   ) {}
 
-  async createGame(userAId: number, userBId: number): Promise<Game> {
+  async createGame(userAId: number, userBId: number): Promise<any> {
     // Créez un nouveau jeu
     const game = new Game();
     game.userA = userAId;
@@ -26,8 +26,8 @@ export class GameService {
     // Enregistrez le jeu dans la base de données
     const newGame = await this.GameRepository.save(game);
 
-    // const playerAPosition = { y: 200 };
-    // const playerBPosition = { y: 200 };
+    const playerA = { y: 200 };
+    const playerB = { y: 200 };
     // newGame.playerAPosition = playerAPosition;
     // newGame.playerBPosition = playerBPosition;
 
@@ -35,7 +35,13 @@ export class GameService {
     await this.updateUserGameHistory(userAId, newGame.id);
     await this.updateUserGameHistory(userBId, newGame.id);
 
-    return newGame;
+    const gameData = {
+      newGame: newGame,
+      playerA: playerA,
+      playerB: playerB
+    };
+
+    return gameData;
   }
 
   async updateUserGameHistory(userId: number, gameId: number): Promise<void> {

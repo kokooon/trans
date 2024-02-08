@@ -11,7 +11,6 @@ export class GameGateway implements OnGatewayConnection {
   constructor(private readonly gameService: GameService) {}
 
   handleConnection(client: Socket, ...args: any[]) {
-    console.log('Le gamegateway ecoute:', client.id);
   }
 
   @SubscribeMessage('matchmaking:request')
@@ -42,7 +41,6 @@ export class GameGateway implements OnGatewayConnection {
       const userIdTwo = getUserIdBySocketId(playerTwo);
   
       if (!isNaN(userIdOne) && !isNaN(userIdTwo)) {
-        console.log('je suis dans la boucle');
         const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
         this.server.emit('game:created', newGame);
   
