@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { Game } from 'src/entities/game.entity';
 import { NotFoundException } from '@nestjs/common';
+import { Ball, GameInstance } from './ball';
 
 @Injectable()
 export class GameService {
@@ -26,8 +27,10 @@ export class GameService {
     // Enregistrez le jeu dans la base de données
     const newGame = await this.GameRepository.save(game);
 
-    const playerA = { y: 200 };
-    const playerB = { y: 200 };
+    const playerAPosition = { y: 200 };
+    const playerBPosition = { y: 200 };
+    const ball = new Ball(200, 220, 5, 5);
+    const gameInstance = new GameInstance(playerAPosition, playerBPosition, ball);
     // newGame.playerAPosition = playerAPosition;
     // newGame.playerBPosition = playerBPosition;
 
@@ -37,8 +40,7 @@ export class GameService {
 
     const gameData = {
       newGame: newGame,
-      playerA: playerA,
-      playerB: playerB
+      gameInstance: gameInstance  // Ajoutez l'instance de jeu à la réponse
     };
 
     return gameData;

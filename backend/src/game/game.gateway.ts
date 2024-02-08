@@ -2,16 +2,13 @@ import { WebSocketGateway, OnGatewayConnection, SubscribeMessage, WebSocketServe
 import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
 import { getUserIdBySocketId } from 'src/entities/socket.map';
-
-interface PlayerPositions {
-  [userId: number]: { y: number };
-}
+import { GameInstance } from './ball';
 
 @WebSocketGateway()
 export class GameGateway implements OnGatewayConnection {
   @WebSocketServer() server: Server;
   private matchmakingQueue: string[] = [];
-  private playerPositions: PlayerPositions = {};
+  private gameInstances: { [userId: string]: GameInstance } = {};
 
   constructor(private readonly gameService: GameService) {}
 
@@ -58,34 +55,29 @@ export class GameGateway implements OnGatewayConnection {
     }
   }
 
-  @SubscribeMessage('playerPositions')
-  handlePlayerPositions(client: Socket, data: any): void {
-    // Récupérer les nouvelles positions des joueurs depuis le frontend
-    const { playerA, playerB } = data;
-
-    // Traiter les positions comme vous le souhaitez dans votre logique de jeu
-
-    // Émettre les nouvelles positions vers le frontend
-    this.server.emit('updatePlayerPositions', { playerA, playerB });
-  }
-
   @SubscribeMessage('keydown')
   handleKeyDown(client: Socket, data: { key: string }) {
     console.log('Key down:', data);
     const userId = client.id;
-    if (!this.playerPositions[userId]) {
-      this.playerPositions[userId] = { y: 200 }; // Position initiale par défaut
+    const gameInstance = this.gameInstances[userId];
+    
+    if (!gameInstance) {
+      console.error('Game instance not found for user:', userId);
+      return;
     }
+    
     // Mettez à jour la position du joueur en fonction de la touche enfoncée
     if (data.key === 'ArrowUp') {
       console.log('je modifie la position');
-      this.playerPositions[userId].y -= 10;
+      gameInstance.playerAPosition.y -= 10;
     } else if (data.key === 'ArrowDown') {
-      this.playerPositions[userId].y += 10;
+      gameInstance.playerAPosition.y += 10;
     }
+    
     // Envoyez les positions mises à jour aux clients concernés
-    this.server.emit('playerPositions', this.playerPositions);
+    this.server.emit('gameState', { playerPositions: gameInstance.playerAPosition, ball: gameInstance.ball });
   }
+  
 
   @SubscribeMessage('keyup')
   handleKeyUp(client: Socket, data: { userId: number, key: string }) {
