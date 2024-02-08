@@ -67,9 +67,13 @@ export class GameGateway implements OnGatewayConnection {
     // Votre logique pour gérer la touche relâchée
   }
 
-  handleStartGame(client: Socket, data: { playerOneId: number, playerTwoId: number }) {
-    const playerOnePosition = { y: 200 };
-    const playerTwoPosition = { y: 200 };
-    this.server.emit('gameStarted', { playerOnePosition, playerTwoPosition });
+  async handleDisconnect(client: Socket) {
+    const index = this.matchmakingQueue.indexOf(client.id);
+    if (index !== -1) {
+      this.matchmakingQueue.splice(index, 1); // Retirer le client de la file d'attente
+      console.log(`Socket ${client.id} disconnected and removed from matchmaking queue.`);
+    } else {
+      console.log(`Socket ${client.id} disconnected.`);
+    }
   }
 }

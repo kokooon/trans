@@ -26,6 +26,11 @@ export class GameService {
     // Enregistrez le jeu dans la base de données
     const newGame = await this.GameRepository.save(game);
 
+    // const playerAPosition = { y: 200 };
+    // const playerBPosition = { y: 200 };
+    // newGame.playerAPosition = playerAPosition;
+    // newGame.playerBPosition = playerBPosition;
+
     // Mettez à jour l'entité User pour chaque utilisateur avec l'ID de la partie
     await this.updateUserGameHistory(userAId, newGame.id);
     await this.updateUserGameHistory(userBId, newGame.id);

@@ -103,13 +103,6 @@ data.recipientId.forEach(recipientId => {
   }
 
   async handleDisconnect(client: Socket) {
-    const index = this.matchmakingQueue.indexOf(client.id);
-    if (index !== -1) {
-      this.matchmakingQueue.splice(index, 1); // Retirer le client de la file d'attente
-      console.log(`Socket ${client.id} disconnected and removed from matchmaking queue.`);
-    } else {
-      console.log(`Socket ${client.id} disconnected.`);
-    }
     const userId = getUserIdBySocketId(client.id);
     if (userId) {
       removeUserSocketPair(userId);
