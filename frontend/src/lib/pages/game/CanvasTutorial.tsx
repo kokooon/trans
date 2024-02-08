@@ -4,10 +4,15 @@ interface CanvasTutorialProps {
   socket: any;
 }
 
+interface BallPosition {
+  x: number;
+  y: number;
+}
+
 interface CanvasTutorialState {
   playerAPosition: number;
   playerBPosition: number;
-  ballPosition: { x: number; y: number };
+  ballPosition: BallPosition;
 }
 
 class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState> {
@@ -20,6 +25,7 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
   componentDidMount() {
     const { socket } = this.props;
     socket.on('game:created', this.handleGameCreated);
+    socket.on('gameState', this.handleGameState);
     this.draw();
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
@@ -28,9 +34,16 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
   componentWillUnmount() {
     const { socket } = this.props;
     socket.off('game:created', this.handleGameCreated);
+    socket.off('gameState', this.handleGameState);
     document.removeEventListener('keydown', this.handleKeyDown);
     document.removeEventListener('keyup', this.handleKeyUp);
   }
+
+  handleGameState = (gameState: any) => {
+    const { playerAPosition, playerBPosition, ballPosition } = gameState;
+    this.setState({ playerAPosition, playerBPosition, ballPosition });
+    this.draw(); // Redessiner le canvas avec les nouvelles positions
+  };
 
   handleGameCreated = (gameData: any) => {
     // Mettre à jour les positions des joueurs et de la balle avec les données reçues

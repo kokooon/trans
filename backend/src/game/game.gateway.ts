@@ -77,7 +77,11 @@ export class GameGateway implements OnGatewayConnection {
     }
     
     // Envoyez les positions mises à jour aux clients concernés
-    this.server.emit('gameState', { playerPositions: gameInstance.playerAPosition, ball: gameInstance.ball });
+    this.server.emit('gameState', { 
+      playerAPosition: gameInstance.playerAPosition.y, 
+      playerBPosition: gameInstance.playerBPosition.y,
+      ballPosition: gameInstance.ball 
+    });
   }
   
 
