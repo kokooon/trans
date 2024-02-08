@@ -9,11 +9,11 @@ export class GameGateway implements OnGatewayConnection {
   constructor(private readonly gameService: GameService) {}
 
   handleConnection(client: Socket, ...args: any[]) {
-    console.log('New WebSocket connection established:', client.id);
+    console.log('Le gamegateway ecoute:', client.id);
   }
 
   @SubscribeMessage('game:created')
-  handleGameCreated(client: Socket, data: any) {
+  async handleGameCreated(client: Socket, data: any) {
     console.log('New game created:', data);
     // Utilisez le service GameService si nécessaire
   }

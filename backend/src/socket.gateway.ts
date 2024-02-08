@@ -81,6 +81,7 @@ async handleMatchmaking(client: Socket): Promise<void> {
       console.log('je suis dans la boucle');
       const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
       this.server.emit('game:created', newGame);
+
     } else {
       console.error('Invalid player IDs:', playerOne, playerTwo);
     }

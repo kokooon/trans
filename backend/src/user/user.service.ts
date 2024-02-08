@@ -230,6 +230,7 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
 
   async findIdByPseudo(pseudo: string): Promise<number | undefined> {
     const user = await this.userRepository.findOne({ where: { pseudo } } as FindOneOptions<User>);
+    if (user)
     return user.id;
   }
 

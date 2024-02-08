@@ -43,11 +43,17 @@ function Game() {
     socket.on('matchmaking:searching', () => {
       setMatchmakingStatus('searching');
     });
+    socket.on('game:created', (newGame) => {
+      // Traitement des données reçues (newGame)
+      console.log('New game created:', newGame);
+    });
+
 
     return () => {
       // Nettoyage des écouteurs d'événements lors du démontage du composant
       socket.off('matchmaking:found');
       socket.off('matchmaking:searching');
+      socket.off('game:created');
     };
   }, [socket]);
 
