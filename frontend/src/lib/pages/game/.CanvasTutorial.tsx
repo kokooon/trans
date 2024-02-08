@@ -5,11 +5,7 @@ function clamp(x: number, _min: number, _max: number)
   return (Math.max(Math.min(x, _max), _min))
 }
 
-interface CanvasTutorialProps {
-  socket: any;
-}
-
-class CanvasTutorial extends Component<CanvasTutorialProps> {
+class CanvasTutorial extends Component {
 
   componentDidMount() {
     this.draw();
@@ -84,27 +80,57 @@ class CanvasTutorial extends Component<CanvasTutorialProps> {
     }
   }
 
+//   handleKeyDown = (event) => {
+//     if (event.key === 'ArrowUp') {
+//       socket.emit('keydown', { key: 'ArrowUp' });
+//     } else if (event.key === 'ArrowDown') {
+//       socket.emit('keydown', { key: 'ArrowDown' });
+//     }
+//   }
+
+//   handleKeyUp = (event) => {
+//     if (event.key === 'ArrowUp') {
+//       socket.emit('keyup', { key: 'ArrowUp' });
+//     } else if (event.key === 'ArrowDown') {
+//       socket.emit('keyup', { key: 'ArrowDown' });
+//     }
+//   }
+
   handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'ArrowUp') {
-      const { socket } = this.props;
-      socket.emit('keydown', { key: 'ArrowUp' });
-    } else if (event.key === 'ArrowDown') {
-      const { socket } = this.props;
-      socket.emit('keydown', { key: 'ArrowDown' });
+    if (event.key == 'ArrowUp') {
+      this.state.mov_up = true;
+    } else if (event.key == 'ArrowDown') {
+      this.state.mov_down = true;
     }
   }
 
   handleKeyUp = (event: KeyboardEvent) => {
-    if (event.key === 'ArrowUp') {
-      const { socket } = this.props;
-      socket.emit('keyup', { key: 'ArrowUp' });
-    } else if (event.key === 'ArrowDown') {
-      const { socket } = this.props;
-      socket.emit('keyup', { key: 'ArrowDown' });
+    if (event.key == 'ArrowUp') {
+      this.state.mov_up = false;
+    } else if (event.key == 'ArrowDown') {
+      this.state.mov_down = false;
     }
   }
 
+  /*
+  handleKeyDown = (event: KeyboardEvent) => {
+    const { key } = event;
+    const { y } = this.state;
+    const deltaY = 10; // Increment for vertical movement
+    const minY = 10; // Minimum y position (top boundary)
+    const maxY = 390; // Maximum y position (bottom boundary)
+
+    if (key === 'ArrowUp' && y > minY) {
+      this.setState({ y: y - deltaY }); // Move the rectangle up
+    } else if (key === 'ArrowDown' && y < maxY) {
+      this.setState({ y: y + deltaY }); // Move the rectangle down
+    }
+  };
+  */
+
   render() {
+  const { socket } = this.props;
+  
     return (
       <div>
         <canvas ref="canvas" width={800} height={500}></canvas>

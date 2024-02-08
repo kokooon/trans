@@ -12,9 +12,15 @@ export class GameGateway implements OnGatewayConnection {
     console.log('Le gamegateway ecoute:', client.id);
   }
 
-  @SubscribeMessage('game:created')
-  async handleGameCreated(client: Socket, data: any) {
-    console.log('New game created:', data);
-    // Utilisez le service GameService si nécessaire
+  @SubscribeMessage('keydown')
+  handleKeyDown(client: Socket, data: { key: string }) {
+    console.log('Key down:', data);
+    // Votre logique pour gérer la touche enfoncée
+  }
+
+  @SubscribeMessage('keyup')
+  handleKeyUp(client: Socket, data: { key: string }) {
+    console.log('Key up:', data);
+    // Votre logique pour gérer la touche relâchée
   }
 }

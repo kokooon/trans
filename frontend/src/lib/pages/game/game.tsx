@@ -82,7 +82,7 @@ function Game() {
           </Button>
         </div>
       )}
-      {matchmakingStatus === 'found' && <CanvasTutorial />}
+      {matchmakingStatus === 'found' && <CanvasTutorial socket={socket}/>}
     </div>
   );
 }
