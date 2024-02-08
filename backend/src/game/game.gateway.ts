@@ -3,10 +3,15 @@ import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
 import { getUserIdBySocketId } from 'src/entities/socket.map';
 
+interface PlayerPositions {
+  [userId: number]: { y: number };
+}
+
 @WebSocketGateway()
 export class GameGateway implements OnGatewayConnection {
   @WebSocketServer() server: Server;
   private matchmakingQueue: string[] = [];
+  private playerPositions: PlayerPositions = {};
 
   constructor(private readonly gameService: GameService) {}
 
@@ -53,16 +58,39 @@ export class GameGateway implements OnGatewayConnection {
     }
   }
 
+  @SubscribeMessage('playerPositions')
+  handlePlayerPositions(client: Socket, data: any): void {
+    // Récupérer les nouvelles positions des joueurs depuis le frontend
+    const { playerA, playerB } = data;
+
+    // Traiter les positions comme vous le souhaitez dans votre logique de jeu
+
+    // Émettre les nouvelles positions vers le frontend
+    this.server.emit('updatePlayerPositions', { playerA, playerB });
+  }
+
   @SubscribeMessage('keydown')
   handleKeyDown(client: Socket, data: { key: string }) {
     console.log('Key down:', data);
-    // Votre logique pour gérer la touche enfoncée
+    const userId = client.id;
+    if (!this.playerPositions[userId]) {
+      this.playerPositions[userId] = { y: 200 }; // Position initiale par défaut
+    }
+    // Mettez à jour la position du joueur en fonction de la touche enfoncée
+    if (data.key === 'ArrowUp') {
+      console.log('je modifie la position');
+      this.playerPositions[userId].y -= 10;
+    } else if (data.key === 'ArrowDown') {
+      this.playerPositions[userId].y += 10;
+    }
+    // Envoyez les positions mises à jour aux clients concernés
+    this.server.emit('playerPositions', this.playerPositions);
   }
 
   @SubscribeMessage('keyup')
-  handleKeyUp(client: Socket, data: { key: string }) {
+  handleKeyUp(client: Socket, data: { userId: number, key: string }) {
     console.log('Key up:', data);
-    // Votre logique pour gérer la touche relâchée
+    // Vous pouvez ajouter une logique supplémentaire ici si nécessaire
   }
 
   async handleDisconnect(client: Socket) {
