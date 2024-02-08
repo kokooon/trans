@@ -58,7 +58,7 @@ export class GameGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('keydown')
-  handleKeyDown(client: Socket, data: { key: string }) {
+  async handleKeyDown(client: Socket, data: { key: string }) {
     console.log('Key down:', data);
     const userId = getUserIdBySocketId(client.id);
     const gameInstance = this.gameInstances[userId];
@@ -67,14 +67,27 @@ export class GameGateway implements OnGatewayConnection {
       console.error('Game instance not found for user:', userId);
       return;
     }
-    
+    try {
+      const game = await this.gameService.getGameById(gameInstance.gameId); // Utilisation du service pour récupérer les informations du jeu
+      if (!game) {
+        console.error('Game not found for ID:', gameInstance.gameId);
+        return;
+      }
     // Mettez à jour la position du joueur en fonction de la touche enfoncée
     if (data.key === 'ArrowUp') {
-      console.log('je modifie la position');
-      gameInstance.playerAPosition.y -= 10;
-    } else if (data.key === 'ArrowDown') {
-      gameInstance.playerAPosition.y += 10;
-    }
+      console.log(userId);
+      if (userId === game.userA) {
+          gameInstance.playerAPosition.y -= 10;
+      } else if (userId === game.userB) {
+          gameInstance.playerBPosition.y -= 10;
+      }
+  } else if (data.key === 'ArrowDown') {
+      if (userId === game.userA) {
+          gameInstance.playerAPosition.y += 10;
+      } else if (userId === game.userB) {
+          gameInstance.playerBPosition.y += 10;
+      }
+  }
     
     // Envoyez les positions mises à jour aux clients concernés
     this.server.emit('gameState', { 
@@ -82,6 +95,10 @@ export class GameGateway implements OnGatewayConnection {
       playerBPosition: gameInstance.playerBPosition.y,
       ballPosition: gameInstance.ball 
     });
+  }
+    catch (error) {
+      console.error('Error:', error);
+    }
   }
   
 
