@@ -10,10 +10,11 @@ import { AuthController } from './auth-42/auth.controller';
 import { DatabaseModule } from './database/database.module';
 import { SocialGateway } from './socket.gateway';
 import { GameModule } from './game/game.module';
+import { GameGateway } from './game/game.gateway';
 
 @Module({
   imports: [DatabaseModule, UserModule, Auth42Module, ChannelModule, chatHistoryModule, GameModule],
   controllers: [AppController, AuthController],
-  providers: [AppService, SocialGateway],
+  providers: [AppService, SocialGateway, GameGateway],
 })
 export class AppModule {}

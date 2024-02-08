@@ -7,19 +7,21 @@ import { getCurrentMapState } from './entities/socket.map';
 import { GameService } from './game/game.service';
 
 @WebSocketGateway({
-    cors: {
-      origin: 'http://127.0.0.1:3000', // The URL of your front-end application
-      methods: ['GET', 'POST'], // Allowed HTTP request methods for CORS preflight requests
-      credentials: true, // Indicates whether the request can include user credentials like cookies, HTTP authentication or client side SSL certificates
-    },
-  })
+  cors: {
+    origin: 'http://127.0.0.1:3000', // The URL of your front-end application
+    methods: ['GET', 'POST'], // Allowed HTTP request methods for CORS preflight requests
+    credentials: true, // Indicates whether the request can include user credentials like cookies, HTTP authentication or client side SSL certificates
+  },
+})
 export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server: Server;
-  private matchmakingQueue: string[] = [];
   constructor(
     private userService: UserService,
     private readonly gameService: GameService,
-    ) {}
+  ) {}
+
+  @WebSocketServer()
+  private server: Server;
+  private matchmakingQueue: string[] = [];
 
 // Handle 'new message' event
   @SubscribeMessage('new_message')
@@ -52,6 +54,12 @@ async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
 async handleMatchmaking(client: Socket): Promise<void> {
   console.log('Matchmaking request received from', client.id);
   
+  // Check if the player is already in the matchmaking queue
+  if (this.matchmakingQueue.includes(client.id)) {
+    console.log('Player is already in the matchmaking queue.');
+    return; // Exit early if the player is already in the queue
+  }
+
   // Add player to the matchmaking queue
   this.matchmakingQueue.push(client.id);
   console.log(this.matchmakingQueue);
@@ -70,7 +78,9 @@ async handleMatchmaking(client: Socket): Promise<void> {
     const userIdTwo = getUserIdBySocketId(playerTwo);
 
     if (!isNaN(userIdOne) && !isNaN(userIdTwo)) {
-      await this.gameService.createGame(userIdOne, userIdTwo);
+      console.log('je suis dans la boucle');
+      const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
+      this.server.emit('game:created', newGame);
     } else {
       console.error('Invalid player IDs:', playerOne, playerTwo);
     }

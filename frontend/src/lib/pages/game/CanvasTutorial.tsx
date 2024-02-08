@@ -18,7 +18,8 @@ class CanvasTutorial extends Component {
   }
 
   state = {
-    y: 200, // Initial y position of the rectangle
+    y: 200,
+    oppo: 200,
 
     mov_down: false,
     mov_up: false,
@@ -68,13 +69,13 @@ class CanvasTutorial extends Component {
         ctx.fillRect(10, this.state.y, 20, 100);
 
         ctx.fillStyle = 'red';
-        ctx.fillRect(width - 30, 200, 20, 100);
+        ctx.fillRect(width - 30, this.state.oppo, 20, 100);
 
         // Repeat animation
         requestAnimationFrame(animate);
       };
 
-      animate(); // Start the animation loop
+      animate();
     }
   }
 
