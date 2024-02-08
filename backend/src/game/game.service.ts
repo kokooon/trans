@@ -30,7 +30,7 @@ export class GameService {
     const playerAPosition = { y: 200 };
     const playerBPosition = { y: 200 };
     const ball = new Ball(200, 220, 5, 5);
-    const gameInstance = new GameInstance(playerAPosition, playerBPosition, ball);
+    const gameInstance = new GameInstance(newGame.id, playerAPosition, playerBPosition, ball);
     // newGame.playerAPosition = playerAPosition;
     // newGame.playerBPosition = playerBPosition;
 

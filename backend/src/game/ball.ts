@@ -13,11 +13,13 @@ export class Ball {
   }
   
   export class GameInstance {
+    gameId: number;
     playerAPosition: { y: number };
     playerBPosition: { y: number };
     ball: Ball;
   
-    constructor(playerAPosition: { y: number }, playerBPosition: { y: number }, ball: Ball) {
+    constructor(gameId: number, playerAPosition: { y: number }, playerBPosition: { y: number }, ball: Ball) {
+      this.gameId = gameId;
       this.playerAPosition = playerAPosition;
       this.playerBPosition = playerBPosition;
       this.ball = ball;
