@@ -44,6 +44,8 @@ export class GameGateway implements OnGatewayConnection {
   
       if (!isNaN(userIdOne) && !isNaN(userIdTwo)) {
         const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
+        this.gameInstances[String(userIdOne)] = newGame.gameInstance;
+        this.gameInstances[String(userIdTwo)] = newGame.gameInstance;
         this.server.emit('game:created', newGame);
   
       } else {
@@ -58,7 +60,7 @@ export class GameGateway implements OnGatewayConnection {
   @SubscribeMessage('keydown')
   handleKeyDown(client: Socket, data: { key: string }) {
     console.log('Key down:', data);
-    const userId = client.id;
+    const userId = getUserIdBySocketId(client.id);
     const gameInstance = this.gameInstances[userId];
     
     if (!gameInstance) {

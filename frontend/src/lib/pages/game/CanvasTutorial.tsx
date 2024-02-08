@@ -1,38 +1,45 @@
 import { Component } from 'react';
 
-function clamp(x: number, _min: number, _max: number)
-{
-  return (Math.max(Math.min(x, _max), _min))
-}
-
 interface CanvasTutorialProps {
   socket: any;
 }
 
-class CanvasTutorial extends Component<CanvasTutorialProps> {
+interface CanvasTutorialState {
+  playerAPosition: number;
+  playerBPosition: number;
+  ballPosition: { x: number; y: number };
+}
+
+class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState> {
+  state: CanvasTutorialState = {
+    playerAPosition: 200,
+    playerBPosition: 200,
+    ballPosition: { x: 400, y: 250 }, // Position initiale de la balle
+  };
 
   componentDidMount() {
+    const { socket } = this.props;
+    socket.on('game:created', this.handleGameCreated);
     this.draw();
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
   }
 
   componentWillUnmount() {
+    const { socket } = this.props;
+    socket.off('game:created', this.handleGameCreated);
     document.removeEventListener('keydown', this.handleKeyDown);
     document.removeEventListener('keyup', this.handleKeyUp);
   }
 
-  state = {
-    y: 200,
-    oppo: 200,
-
-    mov_down: false,
-    mov_up: false,
-    inertie: 0,
-
-    yMin: 10,
-    yMax: 390,
-
+  handleGameCreated = (gameData: any) => {
+    // Mettre à jour les positions des joueurs et de la balle avec les données reçues
+    const { playerA, playerB, ball } = gameData;
+    this.setState({
+      playerAPosition: playerA.y,
+      playerBPosition: playerB.y,
+      ballPosition: { x: ball.x, y: ball.y },
+    });
   };
 
   draw() {
@@ -44,39 +51,26 @@ class CanvasTutorial extends Component<CanvasTutorialProps> {
     if (ctx)
     {
       const animate = () => {
-
-        if (this.state.mov_up === true)
-        {
-          this.state.inertie += 1;
-          //this.state.y -= 10
-        }
-        if (this.state.mov_down === true)
-        {
-          this.state.inertie -= 1;
-          //this.state.y += 10
-        }
-        if (this.state.mov_up === false && this.state.mov_down === false)
-        {
-          if (this.state.inertie < 0)
-            this.state.inertie += 0.5;
-            if (this.state.inertie > 0)
-            this.state.inertie -= 0.5;
-        }
-        this.state.inertie = clamp(this.state.inertie, -10, 10)
-
-        this.state.y = clamp(this.state.y - this.state.inertie, this.state.yMin, this.state.yMax)
-        ctx.clearRect(0, 0, width, height); // Clear the canvas
-
+        ctx.clearRect(0, 0, width, height); // Effacer le canvas
+  
         ctx.strokeStyle = 'black';
         ctx.strokeRect(5, 5, width - 10, height - 10);
-
+  
+        // Dessiner le joueur A
         ctx.fillStyle = 'blue';
-        ctx.fillRect(10, this.state.y, 20, 100);
-
+        ctx.fillRect(10, this.state.playerAPosition, 20, 100);
+  
+        // Dessiner le joueur B
         ctx.fillStyle = 'red';
-        ctx.fillRect(width - 30, this.state.oppo, 20, 100);
-
-        // Repeat animation
+        ctx.fillRect(width - 30, this.state.playerBPosition, 20, 100);
+  
+        // Dessiner la balle
+        ctx.fillStyle = 'black';
+        ctx.beginPath();
+        ctx.arc(this.state.ballPosition.x, this.state.ballPosition.y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+  
+        // Répéter l'animation
         requestAnimationFrame(animate);
       };
 
