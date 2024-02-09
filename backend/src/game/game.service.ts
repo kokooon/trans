@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { Game } from 'src/entities/game.entity';
 import { NotFoundException } from '@nestjs/common';
-import { Ball, GameInstance } from './ball';
+import { Ball, GameData, GameInstance } from './ball';
 
 @Injectable()
 export class GameService {
@@ -16,7 +16,7 @@ export class GameService {
     // ... other dependencies
   ) {}
 
-  async createGame(userAId: number, userBId: number): Promise<any> {
+  async createGame(userAId: number, userBId: number): Promise<GameData> {
     // Créez un nouveau jeu
     const game = new Game();
     game.userA = userAId;
@@ -31,17 +31,11 @@ export class GameService {
     const playerBPosition = { y: 200 };
     const ball = new Ball(200, 220, 5, 5);
     const gameInstance = new GameInstance(newGame.id, playerAPosition, playerBPosition, ball);
-    // newGame.playerAPosition = playerAPosition;
-    // newGame.playerBPosition = playerBPosition;
 
-    // Mettez à jour l'entité User pour chaque utilisateur avec l'ID de la partie
     await this.updateUserGameHistory(userAId, newGame.id);
     await this.updateUserGameHistory(userBId, newGame.id);
 
-    const gameData = {
-      newGame: newGame,
-      gameInstance: gameInstance  // Ajoutez l'instance de jeu à la réponse
-    };
+    const gameData = new GameData (game, gameInstance);
 
     return gameData;
   }

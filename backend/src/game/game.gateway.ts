@@ -2,13 +2,13 @@ import { WebSocketGateway, OnGatewayConnection, SubscribeMessage, WebSocketServe
 import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
 import { getUserIdBySocketId } from 'src/entities/socket.map';
-import { GameInstance } from './ball';
+import { GameData, GameInstance } from './ball';
 
 @WebSocketGateway()
 export class GameGateway implements OnGatewayConnection {
   @WebSocketServer() server: Server;
   private matchmakingQueue: string[] = [];
-  private gameInstances: { [userId: string]: GameInstance } = {};
+  private gameData: Map<number, GameData> = new Map<number, GameData>();
 
   constructor(private readonly gameService: GameService) {}
 
@@ -22,12 +22,13 @@ export class GameGateway implements OnGatewayConnection {
     // Check if the player is already in the matchmaking queue
     if (this.matchmakingQueue.includes(client.id)) {
       console.log('Player is already in the matchmaking queue.');
-      return; // Exit early if the player is already in the queue
+      return;
     }
   
     // Add player to the matchmaking queue
     this.matchmakingQueue.push(client.id);
     console.log(this.matchmakingQueue);
+
     // Check if there are at least two players in the queue
     if (this.matchmakingQueue.length >= 2) {
       // Pair the first two players in the queue
@@ -41,15 +42,21 @@ export class GameGateway implements OnGatewayConnection {
   
       const userIdOne = getUserIdBySocketId(playerOne);
       const userIdTwo = getUserIdBySocketId(playerTwo);
-  
-      if (!isNaN(userIdOne) && !isNaN(userIdTwo)) {
-        const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
-        this.gameInstances[String(userIdOne)] = newGame.gameInstance;
-        this.gameInstances[String(userIdTwo)] = newGame.gameInstance;
-        this.server.emit('game:created', newGame);
-  
+
+      console.log('userIdone = ', userIdOne);
+      console.log('userIdTwo = ', userIdTwo);
+      
+      if (userIdOne && userIdTwo) {
+        try {
+          const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
+          this.gameData.set(userIdOne, newGame);
+          this.gameData.set(userIdTwo, newGame);
+          this.server.emit('game:created', newGame);
+        } catch (error) {
+          console.error('Error creating game:', error);
+        }
       } else {
-        console.error('Invalid player IDs:', playerOne, playerTwo);
+        console.error('User IDs not found for players:', playerOne, playerTwo);
       }
     }
     else {
@@ -61,33 +68,38 @@ export class GameGateway implements OnGatewayConnection {
   async handleKeyDown(client: Socket, data: { key: string }) {
     console.log('Key down:', data);
     const userId = getUserIdBySocketId(client.id);
-    const gameInstance = this.gameInstances[userId];
+    if (!userId) {
+      console.error('User ID not found for client:', client.id);
+      return;
+    }
+    const gameData = this.gameData.get(userId);
     
-    if (!gameInstance) {
+    if (!gameData) {
       console.error('Game instance not found for user:', userId);
       return;
     }
     try {
-      const game = await this.gameService.getGameById(gameInstance.gameId); // Utilisation du service pour récupérer les informations du jeu
-      if (!game) {
-        console.error('Game not found for ID:', gameInstance.gameId);
+      const game = gameData.game;
+      const gameInstance = gameData.gameinstance;
+      if (!gameInstance) {
+        console.error('Game not found for user:', userId);
         return;
       }
     // Mettez à jour la position du joueur en fonction de la touche enfoncée
     if (data.key === 'ArrowUp') {
       console.log(userId);
       if (userId === game.userA) {
-          gameInstance.playerAPosition.y -= 10;
+        gameInstance.playerAPosition.y -= 10;
       } else if (userId === game.userB) {
-          gameInstance.playerBPosition.y -= 10;
+        gameInstance.playerBPosition.y -= 10;
       }
-  } else if (data.key === 'ArrowDown') {
+    } else if (data.key === 'ArrowDown') {
       if (userId === game.userA) {
-          gameInstance.playerAPosition.y += 10;
+        gameInstance.playerAPosition.y += 10;
       } else if (userId === game.userB) {
-          gameInstance.playerBPosition.y += 10;
+        gameInstance.playerBPosition.y += 10;
       }
-  }
+    }
     
     // Envoyez les positions mises à jour aux clients concernés
     this.server.emit('gameState', { 

@@ -1,3 +1,5 @@
+import { Game } from "src/entities/game.entity";
+
 export class Ball {
     x: number;
     y: number;
@@ -25,4 +27,13 @@ export class Ball {
       this.ball = ball;
     }
   }
-  
+
+  export class GameData {
+    game: Game;
+    gameinstance: GameInstance;
+
+    constructor(game: Game, gameinstance: GameInstance) {
+      this.game = game;
+      this.gameinstance = gameinstance;
+    }
+  };
