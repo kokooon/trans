@@ -19,7 +19,7 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
   state: CanvasTutorialState = {
     playerAPosition: 200,
     playerBPosition: 200,
-    ballPosition: { x: 400, y: 250 }, // Position initiale de la balle
+    ballPosition: { x: 400, y: 250 },
   };
 
   componentDidMount() {

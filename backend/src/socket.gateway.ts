@@ -4,7 +4,6 @@ import { UserService } from './user/user.service'; // Import UserService
 import { addUserSocketPair, getSocketIdByUserId, removeUserSocketPair } from './entities/socket.map';
 import { getUserIdBySocketId } from './entities/socket.map';
 import { getCurrentMapState } from './entities/socket.map';
-import { GameService } from './game/game.service';
 
 @WebSocketGateway({
   cors: {
@@ -16,7 +15,6 @@ import { GameService } from './game/game.service';
 export class SocialGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private userService: UserService,
-    private readonly gameService: GameService,
   ) {}
 
   @WebSocketServer()
@@ -104,6 +102,7 @@ data.recipientId.forEach(recipientId => {
 
   async handleDisconnect(client: Socket) {
     const userId = getUserIdBySocketId(client.id);
+    //console.log(`je disco ${client.id} dans le social`)
     if (userId) {
       removeUserSocketPair(userId);
       try {

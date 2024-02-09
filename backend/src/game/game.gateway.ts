@@ -1,11 +1,11 @@
-import { WebSocketGateway, OnGatewayConnection, SubscribeMessage, WebSocketServer } from '@nestjs/websockets';
+import { WebSocketGateway, OnGatewayConnection, SubscribeMessage, WebSocketServer, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
 import { getUserIdBySocketId } from 'src/entities/socket.map';
 import { GameData, GameInstance } from './ball';
 
 @WebSocketGateway()
-export class GameGateway implements OnGatewayConnection {
+export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private matchmakingQueue: string[] = [];
   private gameData: Map<number, GameData> = new Map<number, GameData>();
@@ -19,22 +19,17 @@ export class GameGateway implements OnGatewayConnection {
   async handleMatchmaking(client: Socket): Promise<void> {
     console.log('Matchmaking request received from', client.id);
     
-    // Check if the player is already in the matchmaking queue
     if (this.matchmakingQueue.includes(client.id)) {
       console.log('Player is already in the matchmaking queue.');
       return;
     }
   
-    // Add player to the matchmaking queue
     this.matchmakingQueue.push(client.id);
     console.log(this.matchmakingQueue);
 
-    // Check if there are at least two players in the queue
     if (this.matchmakingQueue.length >= 2) {
-      // Pair the first two players in the queue
       const [playerOne, playerTwo] = this.matchmakingQueue.splice(0, 2);
       
-      // Notify both players that a match has been found
       this.server.to(playerOne).emit('matchmaking:found');
       this.server.to(playerTwo).emit('matchmaking:found');
       
@@ -85,7 +80,6 @@ export class GameGateway implements OnGatewayConnection {
         console.error('Game not found for user:', userId);
         return;
       }
-    // Mettez à jour la position du joueur en fonction de la touche enfoncée
     if (data.key === 'ArrowUp') {
       console.log(userId);
       if (userId === game.userA) {
@@ -101,7 +95,6 @@ export class GameGateway implements OnGatewayConnection {
       }
     }
     
-    // Envoyez les positions mises à jour aux clients concernés
     this.server.emit('gameState', { 
       playerAPosition: gameInstance.playerAPosition.y, 
       playerBPosition: gameInstance.playerBPosition.y,
@@ -117,13 +110,12 @@ export class GameGateway implements OnGatewayConnection {
   @SubscribeMessage('keyup')
   handleKeyUp(client: Socket, data: { userId: number, key: string }) {
     console.log('Key up:', data);
-    // Vous pouvez ajouter une logique supplémentaire ici si nécessaire
   }
 
   async handleDisconnect(client: Socket) {
     const index = this.matchmakingQueue.indexOf(client.id);
     if (index !== -1) {
-      this.matchmakingQueue.splice(index, 1); // Retirer le client de la file d'attente
+      this.matchmakingQueue.splice(index, 1);
       console.log(`Socket ${client.id} disconnected and removed from matchmaking queue.`);
     } else {
       console.log(`Socket ${client.id} disconnected.`);

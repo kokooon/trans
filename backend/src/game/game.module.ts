@@ -12,7 +12,7 @@ import { GameGateway } from './game.gateway';
     MyConfigModule,
     TypeOrmModule.forFeature([Game]),
   ],
-  providers: [GameGateway, GameService],
+  providers: [GameService],
   exports: [GameService],
 })
 export class GameModule {}
