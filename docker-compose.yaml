@@ -32,9 +32,9 @@ services:
     ports:
       - "3001:3000"
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=pong
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
     volumes:
       - ${PWD}/backend:/app
     networks:
@@ -43,16 +43,16 @@ services:
 
   # Database using PostgreSQL
   database:
-    container_name: pong-database
+    container_name: ${DB_HOST}
     image: postgres:latest
     env_file:
       - .env
     expose:
-      - "5432"
+      - ${DB_PORT}
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=pong
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
     networks:
       - pong-data
     restart: always
