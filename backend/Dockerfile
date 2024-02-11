@@ -5,30 +5,13 @@ ARG APP_DIR=/app
 # STEP 2: Install dependencies
 RUN mkdir -p ${APP_DIR}
 WORKDIR ${APP_DIR}
+#COPY ./nest-cli.json /app
+#COPY ./package.json /app
+#COPY ./package-lock.json /app
+COPY . .
 
-#COPY package.json .
-# COPY package-lock.json .
-# COPY . .
-# RUN rm -rf node_modules
-# RUN npm cache clean --force
-# RUN npm update
-# RUN npm upgrade
-#RUN npm install
-# RUN npm install -g npm@10.2.4
-# RUN npm update
-# RUN npm install -g @nestjs/cli
-# RUN npm install typescript@latest
-# RUN npm install @nestjs/typeorm typeorm pg
-# RUN npm install --save @nestjs/config
-# RUN npm install @nestjs/passport passport-42
-# RUN npm install lru-cache --save
+RUN npm install
 
-# COPY ./nest-cli.json .
 EXPOSE 3000
 
-# STEP 4: Run migrations
-#RUN npm run typeorm migration:generate -- -d ./ormconfig.ts
-#RUN npm run typeorm migration:run
-
-# STEP 5: Start the application
 CMD ["npm", "run", "start:dev"]

@@ -37,6 +37,7 @@ services:
       - POSTGRES_DB=${DB_DATABASE}
     volumes:
       - ${PWD}/backend:/app
+      - /app/node_modules
     networks:
       - pong-data
     restart: always
