@@ -12,6 +12,9 @@ export class User {
   pseudo: string;
 
   @Column({ nullable: true })
+  pseudo_42: string;
+
+  @Column({ nullable: true })
   email: string;
 
   @Column({ type: 'text', nullable: true })

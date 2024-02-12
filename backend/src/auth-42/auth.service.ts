@@ -12,7 +12,7 @@ export class AuthService {
     constructor(private readonly userService: UserService, readonly myConfigService: MyConfigService) {}
 
     async findOrCreateUser(profile: any): Promise<any> {
-      let user = await this.userService.findByPseudo(profile.username);
+      let user = await this.userService.findByPseudo_42(profile.username);
   
       if (!user) {
         user = await this.userService.add_user_42(profile);

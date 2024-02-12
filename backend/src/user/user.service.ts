@@ -228,6 +228,10 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
     return this.userRepository.findOne({ where: { pseudo } } as FindOneOptions<User>);
   }
 
+  async findByPseudo_42(pseudo_42: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { pseudo_42 } } as FindOneOptions<User>);
+  }
+
   async findIdByPseudo(pseudo: string): Promise<number | undefined> {
     const user = await this.userRepository.findOne({ where: { pseudo } } as FindOneOptions<User>);
     if (user)
@@ -265,6 +269,7 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
     try {
         let user = new User();
         user.pseudo = profile.username;
+        user.pseudo_42 = profile.username;
         user.email = profile.emails[0].value;
         user.avatar = profile._json.image.link;
         user.friends = [];
@@ -290,6 +295,7 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
 
     let user = new User();
     user.pseudo = pseudo;
+    user.pseudo_42 = pseudo;
     user.email = email;
     user.avatar = avatar; 
     return this.userRepository.save(user);
