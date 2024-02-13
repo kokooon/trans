@@ -51,6 +51,7 @@ async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
 async handleNewMember(@MessageBody() data: any, client: Socket): Promise<void> {
   const allSockets = getAllSocketIds();
   // Iterate over each socket ID and send event
+  console.log('enter gateway');
   allSockets.forEach((recipientSocketId) => {
     if (recipientSocketId) {
       this.server.to(recipientSocketId).emit('newMember', data);

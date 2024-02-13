@@ -143,14 +143,14 @@ export class ChannelController {
   }
 
   @Post('setAsAdmin')
-  async setAdmin(@Req() req, @Res() res): Promise<void> {
+  async setAdmin(@Req() req): Promise<void> {
     const channelName = req.body.channel;
     const channel = await this.channelService.findChannelByName(channelName);
     await this.channelService.setAdmin(channel, req.body.newAdmin);
   }
 
   @Post('deletePassword')
-  async deletePassword(@Req() req, @Res() res): Promise<void> {
+  async deletePassword(@Req() req): Promise<void> {
     const channelId = req.body.channelid;
     const channel = await this.channelService.findChannelById(channelId);
     await this.channelService.deletePassword(channel);

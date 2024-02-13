@@ -196,6 +196,7 @@ const social = () => {
         });
 
         socket.on('newMember', (data: any) => {
+          console.log('data id = ', data.id, 'data name = ', data.name)
           if (currentView === 'Channel' && activeChannel === data.name) {
               getChannelMembersId(data.id);
           }
@@ -894,6 +895,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
 
 //setAsAdmin(member.id)
 const setAsAdmin  = async (newadmin: number, channeL: string, channEL: number) => {
+  console.log('in set as admin');
 	try {
 		const response = await fetch(`http://127.0.0.1:3001/channels/setAsAdmin`, {
           method: 'POST',
@@ -904,15 +906,29 @@ const setAsAdmin  = async (newadmin: number, channeL: string, channEL: number) =
           body: JSON.stringify({ newAdmin: newadmin, channel: channeL}),
       });
 	  if (response.ok){
+      console.log('im here0');
 			console.log('sucessfully set as admin');
 	  }
 	  else{
+      console.log('im here1');
 			console.log('failed to set as admin');
 	  }
 	}catch(error){
+    console.log('im here2');
 		console.log('cant set as admin', error)
 	}
-	getChannelMembersId(channEL);
+  console.log('im here3');
+	//getChannelMembersId(channEL);
+  if (socket) {
+    console.log('name = ', activeChannel, 'id = ', activeChannelId);
+    const data = {
+      name: channeL,
+      id: channEL
+    }
+    socket.emit('newMember', data);
+  } else {
+    console.error('Socket is null');
+  }
 }
 
 //Kick(member.id, activeChannel, activeChannelId)
@@ -1173,12 +1189,12 @@ const handleDeletePassword  = async (channel: Channel) => {
 								)}
 								{(userChannelStatus === 'Owner' && (user[0].id !== member.id))&& (
           						<>
-        						<MenuItem onClick={() => {Kick(member.id, activeChannel, activeChannelId);}}>Kick</MenuItem>
+        						<MenuItem style={{ color: 'red' }} onClick={() => {Kick(member.id, activeChannel, activeChannelId);}}>Kick</MenuItem>
 								</>
 								)}
         						{/* Only show the following buttons for Admins/Owners clicking on Members */}
         						{(user[0].id !== member.id && member.channelStatus === 'Member' && 
-         						(userChannelStatus === 'Admin' || userChannelStatus === 'Owner')) && (
+         						userChannelStatus === 'Admin') && (
           						<>
             					<MenuItem style={{ color: 'red' }}>Mute</MenuItem>
             					<MenuItem style={{ color: 'red' }}>Kick</MenuItem>
