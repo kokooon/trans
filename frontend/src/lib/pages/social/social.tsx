@@ -895,7 +895,6 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
 
 //setAsAdmin(member.id)
 const setAsAdmin  = async (newadmin: number, channeL: string, channEL: number) => {
-  console.log('in set as admin');
 	try {
 		const response = await fetch(`http://127.0.0.1:3001/channels/setAsAdmin`, {
           method: 'POST',
@@ -906,21 +905,16 @@ const setAsAdmin  = async (newadmin: number, channeL: string, channEL: number) =
           body: JSON.stringify({ newAdmin: newadmin, channel: channeL}),
       });
 	  if (response.ok){
-      console.log('im here0');
 			console.log('sucessfully set as admin');
 	  }
 	  else{
-      console.log('im here1');
 			console.log('failed to set as admin');
 	  }
 	}catch(error){
-    console.log('im here2');
 		console.log('cant set as admin', error)
 	}
-  console.log('im here3');
 	//getChannelMembersId(channEL);
   if (socket) {
-    console.log('name = ', activeChannel, 'id = ', activeChannelId);
     const data = {
       name: channeL,
       id: channEL
@@ -965,6 +959,15 @@ const Kick  = async (kickid: number, channelname: string, channelid: number) => 
 	}catch(error){
 		console.log('cant kick the user, ', error);
 	}
+  if (socket) {
+    const data = {
+      name: channelname,
+      id: channelid
+    }
+    socket.emit('newMember', data);
+  } else {
+    console.error('Socket is null');
+  }
 }
 
 const handleDeletePassword  = async (channel: Channel) => {
