@@ -30,5 +30,10 @@ function addUserSocketPair(userId: number, socketId: string): void {
     return Object.fromEntries(userSocketMap);
   }
 
+  function getAllSocketIds(): string[] {
+    // Directly return an array of all socket IDs from the map
+    return Array.from(userSocketMap.values());
+  }
+
   export { addUserSocketPair, getSocketIdByUserId, removeUserSocketPair };
-  export { getUserIdBySocketId, findUserById };
+  export { getUserIdBySocketId, findUserById, getAllSocketIds };

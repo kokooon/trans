@@ -195,8 +195,15 @@ const social = () => {
             getNotifications();
         });
 
+        socket.on('newMember', (data: any) => {
+          if (currentView === 'Channel' && activeChannel === data.name) {
+              getChannelMembersId(data.id);
+          }
+        });
+
           // Clean up the listener
           return () => {
+            socket.off('newMember');
             socket.off('friendConnected');
             socket.off('new_message');
             socket.off('friendDisconnected');
@@ -205,7 +212,7 @@ const social = () => {
 			socket.off('new_channel_message');
           };
         }
-      }, [socket, chatHistory, friendsList, friendsRequestList, lastMessages]);
+      }, [socket, chatHistory, friendsList, friendsRequestList, lastMessages, channelMembersIds]);
 
       const handleClick = (index: number, type: string) => (event: React.MouseEvent<HTMLElement>) => {
         const anchorElArray = type === 'channel' ? channelAnchorElArray : memberAnchorElArray;
@@ -712,6 +719,7 @@ const fetchChannelChatHistory = async (channelName: string) => {
 };
 
 const handleJoinChannel  = async () => {
+  let channelId;
   try {
     const response = await fetch(`http://127.0.0.1:3001/channels/findChannelByName/${joinChannel}`, {
       method: 'POST',  // Changez la méthode pour POST
@@ -738,8 +746,9 @@ const handleJoinChannel  = async () => {
           });
           if (!responsetwo.ok) {
               console.log('cant add channel id in user');
-			  return ;
+			        return ;
           }
+          channelId = responseData.id;
           const responsethree = await fetch(`http://127.0.0.1:3001/channels/addUserId/${user[0].id}`, {
           method: 'POST',
           headers: {
@@ -794,6 +803,15 @@ const handleJoinChannel  = async () => {
       }
   } catch (error) {
       console.log('Error during join channel:', error);
+  }
+  if (socket) {
+    const data = {
+      name: joinChannel,
+      id: channelId
+    }
+    socket.emit('newMember', data);
+  } else {
+    console.error('Socket is null');
   }
   setPasswordInput('');
   setChannelName('');

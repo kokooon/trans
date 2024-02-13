@@ -4,6 +4,7 @@ import { UserService } from './user/user.service'; // Import UserService
 import { addUserSocketPair, getSocketIdByUserId, removeUserSocketPair } from './entities/socket.map';
 import { getUserIdBySocketId } from './entities/socket.map';
 import { getCurrentMapState } from './entities/socket.map';
+import { getAllSocketIds } from './entities/socket.map';
 
 @WebSocketGateway({
   cors: {
@@ -45,6 +46,18 @@ async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
       this.server.to(recipientSocketId).emit('new_friend', data);
   }
 }
+
+@SubscribeMessage('newMember')
+async handleNewMember(@MessageBody() data: any, client: Socket): Promise<void> {
+  const allSockets = getAllSocketIds();
+  // Iterate over each socket ID and send event
+  allSockets.forEach((recipientSocketId) => {
+    if (recipientSocketId) {
+      this.server.to(recipientSocketId).emit('newMember', data);
+    }
+  });
+}
+
 
 @SubscribeMessage('new_notification')
 async handleNewNotif(@MessageBody() data: any, client: Socket): Promise<void> {
