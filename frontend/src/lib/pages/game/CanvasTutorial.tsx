@@ -1,5 +1,10 @@
 import { Component } from 'react';
 
+const PADDLE_WIDTH = 20;
+const PADDLE_HEIGHT = 100;
+const PADDLE_OFFSET_A = 10; // Distance from the left edge of the canvas to Player A's paddle
+const PADDLE_OFFSET_B = 30;
+
 interface CanvasTutorialProps {
   socket: any;
 }
@@ -42,6 +47,7 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
   handleGameState = (gameState: any) => {
     const { playerAPosition, playerBPosition, ballPosition } = gameState;
     this.setState({ playerAPosition, playerBPosition, ballPosition });
+    console.log('ball pos = ', ballPosition);
     this.draw(); // Redessiner le canvas avec les nouvelles positions
   };
 
@@ -71,11 +77,12 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
   
         // Dessiner le joueur A
         ctx.fillStyle = 'blue';
-        ctx.fillRect(10, this.state.playerAPosition, 20, 100);
+        ctx.fillRect(PADDLE_OFFSET_A, this.state.playerAPosition, PADDLE_WIDTH, PADDLE_HEIGHT);
   
         // Dessiner le joueur B
         ctx.fillStyle = 'red';
-        ctx.fillRect(width - 30, this.state.playerBPosition, 20, 100);
+        ctx.fillRect(width - PADDLE_OFFSET_B, this.state.playerBPosition, PADDLE_WIDTH, PADDLE_HEIGHT);
+
   
         // Dessiner la balle
         ctx.fillStyle = 'black';

@@ -32,7 +32,7 @@ export class GameService {
     const playerAPosition = { y: 200 };
     const playerBPosition = { y: 200 };
     const ball = new Ball(400, 250, 5, 5);
-    const gameInstance = new GameInstance(newGame.id, playerAPosition, playerBPosition, ball);
+    const gameInstance = new GameInstance(newGame.id, playerAPosition, playerBPosition);
 
     await this.updateUserGameHistory(userAId, newGame.id);
     await this.updateUserGameHistory(userBId, newGame.id);
