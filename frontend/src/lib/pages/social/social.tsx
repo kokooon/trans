@@ -165,10 +165,11 @@ const social = () => {
           });
 
 		  socket.on('new_channel_message', (message: any) => {
-            console.log('in new_channel_message listener = ', message.channelName);
-            if (currentView === 'Channel' && chatContext.id === message.channelId)
-				fetchLastChannelMessage(channelList);
-				fetchChannelChatHistory(message.channelName.toString());
+            console.log('in new_channel_message listener = ', message.channelName, 'context = ', chatContext.id, 'messagechannel id = ', message.channelId);
+            if (currentView === 'Channel' && chatContext.id === message.channelId) {
+				      fetchChannelChatHistory(message.channelName.toString());
+            }
+				      fetchLastChannelMessage(channelList);
         });
 
           socket.on('friendConnected', () => {
@@ -195,25 +196,31 @@ const social = () => {
             getNotifications();
         });
 
-        socket.on('newMember', (data: any) => {
-          console.log('data id = ', data.id, 'data name = ', data.name)
+        socket.on('channelMembersListChange', (data: any) => {
           if (currentView === 'Channel' && activeChannel === data.name) {
               getChannelMembersId(data.id);
           }
         });
 
+        socket.on('refreshChannelList', () => {
+          if (currentView === 'Channel') {
+              getChannel();
+          }
+        });
+
           // Clean up the listener
           return () => {
-            socket.off('newMember');
+            socket.off('refreshChannelList');
+            socket.off('channelMembersListChange');
             socket.off('friendConnected');
             socket.off('new_message');
             socket.off('friendDisconnected');
             socket.off('new_friend');
             socket.off('new_notification');
-			socket.off('new_channel_message');
+			      socket.off('new_channel_message');
           };
         }
-      }, [socket, chatHistory, friendsList, friendsRequestList, lastMessages, channelMembersIds]);
+      }, [socket, chatHistory, friendsList, friendsRequestList, lastMessages, channelMembersIds, channelList]);
 
       const handleClick = (index: number, type: string) => (event: React.MouseEvent<HTMLElement>) => {
         const anchorElArray = type === 'channel' ? channelAnchorElArray : memberAnchorElArray;
@@ -870,7 +877,12 @@ const handleBlock  = async (friendId: number) => {
       getBlock();
   }
   setBlockInput('');
-  fetchFriendChatHistory(friendId);
+  if (currentView === 'Friends')
+    fetchFriendChatHistory(friendId);
+  else{
+      if (activeChannel)
+          fetchChannelChatHistory(activeChannel);
+  }
 };
 
 const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
@@ -965,6 +977,7 @@ const Kick  = async (kickid: number, channelname: string, channelid: number) => 
       id: channelid
     }
     socket.emit('newMember', data);
+    socket.emit('refreshChannelList', kickid);
   } else {
     console.error('Socket is null');
   }
@@ -1066,7 +1079,7 @@ const handleDeletePassword  = async (channel: Channel) => {
                     info={ lastMessages[channel.id] || 'Loading...'}
                     onClick={() => {
                       setActiveChannel(channel.name);
-					  setActiveChannelId(channel.id);
+					            setActiveChannelId(channel.id);
                       fetchChannelChatHistory(channel.name);
                       getChannelMembersId(channel.id);
                       }} 

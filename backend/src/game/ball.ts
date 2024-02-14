@@ -1,4 +1,3 @@
-import { Game } from "src/entities/game.entity";
 
 export class Ball {
     x: number;
@@ -12,28 +11,15 @@ export class Ball {
       this.dx = dx;
       this.dy = dy;
     }
-  }
-  
-  export class GameInstance {
-    gameId: number;
-    playerAPosition: { y: number };
-    playerBPosition: { y: number };
-    ball: Ball;
-  
-    constructor(gameId: number, playerAPosition: { y: number }, playerBPosition: { y: number }, ball: Ball) {
-      this.gameId = gameId;
-      this.playerAPosition = playerAPosition;
-      this.playerBPosition = playerBPosition;
-      this.ball = ball;
-    }
-  }
 
-  export class GameData {
-    game: Game;
-    gameinstance: GameInstance;
-
-    constructor(game: Game, gameinstance: GameInstance) {
-      this.game = game;
-      this.gameinstance = gameinstance;
-    }
-  };
+    updatePosition(width: number, height: number) {
+      // Update ball position based on velocity
+      this.x += this.dx;
+      this.y += this.dy;
+  
+      // Collision detection with top and bottom boundaries
+      if (this.y <= 0 || this.y >= height) {
+        this.dy = -this.dy; // Reflect the vertical velocity
+      }
+  }
+}

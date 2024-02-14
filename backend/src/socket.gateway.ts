@@ -47,17 +47,26 @@ async handleNewFriend(@MessageBody() data: any, client: Socket): Promise<void> {
   }
 }
 
-@SubscribeMessage('newMember')
+@SubscribeMessage('channelMembersListChange')
 async handleNewMember(@MessageBody() data: any, client: Socket): Promise<void> {
   const allSockets = getAllSocketIds();
   // Iterate over each socket ID and send event
   console.log('enter gateway');
   allSockets.forEach((recipientSocketId) => {
     if (recipientSocketId) {
-      this.server.to(recipientSocketId).emit('newMember', data);
+      this.server.to(recipientSocketId).emit('channelMembersListChange', data);
     }
   });
 }
+
+@SubscribeMessage('refreshChannelList')
+async refreshChannelList(@MessageBody() data: any, client: Socket): Promise<void> {
+  const Sockets = getSocketIdByUserId(data);
+  // Iterate over each socket ID and send event
+    if (Sockets) {
+      this.server.to(Sockets).emit('refreshChannelList');
+    }
+  };
 
 
 @SubscribeMessage('new_notification')

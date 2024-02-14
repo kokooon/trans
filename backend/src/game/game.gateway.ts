@@ -2,7 +2,8 @@ import { WebSocketGateway, OnGatewayConnection, SubscribeMessage, WebSocketServe
 import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
 import { getUserIdBySocketId } from 'src/entities/socket.map';
-import { GameData, GameInstance } from './ball';
+import { GameData } from './gameData';
+import { GameInstance } from './gameInstance';
 
 @WebSocketGateway()
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {

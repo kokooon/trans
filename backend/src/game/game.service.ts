@@ -4,7 +4,9 @@ import { Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { Game } from 'src/entities/game.entity';
 import { NotFoundException } from '@nestjs/common';
-import { Ball, GameData, GameInstance } from './ball';
+import { Ball } from './ball';
+import { GameData } from './gameData';
+import { GameInstance } from './gameInstance';
 
 @Injectable()
 export class GameService {
