@@ -13,31 +13,27 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "@/lib/components/ui/dropdown-menu"
-//   import { useEffect } from 'react';
 import { useEffect, useState } from 'react';
-//import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails } from '../utils/UtilsFetch';
-//import { fetchAvatarByPseudo } from '../utils/UtilsFetch';
-//import { User } from './../user.model.tsx';
 import { useSocket } from '../utils/socketContext';
+import { useUser } from "@/lib/components/utils/UserContext";
 
 function UserAv() {
-
-//    const [, , removeCookie] = useCookies(['jwt']);
+    const { pseudo } = useUser();
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
     const { socket } = useSocket();
-    //const [avatar, setAvatar] = useState<string | null>(null);
 
     useEffect(() => {
+      console.log('inside nav bar useEffect');
     const fetchData = async () => {
       const userData = await fetchUserDetails();
       setUser(userData);
     };
 
     fetchData();
-  }, []);
+  }, [pseudo]);
 
   const handleLogout = async () => {
     try {
@@ -68,9 +64,9 @@ function UserAv() {
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
             {/* Utiliser l'avatar récupéré */}
-            <AvatarImage src={user && user[0] ? user[0].avatar || 'placeholder_url' : 'placeholder_url'} alt={user && user[0] ? user[0].pseudo || 'Unknown User' : 'Unknown User'} />
+            <AvatarImage src={user && user[0] ? user[0].avatar || 'placeholder_url' : 'placeholder_url'} alt={pseudo || 'Unknown User'} />
 
-            <AvatarFallback>{user?.pseudo?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+            <AvatarFallback>{pseudo?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
           </Avatar>
           </Button>
         </DropdownMenuTrigger>
