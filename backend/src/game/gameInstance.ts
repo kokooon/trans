@@ -1,3 +1,4 @@
+import { Server, Socket } from 'socket.io';
 import { Ball } from './ball';
 
 export class GameInstance {
@@ -19,29 +20,39 @@ export class GameInstance {
       y: startSide === 'A' ? playerAPosition.y + 50 : playerBPosition.y + 50,
     };
     const ballVelocity = {
-      dx: startSide === 'A' ? 5 : -5, // Adjust velocity direction based on the side
+      dx: startSide === 'A' ? 3 : -3, // Adjust velocity direction based on the side
       dy: 0, // Starts with horizontal movement; adjust as necessary
     };
 
     this.ball = new Ball(ballStartPosition.x, ballStartPosition.y, ballVelocity.dx, ballVelocity.dy);
-    this.startGameLoop();
   }
 
-  startGameLoop() {
-    this.intervalId = setInterval(() => {
-        const playerAPos = this.playerAPosition;
-        const playerBPos = this.playerBPosition;
-      // Update ball position
-      this.ball.updatePosition(800, 500, playerAPos, playerBPos); // Example dimensions, adjust as needed
+  async startGameLoop(playerA: string, playerB: string, server:Server) {
+      this.intervalId = setInterval(() => {
+        // Update game state
+        this.ball.updatePosition(800, 500, this.playerAPosition, this.playerBPosition);
 
-      // Additional game logic...
+        // Emit game state to clients
+        server.to(playerA).emit('gameState', { 
+          playerAPosition: this.playerAPosition.y, 
+          playerBPosition: this.playerBPosition.y,
+          ballPosition: this.ball 
+        });
 
-    }, 1000 / 60); // 60 FPS
+        server.to(playerB).emit('gameState', { 
+          playerAPosition: this.playerAPosition.y, 
+          playerBPosition: this.playerBPosition.y,
+          ballPosition: this.ball 
+        });
+        
+        // Additional game logic...
+      }, 1000 / 60); // 60 FPS
   }
 
-  stopGameLoop() {
+  async stopGameLoop(gameId: number) {
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
   }
+
 }

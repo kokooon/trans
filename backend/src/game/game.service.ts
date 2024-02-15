@@ -31,17 +31,16 @@ export class GameService {
 
     const playerAPosition = { y: 200 };
     const playerBPosition = { y: 200 };
-    const ball = new Ball(400, 250, 5, 5);
     const gameInstance = new GameInstance(newGame.id, playerAPosition, playerBPosition);
 
     await this.updateUserGameHistory(userAId, newGame.id);
     await this.updateUserGameHistory(userBId, newGame.id);
 
-    const gameData = new GameData (game, gameInstance);
+    const gameData = new GameData(game, gameInstance);
     console.log('data1 = ', gameData);
     console.log('data10 = ', gameData.game.id);
     return gameData;
-  }
+}
 
   async updateUserGameHistory(userId: number, gameId: number): Promise<void> {
     // Utilisez le service UserService pour obtenir l'utilisateur

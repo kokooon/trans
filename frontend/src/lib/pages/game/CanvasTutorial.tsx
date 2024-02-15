@@ -2,7 +2,7 @@ import { Component } from 'react';
 
 const PADDLE_WIDTH = 20;
 const PADDLE_HEIGHT = 100;
-const PADDLE_OFFSET_A = 10; // Distance from the left edge of the canvas to Player A's paddle
+const PADDLE_OFFSET_A = 10;
 const PADDLE_OFFSET_B = 30;
 
 interface CanvasTutorialProps {
@@ -84,7 +84,7 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
     if (ctx)
     {
       const animate = () => {
-        ctx.clearRect(0, 0, width, height); // Effacer le canvas
+        ctx.clearRect(0, 0, width, height);
   
         ctx.strokeStyle = 'black';
         ctx.strokeRect(5, 5, width - 10, height - 10);
@@ -104,7 +104,6 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
         ctx.arc(this.state.ballPosition.x, this.state.ballPosition.y, 5, 0, 2 * Math.PI);
         ctx.fill();
   
-        // Répéter l'animation
         requestAnimationFrame(animate);
       };
 

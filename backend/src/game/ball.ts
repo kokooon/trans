@@ -1,3 +1,4 @@
+//ball.ts
 const PADDLE_WIDTH = 20;
 const PADDLE_HEIGHT = 100;
 const PADDLE_OFFSET_A = 10; // Distance from the left edge of the canvas to Player A's paddle

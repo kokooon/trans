@@ -15,72 +15,54 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly gameService: GameService) {}
 
   handleConnection(client: Socket, ...args: any[]) {
-  }
-
-  @SubscribeMessage('stopGameLoop')
-  async handleStopGameLoop(client: Socket, data: { gameId: number }) {
-    const gameId = data.gameId;
-    console.log(`Received request to stop game loop for gameId: ${gameId}`);
-  
-    const gameData = this.gameData.get(gameId);
-    if (gameData) {
-      // Directly call stopGameLoop on the gameinstance within GameData
-      gameData.gameinstance.stopGameLoop();
-      console.log(`Game loop stopped for gameId: ${gameId}`);
-  
-      // Optional: Clean up after stopping the game
-      // this.gameData.delete(gameId);
-    } else {
-      console.warn(`No game data found for gameId: ${gameId}`);
-    }
-  }
-  
+  }  
   
   @SubscribeMessage('matchmaking:request')
   async handleMatchmaking(client: Socket): Promise<void> {
-    console.log('Matchmaking request received from', client.id);
-    
-    if (this.matchmakingQueue.includes(client.id)) {
-      console.log('Player is already in the matchmaking queue.');
-      return;
-    }
-  
-    this.matchmakingQueue.push(client.id);
-    console.log(this.matchmakingQueue);
-
-    if (this.matchmakingQueue.length >= 2) {
-      const [playerOne, playerTwo] = this.matchmakingQueue.splice(0, 2);
+      console.log('Matchmaking request received from', client.id);
       
-      this.server.to(playerOne).emit('matchmaking:found');
-      this.server.to(playerTwo).emit('matchmaking:found');
-      
-      console.log(`Match found between ${playerOne} and ${playerTwo}`);
-  
-      const userIdOne = getUserIdBySocketId(playerOne);
-      const userIdTwo = getUserIdBySocketId(playerTwo);
-
-      const userOneS = getSocketIdByUserId(userIdOne);
-      const userTwoS = getSocketIdByUserId(userIdTwo); 
-      
-      if (userIdOne && userIdTwo) {
-        try {
-          const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
-          this.gameData.set(userIdOne, newGame);
-          this.gameData.set(userIdTwo, newGame);
-          console.log('data0 = ', newGame);
-          //this.server.emit('game:created', newGame);
-          this.server.to(userOneS).emit('game:created', newGame);
-          this.server.to(userTwoS).emit('game:created', newGame);
-        } catch (error) {
-          console.error('Error creating game:', error);
-        }
-      } else {
-        console.error('User IDs not found for players:', playerOne, playerTwo);
+      if (this.matchmakingQueue.includes(client.id)) {
+          console.log('Player is already in the matchmaking queue.');
+          return;
       }
-    }
-    else {
-      this.server.to(client.id).emit('matchmaking:searching');
-    }
+    
+      this.matchmakingQueue.push(client.id);
+      console.log(this.matchmakingQueue);
+  
+      if (this.matchmakingQueue.length >= 2) {
+          const [playerOne, playerTwo] = this.matchmakingQueue.splice(0, 2);
+        
+          this.server.to(playerOne).emit('matchmaking:found');
+          this.server.to(playerTwo).emit('matchmaking:found');
+        
+          console.log(`Match found between ${playerOne} and ${playerTwo}`);
+    
+          const userIdOne = getUserIdBySocketId(playerOne);
+          const userIdTwo = getUserIdBySocketId(playerTwo);
+  
+          const userOneS = getSocketIdByUserId(userIdOne);
+          const userTwoS = getSocketIdByUserId(userIdTwo); 
+        
+          if (userIdOne && userIdTwo) {
+              try {
+                  const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
+                  this.gameData.set(userIdOne, newGame);
+                  this.gameData.set(userIdTwo, newGame);
+                  console.log('data0 = ', newGame);
+                  
+                  this.server.to(userOneS).emit('game:created', newGame);
+                  this.server.to(userTwoS).emit('game:created', newGame);
+  
+                  newGame.gameinstance.startGameLoop(userOneS, userTwoS, this.server)
+              } catch (error) {
+                  console.error('Error creating game:', error);
+              }
+          } else {
+              console.error('User IDs not found for players:', playerOne, playerTwo);
+          }
+      } else {
+          this.server.to(client.id).emit('matchmaking:searching');
+      }
   }
 
   @SubscribeMessage('keydown')
