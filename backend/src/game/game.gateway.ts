@@ -1,9 +1,10 @@
 import { WebSocketGateway, OnGatewayConnection, SubscribeMessage, WebSocketServer, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
-import { getUserIdBySocketId } from 'src/entities/socket.map';
+import { addUserSocketPair, getSocketIdByUserId, removeUserSocketPair } from '../entities/socket.map';
 import { GameData } from './gameData';
 import { GameInstance } from './gameInstance';
+import { getUserIdBySocketId } from '../entities/socket.map';
 
 @WebSocketGateway()
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -16,6 +17,25 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket, ...args: any[]) {
   }
 
+  @SubscribeMessage('stopGameLoop')
+  async handleStopGameLoop(client: Socket, data: { gameId: number }) {
+    const gameId = data.gameId;
+    console.log(`Received request to stop game loop for gameId: ${gameId}`);
+  
+    const gameData = this.gameData.get(gameId);
+    if (gameData) {
+      // Directly call stopGameLoop on the gameinstance within GameData
+      gameData.gameinstance.stopGameLoop();
+      console.log(`Game loop stopped for gameId: ${gameId}`);
+  
+      // Optional: Clean up after stopping the game
+      // this.gameData.delete(gameId);
+    } else {
+      console.warn(`No game data found for gameId: ${gameId}`);
+    }
+  }
+  
+  
   @SubscribeMessage('matchmaking:request')
   async handleMatchmaking(client: Socket): Promise<void> {
     console.log('Matchmaking request received from', client.id);
@@ -39,15 +59,18 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const userIdOne = getUserIdBySocketId(playerOne);
       const userIdTwo = getUserIdBySocketId(playerTwo);
 
-      console.log('userIdone = ', userIdOne);
-      console.log('userIdTwo = ', userIdTwo);
+      const userOneS = getSocketIdByUserId(userIdOne);
+      const userTwoS = getSocketIdByUserId(userIdTwo); 
       
       if (userIdOne && userIdTwo) {
         try {
           const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
           this.gameData.set(userIdOne, newGame);
           this.gameData.set(userIdTwo, newGame);
-          this.server.emit('game:created', newGame);
+          console.log('data0 = ', newGame);
+          //this.server.emit('game:created', newGame);
+          this.server.to(userOneS).emit('game:created', newGame);
+          this.server.to(userTwoS).emit('game:created', newGame);
         } catch (error) {
           console.error('Error creating game:', error);
         }

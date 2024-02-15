@@ -32,7 +32,6 @@ export class GameInstance {
         const playerAPos = this.playerAPosition;
         const playerBPos = this.playerBPosition;
       // Update ball position
-      console.log('inside loop');
       this.ball.updatePosition(800, 500, playerAPos, playerBPos); // Example dimensions, adjust as needed
 
       // Additional game logic...

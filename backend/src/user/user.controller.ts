@@ -212,7 +212,7 @@ export class UserController {
           const FriendId = await this.userService.findIdByPseudo(addFriend);
           if (!FriendId)
             return res.status(400).send('no friend');
-          await this.userService.AddInFriendRequest(userId, FriendId);
+          await this.userService.SetNotifications(userId, FriendId);
           return res.status(200).json({ status: 'success' });
       } catch (error) {
           console.error('Error adding friend:', error);

@@ -192,8 +192,10 @@ const social = () => {
 
         socket.on('new_notification', () => {
           console.log('new notification');
-          if (currentView === 'Notifications')
-            getNotifications();
+          if (currentView === 'Notifications') {
+              getNotifications();
+              console.log('omg wtf');
+          }
         });
 
         socket.on('channelMembersListChange', (data: any) => {
@@ -244,13 +246,14 @@ const social = () => {
 
   const getNotifications = async () => {
     setCurrentView('Notifications');
+    console.log('inside get notifs');
     const userData = await fetchUserDetails();
     try {
         const friendsRequestList = []; // Créez une nouvelle liste pour les amis
 
         for (let i = 0; i < userData[0].friendNotif.length; i++) {
             const friendId = userData[0].friendNotif[i];
-            console.log(user[0].friendNotif[i]);
+            console.log('my notifs = ', user[0].friendNotif[i]);
             const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
                 method: 'GET',
                 credentials: 'include',
@@ -817,7 +820,7 @@ const handleJoinChannel  = async () => {
       name: joinChannel,
       id: channelId
     }
-    socket.emit('newMember', data);
+    socket.emit('channelMembersListChange', data);
   } else {
     console.error('Socket is null');
   }
@@ -906,7 +909,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
 };
 
 //setAsAdmin(member.id)
-const setAsAdmin  = async (newadmin: number, channeL: string, channEL: number) => {
+const setAsAdmin  = async (newadmin: number, channelName: string, channelId: number) => {
 	try {
 		const response = await fetch(`http://127.0.0.1:3001/channels/setAsAdmin`, {
           method: 'POST',
@@ -914,7 +917,7 @@ const setAsAdmin  = async (newadmin: number, channeL: string, channEL: number) =
               'Content-Type': 'application/json',
           },
           credentials: 'include', // Inclure les cookies avec la requête
-          body: JSON.stringify({ newAdmin: newadmin, channel: channeL}),
+          body: JSON.stringify({ newAdmin: newadmin, channel: channelName}),
       });
 	  if (response.ok){
 			console.log('sucessfully set as admin');
@@ -928,10 +931,10 @@ const setAsAdmin  = async (newadmin: number, channeL: string, channEL: number) =
 	//getChannelMembersId(channEL);
   if (socket) {
     const data = {
-      name: channeL,
-      id: channEL
+      name: channelName,
+      id: channelId
     }
-    socket.emit('newMember', data);
+    socket.emit('channelMembersListChange', data);
   } else {
     console.error('Socket is null');
   }
@@ -976,7 +979,7 @@ const Kick  = async (kickid: number, channelname: string, channelid: number) => 
       name: channelname,
       id: channelid
     }
-    socket.emit('newMember', data);
+    socket.emit('channelMembersListChange', data);
     socket.emit('refreshChannelList', kickid);
   } else {
     console.error('Socket is null');

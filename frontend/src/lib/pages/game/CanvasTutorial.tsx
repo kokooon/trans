@@ -7,6 +7,7 @@ const PADDLE_OFFSET_B = 30;
 
 interface CanvasTutorialProps {
   socket: any;
+  gameId: number;
 }
 
 interface BallPosition {
@@ -18,17 +19,23 @@ interface CanvasTutorialState {
   playerAPosition: number;
   playerBPosition: number;
   ballPosition: BallPosition;
+  gameId?: number;
 }
 
 class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState> {
-  state: CanvasTutorialState = {
-    playerAPosition: 200,
-    playerBPosition: 200,
-    ballPosition: { x: 400, y: 250 },
-  };
+  constructor(props: CanvasTutorialProps) {
+    super(props);
+    this.state = {
+      playerAPosition: 200,
+      playerBPosition: 200,
+      ballPosition: { x: 400, y: 250 },
+      // Initialize other state properties as needed
+    };
+  }
 
   componentDidMount() {
-    const { socket } = this.props;
+    const { socket, gameId } = this.props;
+    gameId;
     socket.on('game:created', this.handleGameCreated);
     socket.on('gameState', this.handleGameState);
     this.draw();
@@ -37,12 +44,19 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
   }
 
   componentWillUnmount() {
-    const { socket } = this.props;
+    const { socket, gameId } = this.props;
+    if (gameId) {
+      socket.emit('stopGameLoop', { gameId });
+    }
     socket.off('game:created', this.handleGameCreated);
     socket.off('gameState', this.handleGameState);
     document.removeEventListener('keydown', this.handleKeyDown);
     document.removeEventListener('keyup', this.handleKeyUp);
+    // Removed the redundant emit using this.state.gameId
+    console.log('Component is unmounting, gameId:', gameId);
   }
+  
+  
 
   handleGameState = (gameState: any) => {
     const { playerAPosition, playerBPosition, ballPosition } = gameState;

@@ -101,7 +101,6 @@ export class UserService {
           await this.userRepository.save(user);
         }
       }
-      this.SetNotifications(userId, FriendRequestid);
   }
 
     //social
@@ -122,6 +121,7 @@ export class UserService {
           }
         }
       }
+      this.AddInFriendRequest(userId, FriendRequestid);
     }
 
   //social

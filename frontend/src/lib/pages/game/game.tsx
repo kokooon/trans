@@ -5,9 +5,37 @@ import { Button } from "@/lib/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails, isTokenValid, isUserConnected } from '../../components/utils/UtilsFetch';
 
+interface Game {
+  userA: number;
+  userB: number;
+  scoreA: number;
+  scoreB: number;
+  id: number;
+}
+
+interface GameInstance {
+  intervalId: any; // Use a more specific type if available
+  gameId: number;
+  playerAPosition: { y: number };
+  playerBPosition: { y: number };
+  ball: {
+    x: number;
+    y: number;
+    dx: number;
+    dy: number;
+  };
+}
+
+interface GameData {
+  game: Game;
+  gameinstance: GameInstance;
+}
+
+
 function Game() {
   const { socket } = useSocket(); // Récupérer le socket depuis le contexte
   //const [user, setUser] = useState<any | null>(null);
+  const [gameId, setGameId] = useState<number>(0);
   const navigate = useNavigate();
   const [matchmakingStatus, setMatchmakingStatus] = useState('pending');
 
@@ -43,9 +71,12 @@ function Game() {
     socket.on('matchmaking:searching', () => {
       setMatchmakingStatus('searching');
     });
-    socket.on('game:created', (newGame) => {
-      // Traitement des données reçues (newGame)
+    socket.on('game:created', (newGame: GameData) => {
       console.log('New game created:', newGame);
+      // Assuming CanvasTutorial can accept a gameId prop
+      console.log('data = ', newGame);
+      setGameId(newGame.game.id); // Update local state or context with gameId
+
     });
 
 
@@ -82,7 +113,7 @@ function Game() {
           </Button>
         </div>
       )}
-      {matchmakingStatus === 'found' && <CanvasTutorial socket={socket}/>}
+      {matchmakingStatus === 'found' && <CanvasTutorial socket={socket} gameId={gameId}/>}
     </div>
   );
 }

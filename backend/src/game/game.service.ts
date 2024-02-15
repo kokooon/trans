@@ -38,7 +38,8 @@ export class GameService {
     await this.updateUserGameHistory(userBId, newGame.id);
 
     const gameData = new GameData (game, gameInstance);
-
+    console.log('data1 = ', gameData);
+    console.log('data10 = ', gameData.game.id);
     return gameData;
   }
 

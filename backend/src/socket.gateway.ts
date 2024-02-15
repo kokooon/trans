@@ -74,6 +74,7 @@ async handleNewNotif(@MessageBody() data: any, client: Socket): Promise<void> {
 
   const friendid = await this.userService.findIdByPseudo(data.recipientId);
   const recipientSocketId = getSocketIdByUserId(friendid);
+  console.log('id test = ', friendid);
   if (recipientSocketId) {
       this.server.to(recipientSocketId).emit('new_notification', data);
   }
