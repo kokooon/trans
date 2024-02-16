@@ -1,7 +1,7 @@
 /* styles.css */
 .match-item {
     list-style-type: none;
-    background-image: linear-gradient(to right, #11e82e 0%, #016f10 50%, #8b1d01 50%, #c92800 100%);
+    background-image: linear-gradient(to right, #11e82e 0%, #039e17 50%, #b02502 50%, #c92800 100%);
     border-radius: 5px;
     padding: 10px;
     margin-bottom: 10px;
