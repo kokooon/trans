@@ -1,0 +1,43 @@
+/* styles.css */
+.match-item {
+    list-style-type: none;
+    background-image: linear-gradient(to right, #11e82e 0%, #039e17 50%, #b02502 50%, #c92800 100%);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.avatar {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.username {
+    font-weight: bold;
+    margin-right: 10px;
+    color: black;
+}
+
+.score {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.score-separator {
+    margin: 0 5px; /* Ajoute une marge de 5px autour du séparateur */
+    text-align: center;
+}
+
+.player1 {
+    color: rgb(0, 0, 0); /* Couleur verte pour le score du joueur 1 */
+}
+
+.player2 {
+    color: rgb(0, 0, 0); /* Couleur rouge pour le score du joueur 2 */
+}
