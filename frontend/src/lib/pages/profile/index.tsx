@@ -50,8 +50,8 @@ const Profile = () => {
             <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} className="rounded-full w-[120px] mx-auto my-10 p-0 border-[6px] box-content border-[#231f39] shadow-[0px_27px_16px_-11px_rgba(31,27,56,0.25)] transition-all duration-150 ease-in hover:scale-105 cursor-pointer slide-in-elliptic-top-fwd" />
         </a>
         <h1 className="text-xl font-bold text-center">{user && user.pseudo ? user.pseudo : 'Unknown User'}</h1>
-        <small className="block my-1 text-center">Level 42</small>
-        <p className="mt-5 text-center">User Interface design and front<br /> end developer.</p>
+        <small className="block my-1 text-center">{user && user.pseudo_42 ? user.pseudo_42 : 'Unknown User'}</small>
+        <p className="mt-5 text-center">Level 42</p>
         <div className="flex items-center justify-center gap-2 w-[80%] mx-auto mt-5 mb-10">
             <button className="flex-1 border border-[#231f39] rounded-[4px] py-3 text-white bg-[#231f39] transition-all duration-150 ease-in hover:bg-[#472e99]">Add Friend</button>
             <button className="flex-1 border border-[#231f39] text-[#ffffff] rounded-[4px] py-3 transition-all duration-150 ease-in hover:bg-[#472e99]  hover:text-white">Invite Game</button>
