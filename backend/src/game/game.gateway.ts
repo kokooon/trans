@@ -64,59 +64,137 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
           this.server.to(client.id).emit('matchmaking:searching');
       }
   }
-
+  
   @SubscribeMessage('keydown')
-  async handleKeyDown(client: Socket, data: { key: string }) {
+async handleKeyDown(client: Socket, data: { key: string }) {
     console.log('Key down:', data);
     const userId = getUserIdBySocketId(client.id);
     if (!userId) {
-      console.error('User ID not found for client:', client.id);
-      return;
+        console.error('User ID not found for client:', client.id);
+        return;
     }
     const gameData = this.gameData.get(userId);
-    
+
     if (!gameData) {
-      console.error('Game instance not found for user:', userId);
-      return;
+        console.error('Game instance not found for user:', userId);
+        return;
+    }
+    try {
+        const game = gameData.game;
+        const gameInstance = gameData.gameinstance;
+        if (!gameInstance) {
+            console.error('Game not found for user:', userId);
+            return;
+        }
+        if (data.key === 'ArrowUp') {
+            if (userId === game.userA) {
+                gameInstance.moveupA = true;
+            } else if (userId === game.userB) {
+                gameInstance.moveupB = true;
+            }
+        } else if (data.key === 'ArrowDown') {
+            if (userId === game.userA) {
+                gameInstance.movedownA = true;
+            } else if (userId === game.userB) {
+                gameInstance.movedownB = true;
+            }
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+@SubscribeMessage('keyup')
+handleKeyUp(client: Socket, data: { key: string }) {
+    console.log('Key up:', data);
+    const userId = getUserIdBySocketId(client.id);
+    if (!userId) {
+        console.error('User ID not found for client:', client.id);
+        return;
+    }
+    const gameData = this.gameData.get(userId);
+
+    if (!gameData) {
+        console.error('Game instance not found for user:', userId);
+        return;
     }
     try {
       const game = gameData.game;
       const gameInstance = gameData.gameinstance;
       if (!gameInstance) {
-        console.error('Game not found for user:', userId);
-        return;
+          console.error('Game not found for user:', userId);
+          return;
       }
-    if (data.key === 'ArrowUp') {
-      console.log(userId);
-      if (userId === game.userA) {
-        gameInstance.playerAPosition.y -= 10;
-      } else if (userId === game.userB) {
-        gameInstance.playerBPosition.y -= 10;
+      if (data.key === 'ArrowUp') {
+          if (userId === game.userA) {
+              gameInstance.moveupA = false;
+          } else if (userId === game.userB) {
+              gameInstance.moveupB = false;
+          }
+      } else if (data.key === 'ArrowDown') {
+          if (userId === game.userA) {
+              gameInstance.movedownA = false;
+          } else if (userId === game.userB) {
+              gameInstance.movedownB = false;
+          }
       }
-    } else if (data.key === 'ArrowDown') {
-      if (userId === game.userA) {
-        gameInstance.playerAPosition.y += 10;
-      } else if (userId === game.userB) {
-        gameInstance.playerBPosition.y += 10;
-      }
+    } catch (error) {
+        console.error('Error:', error);
     }
+}
+
+  // @SubscribeMessage('keydown')
+  // async handleKeyDown(client: Socket, data: { key: string }) {
+  //   console.log('Key down:', data);
+  //   const userId = getUserIdBySocketId(client.id);
+  //   if (!userId) {
+  //     console.error('User ID not found for client:', client.id);
+  //     return;
+  //   }
+  //   const gameData = this.gameData.get(userId);
     
-    this.server.emit('gameState', { 
-      playerAPosition: gameInstance.playerAPosition.y, 
-      playerBPosition: gameInstance.playerBPosition.y,
-      ballPosition: gameInstance.ball 
-    });
-  }
-    catch (error) {
-      console.error('Error:', error);
-    }
-  }
+  //   if (!gameData) {
+  //     console.error('Game instance not found for user:', userId);
+  //     return;
+  //   }
+  //   try {
+  //     const game = gameData.game;
+  //     const gameInstance = gameData.gameinstance;
+  //     if (!gameInstance) {
+  //       console.error('Game not found for user:', userId);
+  //       return;
+  //     }
+  //   if (data.key === 'ArrowUp') {
+  //     console.log(userId);
+  //     if (userId === game.userA) {
+  //       gameInstance.playerAPosition.y -= 10;
+  //     } else if (userId === game.userB) {
+  //       gameInstance.playerBPosition.y -= 10;
+  //     }
+  //   } else if (data.key === 'ArrowDown') {
+  //     if (userId === game.userA) {
+  //       gameInstance.playerAPosition.y += 10;
+  //     } else if (userId === game.userB) {
+  //       gameInstance.playerBPosition.y += 10;
+  //     }
+  //   }
+    
+  //   this.server.emit('gameState', { 
+  //     playerAPosition: gameInstance.playerAPosition.y, 
+  //     playerBPosition: gameInstance.playerBPosition.y,
+  //     ballPosition: gameInstance.ball 
+  //   });
+  // }
+  //   catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // }
   
 
-  @SubscribeMessage('keyup')
-  handleKeyUp(client: Socket, data: { userId: number, key: string }) {
-    console.log('Key up:', data);
-  }
+  // @SubscribeMessage('keyup')
+  // handleKeyUp(client: Socket, data: { userId: number, key: string }) {
+  //   console.log('Key up:', data);
+  // }
 
   async handleDisconnect(client: Socket) {
     const index = this.matchmakingQueue.indexOf(client.id);

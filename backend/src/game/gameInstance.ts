@@ -4,6 +4,12 @@ import { Ball } from './ball';
 export class GameInstance {
   gameId: number;
   playerAPosition: { y: number };
+  moveupA: boolean;
+  movedownA: boolean;
+  inertiaA: number;
+  moveupB: boolean;
+  movedownB: boolean;
+  inertiaB: number;
   playerBPosition: { y: number };
   ball: Ball;
   intervalId: NodeJS.Timeout | null = null;
@@ -12,6 +18,12 @@ export class GameInstance {
     this.gameId = gameId;
     this.playerAPosition = playerAPosition;
     this.playerBPosition = playerBPosition;
+    this.moveupA = false;
+    this.movedownA = false;
+    this.moveupB = false;
+    this.movedownB = false;
+    this.inertiaA = 0;
+    this.inertiaB = 0;
     
     // Randomly decide the starting side of the ball
     const startSide = Math.random() < 0.5 ? 'A' : 'B';
@@ -28,26 +40,77 @@ export class GameInstance {
   }
 
   async startGameLoop(playerA: string, playerB: string, server:Server) {
-      this.intervalId = setInterval(() => {
-        // Update game state
-        this.ball.updatePosition(800, 500, this.playerAPosition, this.playerBPosition);
 
-        // Emit game state to clients
-        server.to(playerA).emit('gameState', { 
-          playerAPosition: this.playerAPosition.y, 
+    this.intervalId = setInterval(async () => {
+      // Update game state
+      this.ball.updatePosition(800, 500, this.playerAPosition, this.playerBPosition);
+  
+      // Handle player movements
+      this.movements();
+  
+      // Emit game state to clients
+      server.to(playerA).emit('gameState', {
+          playerAPosition: this.playerAPosition.y,
           playerBPosition: this.playerBPosition.y,
-          ballPosition: this.ball 
-        });
+          ballPosition: this.ball,
+      });
+  
+      server.to(playerB).emit('gameState', {
+          playerAPosition: this.playerAPosition.y,
+          playerBPosition: this.playerBPosition.y,
+          ballPosition: this.ball,
+      });
+  
+      // Additional game logic...
+  }, 1000 / 60); // 60 FPS
+}
+  
+async movements() 
+{
+  const ymax = 390;
+  const ymin = 10;
 
-        server.to(playerB).emit('gameState', { 
-          playerAPosition: this.playerAPosition.y, 
-          playerBPosition: this.playerBPosition.y,
-          ballPosition: this.ball 
-        });
-        
-        // Additional game logic...
-      }, 1000 / 60); // 60 FPS
+  const clamp = (y: number, _min: number, _max:number) => Math.max(Math.min(y, _max), _min);
+
+  // Calculate inertia for player A
+  if (this.moveupA) {
+      this.inertiaA += 1;
+  } else if (this.movedownA) {
+      this.inertiaA -= 1;
   }
+  if (this.moveupA === false && this.movedownA === false)
+  {
+    if (this.inertiaA < 0)
+      this.inertiaA += 0.5;
+      if (this.inertiaA > 0)
+      this.inertiaA -= 0.5;
+  }
+
+  // Calculate inertia for player B (same logic as player A)
+  if (this.moveupB) {
+    this.inertiaB += 1;
+  } else if (this.movedownB) {
+    this.inertiaB -= 1;
+  }
+  if (this.moveupB === false && this.movedownB === false)
+  {
+  if (this.inertiaB < 0)
+    this.inertiaB += 0.5;
+    if (this.inertiaB > 0)
+    this.inertiaB -= 0.5;
+  }
+
+  this.inertiaA = clamp(this.inertiaA, -10, 10);
+  this.inertiaB = clamp(this.inertiaB, -10, 10);
+
+  // Déplacer les joueurs en fonction de l'inertie
+  this.playerAPosition.y = clamp(this.playerAPosition.y - this.inertiaA, ymin, ymax)
+  this.playerBPosition.y = clamp(this.playerBPosition.y - this.inertiaB, ymin, ymax)
+
+  return;
+}
+
+
 
   async stopGameLoop(gameId: number) {
     if (this.intervalId) {
