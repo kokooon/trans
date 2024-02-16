@@ -2,6 +2,7 @@ import { useEffect, useState} from 'react';
 import { UserNav } from '@/lib/components/ui/user-nav';
 import { fetchUserDetails, fetchUserDetailsByPseudo, isTokenValid, isUserConnected } from '@/lib/components/utils/UtilsFetch';
 import { useNavigate, useParams } from 'react-router-dom';
+import "../../styles/profile.css"
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -57,10 +58,20 @@ const Profile = () => {
             <button className="flex-1 border border-[#231f39] text-[#ffffff] rounded-[4px] py-3 transition-all duration-150 ease-in hover:bg-[#472e99]  hover:text-white">Invite Game</button>
         </div>
         <div className="bg-[#1e1a36]/70 p-4 text-sm font-semibold backdrop-blur-sm">
-            <p>Stats</p>
+            <p>Match History</p>
             <ul className="flex mt-4 flex-wrap items-center justify-start gap-2 gap-y-3">
+                <li className="match-item">
+                    <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar"/>
+                    <span className="username">joberle</span>
+                    <span className="score player1">5</span>
+                    <span className="score-separator">-</span> 
+                    <span className="score player2">3</span> 
+                    <span className="username">joberle</span>
+                    <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar"/>
+                </li>
             </ul>
         </div>
+
     </section>
 </div>
         </div>
