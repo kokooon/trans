@@ -17,7 +17,7 @@ const Routings = () => {
         {/* Routes publiques */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/:pseudo" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/social" element={<Social />} />
         <Route path="/2fa" element={<TwoFa />} />

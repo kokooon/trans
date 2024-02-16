@@ -83,7 +83,7 @@ const handleLogout = async () => {
           Home
         </DropdownMenuItem>
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigate('/profile')}>
+        <DropdownMenuItem onClick={() => navigate(`/profile/${user[0].pseudo}`)}>
             Profile
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate('/social')}>
