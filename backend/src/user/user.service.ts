@@ -316,6 +316,7 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
       }
 
       user.is2FAEnabled = is2FAEnabled;
+      user.is2FAVerified = true;
 
       await this.userRepository.save(user);
     } catch (error) {
