@@ -1023,6 +1023,7 @@ const handleDeletePassword  = async (channel: Channel) => {
                         <Avatar src={user.avatar}/>
                         </Conversation>
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
+                        <MenuItem style={{ color: 'black' }} onClick={() => navigate(`/profile/${user.pseudo}`)}>Profile</MenuItem>
                         <MenuItem style={{ color: 'green' }} onClick={() => handleAccept(user.pseudo, index)}>Accepter</MenuItem>
                         <MenuItem style={{ color: 'red' }} onClick={() => handleDecline(user.pseudo, index)}>Supprimer</MenuItem>
                         </Menu>
@@ -1111,6 +1112,7 @@ const handleDeletePassword  = async (channel: Channel) => {
                             onClick={handleClick(index, 'friends')}/>
                         )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
+                        <MenuItem style={{ color: 'black' }} onClick={() => navigate(`/profile/${user.pseudo}`)}>Profile</MenuItem>
                         <MenuItem style={{ color: 'red' }} onClick={() => handleBlock(user.id)}>Bloquer</MenuItem>
                         </Menu>
                         </div>
@@ -1127,6 +1129,7 @@ const handleDeletePassword  = async (channel: Channel) => {
                             onClick={handleClick(index, 'blocked')}/>
                         )}
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
+                        <MenuItem style={{ color: 'black' }} onClick={() => navigate(`/profile/${user.pseudo}`)}>Profile</MenuItem>
                         <MenuItem style={{ color: 'green' }} onClick={() => handleUnblock(user.pseudo, user.id)}>Debloquer</MenuItem>
                         </Menu>
                         </div>
@@ -1194,7 +1197,7 @@ const handleDeletePassword  = async (channel: Channel) => {
 								//SET WHAT U NEED
 								setBlockInput(member.pseudo);
         						}}>
-								<MenuItem>profile</MenuItem>
+								<MenuItem style={{ color: 'black' }} onClick={() => navigate(`/profile/${member.pseudo}`)}>Profile</MenuItem>
 								{(user[0].id !== member.id )&& (
           						<>
         						<MenuItem>invite game</MenuItem>
