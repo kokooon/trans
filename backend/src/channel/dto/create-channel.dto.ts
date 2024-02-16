@@ -9,6 +9,7 @@ export class CreateChannelDto {
   name: string;
   admin: number;
   owner: number;
+  banned: number;
   @IsEnum(ChannelVisibility)
   visibility: ChannelVisibility;
   memberIds: number;

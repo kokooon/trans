@@ -23,9 +23,10 @@ export class ChannelService {
     if (createChannelDto.password != '')
       channel.password = bcrypt.hashSync(createChannelDto.password, 10);
     else
-    channel.password = createChannelDto.password;
+      channel.password = createChannelDto.password;
     channel.admin = createChannelDto.admin;
     channel.owner = createChannelDto.admin;
+    channel.banned = [];
     /*if (createChannelDto.visibility === 'public'){
 		
     }*/
@@ -44,6 +45,20 @@ export class ChannelService {
       channel.memberIds.push(userId);
       await this.channelRepository.save(channel);
     }
+  }
+
+  async isBanned(channel: Channel, banId: number) {
+    if (channel.banned.includes(banId))
+      return true;
+    else
+      return false;
+  }
+
+  async ban(channel: Channel, banId: number) {
+    channel.banned.push(banId);
+    channel.memberIds = channel.memberIds.filter(id => Number(id) !== banId)
+		await this.channelRepository.save(channel);
+		return;
   }
 
   async kick(channel: Channel, kickId: number) {

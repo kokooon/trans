@@ -28,5 +28,10 @@ export class Channel {
   @Column('simple-array', { nullable: true })
   memberIds: number[];
 
+  @Column('simple-array', { nullable: true })
+  banned: number[];
+
+  @Column('simple-array', { nullable: true })
+  muted: number[];
   // Add other channel properties and methods below as needed
 }

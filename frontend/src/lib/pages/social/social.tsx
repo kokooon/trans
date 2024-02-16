@@ -747,6 +747,18 @@ const handleJoinChannel  = async () => {
                   console.log("wrong password or password missing1")
                   return;
               }
+              const responsefive = await fetch('http://127.0.0.1:3001/channel/isBanned', {
+              method: 'GET',
+              headers: {
+              'Content-Type': 'application/json',
+              },
+              credentials: 'include', // if you're including credentials like cookies
+              body: JSON.stringify({ channelId: responseData.id, userId: user[0].id }),
+              });
+              if (!responsefive.ok) {
+                  console.log('user is banned');
+			            return ;
+              }
           const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
           method: 'POST',
           headers: {
@@ -1004,6 +1016,52 @@ const handleDeletePassword  = async (channel: Channel) => {
 	}
 }
 
+const Ban  = async (Banid: number, channelname: string, channelid: number) => {
+	try {
+		const response = await fetch('http://127.0.0.1:3001/channels/Ban', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ banId: Banid, channel: channelname}),
+      });
+	  if (response.ok){
+			console.log('sucessfully set as admin');
+	  }
+	  else{
+			console.log('failed to set as admin');
+	  }
+    const responsetwo = await fetch('http://127.0.0.1:3001/users/leaveChannel', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		credentials: 'include', // Inclure les cookies avec la requête
+		body: JSON.stringify({ kickId: Banid, channelId: channelid}),
+	});
+	if (responsetwo.ok){
+		console.log('sucessfully kicked');
+  	}
+  	else{
+		console.log('failed to kick');
+  	}
+	}catch(error){
+		console.log('cant kick the user, ', error);
+	}
+  if (socket) {
+    const data = {
+      name: channelname,
+      id: channelid
+    }
+    socket.emit('channelMembersListChange', data);
+    socket.emit('refreshChannelList', Banid);
+  } else {
+    console.error('Socket is null');
+  }
+}
+
+
   return (
             <div style={{height: "600px",position: "relative"}}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1212,6 +1270,7 @@ const handleDeletePassword  = async (channel: Channel) => {
 								{(userChannelStatus === 'Owner' && (user[0].id !== member.id))&& (
           						<>
         						<MenuItem style={{ color: 'red' }} onClick={() => {Kick(member.id, activeChannel, activeChannelId);}}>Kick</MenuItem>
+                    <MenuItem style={{ color: 'red' }} onClick={() => {Ban(member.id, activeChannel, activeChannelId);}}>Ban</MenuItem>
 								</>
 								)}
         						{/* Only show the following buttons for Admins/Owners clicking on Members */}
@@ -1219,7 +1278,8 @@ const handleDeletePassword  = async (channel: Channel) => {
          						userChannelStatus === 'Admin') && (
           						<>
             					<MenuItem style={{ color: 'red' }}>Mute</MenuItem>
-            					<MenuItem style={{ color: 'red' }}>Kick</MenuItem>
+            					<MenuItem style={{ color: 'red' }} onClick={() => {Kick(member.id, activeChannel, activeChannelId);}}>Kick</MenuItem>
+                      <MenuItem style={{ color: 'red' }} onClick={() => {Ban(member.id, activeChannel, activeChannelId);}}>Ban</MenuItem>
           						</>
         						)}
       						</Menu>

@@ -125,6 +125,19 @@ export class ChannelController {
     	return 'error';
 }
 
+@Get('isBanned') // Définissez le paramètre dans l'URL comme ":userId"
+    async isBanned(@Req() req, @Res() res): Promise<number[] | void> {
+  const channel = await this.channelService.findChannelById(req.body.channelId);
+    if (channel) {
+      if (this.channelService.isBanned(channel, req.body.userId))
+        return res.status(409).json(channel.memberIds);
+      else
+      return res.status(201).json(channel.memberIds);
+    }
+    else
+      return res.status(409).json({ error: 'can\'t find channel' });
+  }
+
 @Get('returnMembers/:channelId') // Définissez le paramètre dans l'URL comme ":userId"
     async returnChannelMembers(@Param('channelId') channelId: number,  @Req() req, @Res() res): Promise<number[] | void> {
   const channel = await this.channelService.findChannelById(channelId);
@@ -133,6 +146,12 @@ export class ChannelController {
     }
     else
       return res.status(409).json({ error: 'can\'t find channel' });
+  }
+
+  @Post('Ban')
+  async Ban(@Req() req): Promise<void> {
+    const channel = await this.channelService.findChannelByName(req.body.channel);
+    await this.channelService.ban(channel, req.body.banId);
   }
 
   @Post('kick')
