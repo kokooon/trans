@@ -125,14 +125,18 @@ export class ChannelController {
     	return 'error';
 }
 
-@Get('isBanned') // Définissez le paramètre dans l'URL comme ":userId"
-    async isBanned(@Req() req, @Res() res): Promise<number[] | void> {
-  const channel = await this.channelService.findChannelById(req.body.channelId);
+@Get('isBanned/:channelid/:userid') // Définissez le paramètre dans l'URL comme ":userId"
+    async isBanned(@Param('userid') userid: number, @Param('channelid') channelid: number, @Res() res): Promise<void> {
+  const channel = await this.channelService.findChannelById(channelid);
+  console.log('channel id = ', channelid, 'user id = ', userid);
     if (channel) {
-      if (this.channelService.isBanned(channel, req.body.userId))
-        return res.status(409).json(channel.memberIds);
-      else
-      return res.status(201).json(channel.memberIds);
+      const result = await this.channelService.isBanned(channel, userid)
+      if (result){
+        return res.status(201).json('Banned');
+      }
+      else {
+        return res.status(201).json('ok');
+      }
     }
     else
       return res.status(409).json({ error: 'can\'t find channel' });

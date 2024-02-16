@@ -48,10 +48,13 @@ export class ChannelService {
   }
 
   async isBanned(channel: Channel, banId: number) {
-    if (channel.banned.includes(banId))
+    if (channel.banned.includes(banId)){
       return true;
-    else
+    }
+    else{
+      console.log('returned false');
       return false;
+    }
   }
 
   async ban(channel: Channel, banId: number) {

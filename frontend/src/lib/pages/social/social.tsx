@@ -742,22 +742,26 @@ const handleJoinChannel  = async () => {
     });
       if (response.ok){
           const responseData = await response.json();
-          if (responseData.password) {
-              if (!passwordInput){
-                  console.log("wrong password or password missing1")
-                  return;
-              }
-              const responsefive = await fetch('http://127.0.0.1:3001/channel/isBanned', {
+          const responsefive = await fetch(`http://127.0.0.1:3001/channels/isBanned/${responseData.id}/${user[0].id}`, {
               method: 'GET',
               headers: {
               'Content-Type': 'application/json',
               },
               credentials: 'include', // if you're including credentials like cookies
-              body: JSON.stringify({ channelId: responseData.id, userId: user[0].id }),
               });
-              if (!responsefive.ok) {
-                  console.log('user is banned');
-			            return ;
+              if (responsefive.ok) {
+                  const data = await responsefive.json();
+                 if (data === 'Banned') {
+                    console.log('user is banned');
+                    return ;
+                 }
+                 else if (data === 'ok')
+                    console.log('not banned');
+              }
+          if (responseData.password) {
+              if (!passwordInput){
+                  console.log("wrong password or password missing1")
+                  return;
               }
           const responsetwo = await fetch('http://127.0.0.1:3001/users/channel/AddInUser', {
           method: 'POST',
@@ -1016,6 +1020,13 @@ const handleDeletePassword  = async (channel: Channel) => {
 	}
 }
 
+const Mute  = async (banid: number, channelname: string, channelid: number) => {
+	banid;
+	channelname;
+	channelid;
+
+}
+
 const Ban  = async (Banid: number, channelname: string, channelid: number) => {
 	try {
 		const response = await fetch('http://127.0.0.1:3001/channels/Ban', {
@@ -1270,14 +1281,15 @@ const Ban  = async (Banid: number, channelname: string, channelid: number) => {
 								{(userChannelStatus === 'Owner' && (user[0].id !== member.id))&& (
           						<>
         						<MenuItem style={{ color: 'red' }} onClick={() => {Kick(member.id, activeChannel, activeChannelId);}}>Kick</MenuItem>
-                    <MenuItem style={{ color: 'red' }} onClick={() => {Ban(member.id, activeChannel, activeChannelId);}}>Ban</MenuItem>
+                    			<MenuItem style={{ color: 'red' }} onClick={() => {Ban(member.id, activeChannel, activeChannelId);}}>Ban</MenuItem>
+								<MenuItem style={{ color: 'red' }}onClick={() => {Mute(member.id, activeChannel, activeChannelId);}}>Mute</MenuItem>
 								</>
 								)}
         						{/* Only show the following buttons for Admins/Owners clicking on Members */}
         						{(user[0].id !== member.id && member.channelStatus === 'Member' && 
          						userChannelStatus === 'Admin') && (
           						<>
-            					<MenuItem style={{ color: 'red' }}>Mute</MenuItem>
+            					<MenuItem style={{ color: 'red' }}onClick={() => {Mute(member.id, activeChannel, activeChannelId);}}>Mute</MenuItem>
             					<MenuItem style={{ color: 'red' }} onClick={() => {Kick(member.id, activeChannel, activeChannelId);}}>Kick</MenuItem>
                       <MenuItem style={{ color: 'red' }} onClick={() => {Ban(member.id, activeChannel, activeChannelId);}}>Ban</MenuItem>
           						</>
