@@ -2,7 +2,6 @@ import { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import Page404 from '@/lib/pages/404';
-import Home from '@/lib/pages/home';
 import Login from '../pages/login';
 import Profile from '../pages/profile';
 import Settings from '../pages/settings/settings';
@@ -15,13 +14,12 @@ const Routings = () => {
     <Suspense>
       <Routes>
         {/* Routes publiques */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Game />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile/:pseudo" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/social" element={<Social />} />
         <Route path="/2fa" element={<TwoFa />} />
-        <Route path="/game" element={<Game />} />
         {/* Route 404 */}
         <Route path="*" element={<Page404 />} />
       </Routes>

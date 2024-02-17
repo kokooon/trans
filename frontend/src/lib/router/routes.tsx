@@ -20,7 +20,6 @@ import { Routes, Route } from 'react-router-dom';
 
 import Layout from '@/lib/layout';
 import Page404 from '@/lib/pages/404'; // Importez votre composant Page404
-import Home from '@/lib/pages/home';
 import Login from '../pages/login';
 import Profile from '../pages/profile';
 import Settings from '../pages/settings/settings';
@@ -34,12 +33,11 @@ const AppRoutes = () => {
         path="/"
         element={
           <Layout>
-            <Route index element={<Home />} />
             <Route index element={<Login />} />
+            <Route index element={<Game />} />
             <Route index element={<Profile />} />
             <Route index element={<Settings />} />
             <Route index element={<TwoFa />} />
-            <Route index element={<Game />} />
           </Layout>
         }
       />

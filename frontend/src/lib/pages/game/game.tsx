@@ -37,6 +37,7 @@ function Game() {
   //const [user, setUser] = useState<any | null>(null);
   const [gameId, setGameId] = useState<number>(0);
   const navigate = useNavigate();
+  const [user, setUser] = useState<any | null>(null);
   const [matchmakingStatus, setMatchmakingStatus] = useState('pending');
 
   useEffect(() => {
@@ -48,6 +49,8 @@ function Game() {
             return;
         }
         const userData = await fetchUserDetails();
+        if (userData)
+          setUser(userData);
         if (userData[0].is2FAEnabled !== false) {
             const isConnected = await isUserConnected();
             console.log(isConnected);
@@ -98,6 +101,29 @@ function Game() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:3001/users/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ userId: user[0].id, }),
+      });
+      if (response.ok) {
+        if (socket) {
+          socket.disconnect(); // Disconnect the socket
+        }
+        navigate('/login'); // Redirect to login page after logout
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
   return (
     <div className="menugrid">
       <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
@@ -107,7 +133,11 @@ function Game() {
       {matchmakingStatus === 'searching' &&<div className="loader"> <p>Recherche d'un adversaire...</p></div>}
       {matchmakingStatus !== 'found' && (
       <div>
-        <a href="#!" className="nav-link" onClick={startMatchmaking}><p>Play !</p></a>
+        <a  className="nav-link" onClick={startMatchmaking}><p>Play !</p></a>
+        <a  className="nav-link" onClick={() => navigate(`/profile/${user[0].pseudo}`)}><p>Profile</p></a>
+        <a  className="nav-link" onClick={() => navigate('/social')}><p>Social</p></a>
+        <a  className="nav-link" onClick={() => navigate('/settings')}><p>Settings</p></a>
+        <a  className="nav-link" onClick={handleLogout}><p>Exit</p></a>
       </div>
           
       )}
