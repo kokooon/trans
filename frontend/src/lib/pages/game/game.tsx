@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import CanvasTutorial from './CanvasTutorial.tsx';
 import { useSocket } from '../../components/utils/socketContext';
-import { Button } from "@/lib/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails, isTokenValid, isUserConnected } from '../../components/utils/UtilsFetch';
+import "../../styles/game.css"
 
 interface Game {
   userA: number;
@@ -99,21 +99,20 @@ function Game() {
   };
 
   return (
-    <div>
-      <h1>Pong Game</h1>
-      {matchmakingStatus === 'searching' && <p>Recherche d'un adversaire...</p>}
+    <div className="menugrid">
+      <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
+        <source src="https://assets.codepen.io/263256/menubg.mp4" />
+      </video>
+      <nav className="nav">
+      {matchmakingStatus === 'searching' &&<div className="loader"> <p>Recherche d'un adversaire...</p></div>}
       {matchmakingStatus !== 'found' && (
-        <div className="flex flex-col items-center justify-center flex-1">
-          <Button 
-            variant="outline"
-            className="osef"
-            onClick={startMatchmaking}
-          >
-            <p>Play !</p>
-          </Button>
-        </div>
+      <div>
+        <a href="#!" className="nav-link" onClick={startMatchmaking}><p>Play !</p></a>
+      </div>
+          
       )}
       {matchmakingStatus === 'found' && <CanvasTutorial socket={socket} gameId={gameId}/>}
+      </nav>
     </div>
   );
 }
