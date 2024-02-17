@@ -43,6 +43,7 @@ const Profile = () => {
     }, [navigate]);
 
     return (
+        <div className="page">
         <div className="center min-h-screen flex flex-col">
         <div className="absolute top-10 right-0"><UserNav/></div>
         <div className="center flex items-center justify-center min-h-screen text-[#9e9cb6]">
@@ -71,9 +72,9 @@ const Profile = () => {
                 </li>
             </ul>
         </div>
-
     </section>
 </div>
+        </div>
         </div>
     );
 }

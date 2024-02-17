@@ -1,7 +1,7 @@
 /* styles.css */
 
 
-body  {
+.page  {
     background-image: url('https://static.pexels.com/photos/414171/pexels-photo-414171.jpeg');
   background-size:cover;
         -webkit-animation: slidein 100s;
@@ -14,7 +14,7 @@ body  {
         animation-iteration-count: infinite;
 
         -webkit-animation-direction: alternate;
-        animation-direction: alternate;   
+        animation-direction: alternate;
         
 }
 
@@ -35,7 +35,6 @@ to {background-position: -100px 0px;background-size:2750px;}
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
     background: rgba(75, 75, 250, 0.3);
     border-radius: 3px;
 }
