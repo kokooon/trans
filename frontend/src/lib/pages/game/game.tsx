@@ -156,8 +156,8 @@ function Game() {
 
   return (
     <div className="menugrid">
-      <audio id="audioElement" src="../../../../public/assets/music.mp3"></audio>
-      <audio id="fxElement" src="../../../../public/assets/fx.wav"></audio>
+      <audio id="audioElement" preload="auto" src="../../../../public/assets/music.mp3"></audio>
+      <audio id="fxElement" preload="auto" src="../../../../public/assets/fx.wav"></audio>
       <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
         <source src="https://assets.codepen.io/263256/menubg.mp4" />
       </video>
