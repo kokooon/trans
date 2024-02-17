@@ -41,7 +41,8 @@ function Game() {
   const [matchmakingStatus, setMatchmakingStatus] = useState('pending');
 
   useEffect(() => {
-    playAudio();
+    playAudio(1);
+    playAudio(2);
     const fetchData = async () => {
       try {
         const isValid = await isTokenValid();
@@ -128,9 +129,18 @@ function Game() {
     }
   };
 
-  function playAudio() {
-    var audio = document.getElementById("audioElement") as HTMLMediaElement;
-    if (audio) {
+  function playAudio(nb: number) {
+    var audio 
+    if (nb == 1)
+      audio = document.getElementById("audioElement") as HTMLMediaElement;
+    if (nb == 2)
+      audio = document.getElementById("space") as HTMLMediaElement;
+    
+    if (audio && nb == 1) {
+      audio.play();
+    }
+    if (audio && nb == 2) {
+      audio.volume = 0.2;
       audio.play();
     }
   }
@@ -167,6 +177,7 @@ function Game() {
   return (
     <div className="menugrid">
       <audio id="audioElement" preload="auto" src="../../../../public/assets/music.mp3"></audio>
+      <audio id="space" preload="auto" src="../../../../public/assets/apollo.mp3"></audio>
       <audio id="fx" preload="auto" src="../../../../public/assets/fx.wav"></audio>
       <audio id="look" preload="auto" src="../../../../public/assets/look.mp3"></audio>
       <audio id="find" preload="auto" src="../../../../public/assets/find.mp3"></audio>
@@ -184,7 +195,14 @@ function Game() {
         <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={handleLogout}><p>Exit</p></a>
       </div>
       )}
-      {matchmakingStatus === 'found' && <CanvasTutorial socket={socket} gameId={gameId}/>}
+      {matchmakingStatus === 'found' && 
+      <div className="relative w-800 h-500">
+        <video autoPlay muted loop id="background-video"  style={{ position: 'absolute', width: '900px', height: '500px', zIndex: -1 }}>
+        <source src="../../../../public/assets/space.mp4" type="video/mp4"/>
+        </video>
+        <CanvasTutorial socket={socket} gameId={gameId}/>
+      </div>
+      }
       </nav>
     </div>
   );

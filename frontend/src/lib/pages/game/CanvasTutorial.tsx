@@ -89,9 +89,6 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
         ctx.strokeStyle = 'orange';
         ctx.strokeRect(5, 5, width - 10, height - 10);
 
-        ctx.fillStyle = 'lightblue'; // Couleur de l'arrière-plan
-        ctx.fillRect(0, 0, width, height); // Remplir un rectangle avec la couleur de l'arrière-plan
-  
         // Dessiner le joueur A
         ctx.fillStyle = 'blue';
         ctx.fillRect(PADDLE_OFFSET_A, this.state.playerAPosition, PADDLE_WIDTH, PADDLE_HEIGHT);
@@ -102,7 +99,7 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
 
   
         // Dessiner la balle
-        ctx.fillStyle = 'black';
+        ctx.fillStyle = 'white';
         ctx.beginPath();
         ctx.arc(this.state.ballPosition.x, this.state.ballPosition.y, 5, 0, 2 * Math.PI);
         ctx.fill();
