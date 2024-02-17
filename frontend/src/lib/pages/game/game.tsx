@@ -70,9 +70,12 @@ function Game() {
 
     // Écouter les événements du serveur
     socket.on('matchmaking:found', () => {
+      playFx(3);
       setMatchmakingStatus('found');
+      setTimeout(() => {stopAudio()}, 500);
     });
     socket.on('matchmaking:searching', () => {
+      playFx(2);
       setMatchmakingStatus('searching');
     });
     socket.on('game:created', (newGame: GameData) => {
@@ -131,23 +134,30 @@ function Game() {
       audio.play();
     }
   }
-  function playFx() {
-    var audio = document.getElementById("fxElement") as HTMLMediaElement;
+  function playFx(nb: number) {
+    var audio
+    if (nb == 1)
+      audio = document.getElementById("fx") as HTMLMediaElement;
+    if (nb == 2)
+      audio = document.getElementById("look") as HTMLMediaElement;
+    if (nb == 3)
+      audio = document.getElementById("find") as HTMLMediaElement;
+    
     if (audio) {
       audio.volume = 0.2;
       audio.play();
     }
   }
-  // function stopAudio() {
-  //   var audio = document.getElementById("audioElement") as HTMLMediaElement;
-  //   if (audio) {
-  //     audio.pause();
-  //     audio.currentTime = 0;
-  //   }
-  // }
+  function stopAudio() {
+    var audio = document.getElementById("audioElement") as HTMLMediaElement;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }
 
   function stopFx() {
-    var audio = document.getElementById("fxElement") as HTMLMediaElement;
+    var audio = document.getElementById("fx") as HTMLMediaElement;
     if (audio) {
       audio.pause();
       audio.currentTime = 0;
@@ -157,7 +167,9 @@ function Game() {
   return (
     <div className="menugrid">
       <audio id="audioElement" preload="auto" src="../../../../public/assets/music.mp3"></audio>
-      <audio id="fxElement" preload="auto" src="../../../../public/assets/fx.wav"></audio>
+      <audio id="fx" preload="auto" src="../../../../public/assets/fx.wav"></audio>
+      <audio id="look" preload="auto" src="../../../../public/assets/look.mp3"></audio>
+      <audio id="find" preload="auto" src="../../../../public/assets/find.mp3"></audio>
       <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
         <source src="https://assets.codepen.io/263256/menubg.mp4" />
       </video>
@@ -165,11 +177,11 @@ function Game() {
       {matchmakingStatus === 'searching' &&<div className="loader"> <p>Recherche d'un adversaire...</p></div>}
       {matchmakingStatus !== 'found' && (
       <div>
-        <a  className="nav-link" onMouseEnter={() => playFx()} onMouseLeave={stopFx}  onClick={startMatchmaking}><p>Play !</p></a>
-        <a  className="nav-link" onMouseEnter={() => playFx()} onMouseLeave={stopFx} onClick={() => navigate(`/profile/${user[0].pseudo}`)}><p>Profile</p></a>
-        <a  className="nav-link" onMouseEnter={() => playFx()} onMouseLeave={stopFx} onClick={() => navigate('/social')}><p>Social</p></a>
-        <a  className="nav-link" onMouseEnter={() => playFx()} onMouseLeave={stopFx} onClick={() => navigate('/settings')}><p>Settings</p></a>
-        <a  className="nav-link" onMouseEnter={() => playFx()} onMouseLeave={stopFx} onClick={handleLogout}><p>Exit</p></a>
+        <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx}  onClick={startMatchmaking}><p>Play !</p></a>
+        <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={() => navigate(`/profile/${user[0].pseudo}`)}><p>Profile</p></a>
+        <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={() => navigate('/social')}><p>Social</p></a>
+        <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={() => navigate('/settings')}><p>Settings</p></a>
+        <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={handleLogout}><p>Exit</p></a>
       </div>
       )}
       {matchmakingStatus === 'found' && <CanvasTutorial socket={socket} gameId={gameId}/>}

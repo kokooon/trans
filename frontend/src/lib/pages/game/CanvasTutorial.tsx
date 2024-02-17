@@ -99,7 +99,7 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
 
   
         // Dessiner la balle
-        ctx.fillStyle = 'black';
+        ctx.fillStyle = 'white';
         ctx.beginPath();
         ctx.arc(this.state.ballPosition.x, this.state.ballPosition.y, 5, 0, 2 * Math.PI);
         ctx.fill();
