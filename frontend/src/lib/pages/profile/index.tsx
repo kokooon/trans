@@ -43,9 +43,9 @@ const Profile = () => {
     }, [navigate]);
 
     return (
-        <div className="bg-gradient-to-r from-amber-500 to-pink-500 min-h-screen flex flex-col">
-        <UserNav />
-        <div className="bg-gradient-to-r from-amber-500 to-pink-500 bg-[#292240] flex items-center justify-center min-h-screen text-[#9e9cb6]">
+        <div className="center min-h-screen flex flex-col">
+        <div className="absolute top-10 right-0"><UserNav/></div>
+        <div className="center flex items-center justify-center min-h-screen text-[#9e9cb6]">
     <section className="w-full max-w-[430px] relative bg-[#231f39]/60 rounded-[6px] shadow-[0px_15px_39px_16px_rgba(52,45,91,0.65)] backdrop-blur-sm mx-2 overflow-hidden">
         <a href="" target="_blank" className="">
             <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} className="rounded-full w-[120px] mx-auto my-10 p-0 border-[6px] box-content border-[#231f39] shadow-[0px_27px_16px_-11px_rgba(31,27,56,0.25)] transition-all duration-150 ease-in hover:scale-105 cursor-pointer slide-in-elliptic-top-fwd" />
