@@ -137,6 +137,7 @@ function Game() {
       audio = document.getElementById("space") as HTMLMediaElement;
     
     if (audio && nb == 1) {
+      audio.volume = 0.8;
       audio.play();
     }
     if (audio && nb == 2) {
@@ -154,7 +155,7 @@ function Game() {
       audio = document.getElementById("find") as HTMLMediaElement;
     
     if (audio) {
-      audio.volume = 0.2;
+      audio.volume = 0.4;
       audio.play();
     }
   }
