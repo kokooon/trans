@@ -125,10 +125,36 @@ export class ChannelController {
     	return 'error';
 }
 
+@Get('isMuted/:channelid/:userid') // Définissez le paramètre dans l'URL comme ":userId"
+    async isMuted(@Param('channelid') channelid: number, @Param('userid') userid: number, @Res() res): Promise<void> {
+      const channel = await this.channelService.findChannelById(channelid);
+    if (channel) {
+      const result = await this.channelService.isMuted(channel, userid)
+      console.log(result);
+      if (result) {
+        return res.status(200).json({ isMuted: true });
+      } else {
+        return res.status(200).json({ isMuted: false });
+      }
+    }
+    else
+      return res.status(409).json({ error: 'can\'t find channel' });
+  }
+
+@Post('mute')
+  async mute(@Req() req, @Res() res): Promise<void> {
+    const channel = await this.channelService.findChannelById(req.body.channel);
+    if (channel){
+        await this.channelService.mute(channel, req.body.muteId)
+    }
+    else{
+        return res.status(409).json({ error: 'can\'t find channel' });
+    }
+  }
+
 @Get('isBanned/:channelid/:userid') // Définissez le paramètre dans l'URL comme ":userId"
     async isBanned(@Param('userid') userid: number, @Param('channelid') channelid: number, @Res() res): Promise<void> {
   const channel = await this.channelService.findChannelById(channelid);
-  console.log('channel id = ', channelid, 'user id = ', userid);
     if (channel) {
       const result = await this.channelService.isBanned(channel, userid)
       if (result){

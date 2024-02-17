@@ -31,7 +31,7 @@ export class Channel {
   @Column('simple-array', { nullable: true })
   banned: number[];
 
-  @Column('simple-array', { nullable: true })
-  muted: number[];
+  @Column({ type: 'json', nullable: true })
+  muted: { userId: number, expireAt: number }[];
   // Add other channel properties and methods below as needed
 }

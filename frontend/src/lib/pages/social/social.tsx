@@ -538,10 +538,35 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
     }
   };
 
+  const isUserMutedInChannel = async (channelId: number, userId: number) => {
+	try {
+	  const response = await fetch(`http://127.0.0.1:3001/channels/isMuted/${channelId}/${userId}`, {
+		method: 'GET',
+		headers: {
+		  'Content-Type': 'application/json',
+		},
+		credentials: 'include',
+	  });
+	  if (response.ok) {
+		const { isMuted } = await response.json();
+		return isMuted;
+	  }
+	  console.log('Response not OK when checking mute status');
+	} catch (error) {
+	  console.log('Error checking mute status', error);
+	}
+	return false; // Assume not muted if there's an error
+  };
+
   const sendMessage = async () => {
 	let membersIDS;
     if (inputMessage.trim() === '') return; // Prevent sending empty messages
 	if (chatContext.id) {
+		const isMuted = await isUserMutedInChannel(chatContext.id, user[0].id);
+    	if (isMuted) {
+      		console.log('User is muted and cannot send messages in this channel.');
+      		return; // Exit the function to prevent sending the message
+    	}
 		try {
 		const response = await fetch(`http://127.0.0.1:3001/channels/returnMembers/${chatContext.id}`, {
     	method: 'GET',
@@ -582,6 +607,7 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
   };
 }
     try {
+
         const response = await fetch('http://127.0.0.1:3001/chatHistory/newPrivateMessage', {
             method: 'POST',
             headers: {
@@ -1024,7 +1050,24 @@ const Mute  = async (banid: number, channelname: string, channelid: number) => {
 	banid;
 	channelname;
 	channelid;
-
+	try {
+		const response = await fetch('http://127.0.0.1:3001/channels/mute', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ muteId: banid, channel: channelid}),
+      });
+	  if (response.ok){
+			console.log('sucessfully set as admin');
+	  }
+	  else{
+			console.log('failed to set as admin');
+	  }
+	}catch (error) {
+		console.log('error while trying to mute');
+	}
 }
 
 const Ban  = async (Banid: number, channelname: string, channelid: number) => {

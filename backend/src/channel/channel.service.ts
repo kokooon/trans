@@ -27,6 +27,7 @@ export class ChannelService {
     channel.admin = createChannelDto.admin;
     channel.owner = createChannelDto.admin;
     channel.banned = [];
+    channel.muted = [];
     /*if (createChannelDto.visibility === 'public'){
 		
     }*/
@@ -68,6 +69,28 @@ export class ChannelService {
 		channel.memberIds = channel.memberIds.filter(id => Number(id) !== kickId)
 		await this.channelRepository.save(channel);
 		return;
+  }
+
+  async isMuted(channel: Channel, userId: number): Promise<boolean> {
+    const now = Date.now();
+    const muteEntry = channel.muted.find(mute => mute.userId === Number(userId));
+    return !!muteEntry && muteEntry.expireAt > now;
+  }
+
+  async mute(channel: Channel, userId: number, duration: number = 300000) { // 5 minutes by default
+    const expireAt = Date.now() + duration;
+    // Add or update the mute entry for the user
+    const mutedUserIndex = channel.muted.findIndex(mute => mute.userId === userId);
+    if (mutedUserIndex > -1) {
+      channel.muted[mutedUserIndex].expireAt = expireAt;
+    } else {
+      channel.muted.push({ userId, expireAt });
+    }
+    
+    // Save changes to the database
+    await this.channelRepository.save(channel);
+  
+    // Optionally, schedule an unmute operation if your application's architecture allows it
   }
 
   async setAdmin(channel: Channel, newAdmin: number) {
