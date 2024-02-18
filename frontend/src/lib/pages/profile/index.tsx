@@ -2,12 +2,14 @@ import { useEffect, useState} from 'react';
 import { UserNav } from '@/lib/components/ui/user-nav';
 import { fetchUserDetails, fetchUserDetailsByPseudo, isTokenValid, isUserConnected } from '@/lib/components/utils/UtilsFetch';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSocket } from '../../components/utils/socketContext';
 import "../../styles/profile.css"
 
 const Profile = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
     const { pseudo } = useParams();
+    const { socket } = useSocket();
 
     useEffect(() => {
         const checkToken = async () => {
@@ -42,6 +44,34 @@ const Profile = () => {
         checkToken();
     }, [navigate]);
 
+    const handleadd = async () => {
+        try {
+            const userData = await fetchUserDetails();
+          const response = await fetch('http://127.0.0.1:3001/users/FriendRequest', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ addFriend: user.pseudo, userId: userData[0].id }),
+          });
+      
+          if (!response.ok) {
+            throw new Error('La réponse du réseau n’était pas correcte');
+          }
+        } catch (error) {
+          console.error('Erreur lors de la mise à jour du pseudo :', error);
+        }
+        let messagedata = {
+          recipientId: user.pseudo
+            };
+          if (socket) {
+            socket.emit('new_notification', messagedata);
+        } else {
+            console.error('Socket is null');
+        }
+      };
+
     return (
         <div className="page">
         <div className="center min-h-screen flex flex-col">
@@ -55,7 +85,7 @@ const Profile = () => {
         <small className="block my-1 text-center">{user && user.pseudo_42 ? user.pseudo_42 : 'Unknown User'}</small>
         <p className="mt-5 text-center">Level 42</p>
         <div className="flex items-center justify-center gap-2 w-[80%] mx-auto mt-5 mb-10">
-            <button className="flex-1 border border-[#231f39] rounded-[4px] py-3 text-white bg-[#231f39] transition-all duration-150 ease-in hover:bg-[#472e99]">Add Friend</button>
+            <button className="flex-1 border border-[#231f39] rounded-[4px] py-3 text-white bg-[#231f39] transition-all duration-150 ease-in hover:bg-[#472e99]" onClick={handleadd}>Add Friend</button>
             <button className="flex-1 border border-[#231f39] text-[#ffffff] rounded-[4px] py-3 transition-all duration-150 ease-in hover:bg-[#472e99]  hover:text-white">Invite Game</button>
         </div>
         <div className="bg-[#1e1a36]/70 p-4 text-sm font-semibold backdrop-blur-sm">
