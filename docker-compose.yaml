@@ -1,5 +1,3 @@
-version: '3'
-
 services:
 
   adminer:
@@ -10,7 +8,7 @@ services:
       - 8080:8080
     networks:
       - pong-data
-  # Frontend written in React
+
   frontend:
     container_name: pong-frontend
     image: pong-front:latest
@@ -20,42 +18,32 @@ services:
     volumes:
       - ${PWD}/frontend/src:/app/src:ro
       - ${PWD}/frontend/public:/app/public:ro
-    environment:
-    - VITE_42_URL=${VITE_42_URL}
+    env_file:
+      - "./frontend/.env"  # Specify the path to frontend.env
     restart: always
 
-  # Backend written in NestJS
   backend:
     container_name: pong-backend
     image: pong-back:latest
     build: ./backend
     env_file:
-      - .env
+      - "./.env"
     ports:
       - "3001:3000"
-    environment:
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_DATABASE}
     volumes:
-      - ${PWD}/backend:/app
+      - ./backend:/app
       - /app/node_modules
     networks:
       - pong-data
     restart: always
 
-  # Database using PostgreSQL
   database:
-    container_name: ${DB_HOST}
-    image: postgres:latest
     env_file:
-      - .env
-    expose:
-      - ${DB_PORT}
-    environment:
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_DATABASE}
+      - "./.env"
+    container_name: pong-database
+    image: postgres:latest
+    ports: # Example of using an environment variable for external mapping
+      - "5432"
     networks:
       - pong-data
     restart: always
