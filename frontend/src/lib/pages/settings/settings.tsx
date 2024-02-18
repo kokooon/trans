@@ -218,7 +218,6 @@ const Settings = () => {
                     {qrCodeUrl && (
             <div className="qr-code-container">
               <img src={qrCodeUrl} alt="QR Code" className="my-4 w-30 h-30" />
-              <div>enregistre bien ce QR code encule</div>
             </div>
           )}
                 </div>
