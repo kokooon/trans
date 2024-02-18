@@ -20,6 +20,8 @@ services:
     volumes:
       - ${PWD}/frontend/src:/app/src:ro
       - ${PWD}/frontend/public:/app/public:ro
+    environment:
+    - VITE_42_URL=${VITE_42_URL}
     restart: always
 
   # Backend written in NestJS

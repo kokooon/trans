@@ -38,8 +38,15 @@ export function CreateAccount() {
   }, [navigate]);
 
   const checkToken = async () => {
-      console.log("never login/or no cookie and no 2fa"); //si pas cookie/pas valide // 42 api // cree compte + donner cookie
-      window.location.href = 'https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-1515023d756b04e8a366ce5ea86e9165d804a57f977124f5f6df1f54a76017a9&redirect_uri=http%3A%2F%2F127.0.0.1%3A3001%2Fauth%2F42%2Fcallback&response_type=code';
+      console.log("never login/or no cookie and no 2fa = "); //si pas cookie/pas valide // 42 api // cree compte + donner cookie
+      const authUrl = import.meta.env.VITE_42_URL;
+  if (typeof authUrl === 'undefined') {
+    console.error('VITE_42_URL is not defined. Make sure your environment variable is set.');
+    // Handle the error, e.g., redirect to a default page or show an error message
+    return;
+  }
+
+  window.location.href = authUrl;
   
     // Further actions or rendering based on QR code URL can be handled here.
   };
