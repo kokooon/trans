@@ -39,15 +39,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     
           const userIdOne = getUserIdBySocketId(playerOne);
           const userIdTwo = getUserIdBySocketId(playerTwo);
-  
+
           const userOneS = getSocketIdByUserId(userIdOne);
           const userTwoS = getSocketIdByUserId(userIdTwo); 
         
           if (userIdOne && userIdTwo) {
               try {
                   const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
-                  this.gameData.set(userIdOne, newGame);
-                  this.gameData.set(userIdTwo, newGame);
+                  this.gameData.set(newGame.game.id, newGame);
                   console.log('data0 = ', newGame);
                   
                   this.server.to(userOneS).emit('game:created', newGame);
@@ -66,53 +65,80 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
   
   @SubscribeMessage('keydown')
-async handleKeyDown(client: Socket, data: { key: string }) {
+  async handleKeyDown(client: Socket, data: { key: string }) {
+      console.log('Key down:', data);
+      const userId = getUserIdBySocketId(client.id);
+      if (!userId) {
+          console.error('User ID not found for client:', client.id);
+          return;
+      }
+
+      let gameId: number | undefined;
+      for (const [id, gameData] of this.gameData.entries()) {
+          if (gameData.game.userA === userId || gameData.game.userB === userId) {
+              gameId = id;
+              break;
+          }
+      }
+      if (!gameId) {
+          console.error('Game ID not found for client:', client.id);
+          return;
+      }
+  
+      const gameData = this.gameData.get(gameId);
+  
+      if (!gameData) {
+          console.error('Game instance not found for user:', userId);
+          return;
+      }
+      
+      try {
+          const game = gameData.game;
+          const gameInstance = gameData.gameinstance;
+          if (!gameInstance) {
+              console.error('Game not found for user:', userId);
+              return;
+          }
+          if (data.key === 'ArrowUp') {
+              if (userId === game.userA) {
+                  gameInstance.moveupA = true;
+              } else if (userId === game.userB) {
+                  gameInstance.moveupB = true;
+              }
+          } else if (data.key === 'ArrowDown') {
+              if (userId === game.userA) {
+                  gameInstance.movedownA = true;
+              } else if (userId === game.userB) {
+                  gameInstance.movedownB = true;
+              }
+          }
+      } catch (error) {
+          console.error('Error:', error);
+      }
+  }
+  
+@SubscribeMessage('keyup')
+handleKeyUp(client: Socket, data: { key: string }) {
     console.log('Key down:', data);
     const userId = getUserIdBySocketId(client.id);
     if (!userId) {
         console.error('User ID not found for client:', client.id);
         return;
     }
-    const gameData = this.gameData.get(userId);
-
-    if (!gameData) {
-        console.error('Game instance not found for user:', userId);
+    
+    let gameId: number | undefined;
+    for (const [id, gameData] of this.gameData.entries()) {
+        if (gameData.game.userA === userId || gameData.game.userB === userId) {
+            gameId = id;
+            break;
+        }
+    }
+    if (!gameId) {
+        console.error('Game ID not found for client:', client.id);
         return;
     }
-    try {
-        const game = gameData.game;
-        const gameInstance = gameData.gameinstance;
-        if (!gameInstance) {
-            console.error('Game not found for user:', userId);
-            return;
-        }
-        if (data.key === 'ArrowUp') {
-            if (userId === game.userA) {
-                gameInstance.moveupA = true;
-            } else if (userId === game.userB) {
-                gameInstance.moveupB = true;
-            }
-        } else if (data.key === 'ArrowDown') {
-            if (userId === game.userA) {
-                gameInstance.movedownA = true;
-            } else if (userId === game.userB) {
-                gameInstance.movedownB = true;
-            }
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
 
-@SubscribeMessage('keyup')
-handleKeyUp(client: Socket, data: { key: string }) {
-    console.log('Key up:', data);
-    const userId = getUserIdBySocketId(client.id);
-    if (!userId) {
-        console.error('User ID not found for client:', client.id);
-        return;
-    }
-    const gameData = this.gameData.get(userId);
+    const gameData = this.gameData.get(gameId);
 
     if (!gameData) {
         console.error('Game instance not found for user:', userId);
@@ -143,66 +169,46 @@ handleKeyUp(client: Socket, data: { key: string }) {
     }
 }
 
-  // @SubscribeMessage('keydown')
-  // async handleKeyDown(client: Socket, data: { key: string }) {
-  //   console.log('Key down:', data);
-  //   const userId = getUserIdBySocketId(client.id);
-  //   if (!userId) {
-  //     console.error('User ID not found for client:', client.id);
-  //     return;
-  //   }
-  //   const gameData = this.gameData.get(userId);
-    
-  //   if (!gameData) {
-  //     console.error('Game instance not found for user:', userId);
-  //     return;
-  //   }
-  //   try {
-  //     const game = gameData.game;
-  //     const gameInstance = gameData.gameinstance;
-  //     if (!gameInstance) {
-  //       console.error('Game not found for user:', userId);
-  //       return;
-  //     }
-  //   if (data.key === 'ArrowUp') {
-  //     console.log(userId);
-  //     if (userId === game.userA) {
-  //       gameInstance.playerAPosition.y -= 10;
-  //     } else if (userId === game.userB) {
-  //       gameInstance.playerBPosition.y -= 10;
-  //     }
-  //   } else if (data.key === 'ArrowDown') {
-  //     if (userId === game.userA) {
-  //       gameInstance.playerAPosition.y += 10;
-  //     } else if (userId === game.userB) {
-  //       gameInstance.playerBPosition.y += 10;
-  //     }
-  //   }
-    
-  //   this.server.emit('gameState', { 
-  //     playerAPosition: gameInstance.playerAPosition.y, 
-  //     playerBPosition: gameInstance.playerBPosition.y,
-  //     ballPosition: gameInstance.ball 
-  //   });
-  // }
-  //   catch (error) {
-  //     console.error('Error:', error);
-  //   }
-  // }
-  
-
-  // @SubscribeMessage('keyup')
-  // handleKeyUp(client: Socket, data: { userId: number, key: string }) {
-  //   console.log('Key up:', data);
-  // }
-
-  async handleDisconnect(client: Socket) {
+async handleDisconnect(client: Socket) {
+    console.log(`ici 1`);
     const index = this.matchmakingQueue.indexOf(client.id);
     if (index !== -1) {
-      this.matchmakingQueue.splice(index, 1);
-      console.log(`Socket ${client.id} disconnected and removed from matchmaking queue.`);
+        this.matchmakingQueue.splice(index, 1);
+        console.log(`Socket ${client.id} disconnected and removed from matchmaking queue.`);
     } else {
-      console.log(`Socket ${client.id} disconnected.`);
+        console.log(`Socket ${client.id} disconnected.`);
     }
-  }
+    console.log(`ici 2`);
+    let gameId: number | undefined;
+    for (const [id, gameData] of this.gameData.entries()) {
+        if (gameData.socketA === client.id || gameData.socketB === client.id) {
+            gameId = id;
+            break;
+        }
+    }
+
+    if (gameId !== undefined) {
+        console.log(`Game found for disconnected client: gameId ${gameId}`);
+        const gameData = this.gameData.get(gameId);
+
+        if (gameData) {
+            const gameInstance = gameData.gameinstance;
+            if (gameInstance) {
+                // Envoi de l'événement "opponentLeft" à l'autre joueur avant de supprimer les données de jeu
+                const otherUserId = gameData.socketA === client.id ? gameData.socketB : gameData.socketA;
+                if (otherUserId) {
+                    this.server.to(otherUserId).emit('opponentLeft');
+                    console.log(`Event 'opponentLeft' sent to user ${otherUserId}.`);
+                }
+
+                gameInstance.stopGameLoop();
+                console.log(`Game loop stopped for user ${client.id}.`);
+            }
+            this.gameData.delete(gameId);
+            console.log(`GameData removed for user ${client.id}.`);
+        }
+    } else {
+        console.log(`No game found for disconnected client.`);
+    }
+    }
 }

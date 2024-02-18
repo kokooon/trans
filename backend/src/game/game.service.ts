@@ -7,6 +7,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Ball } from './ball';
 import { GameData } from './gameData';
 import { GameInstance } from './gameInstance';
+import { getSocketIdByUserId } from 'src/entities/socket.map';
 
 @Injectable()
 export class GameService {

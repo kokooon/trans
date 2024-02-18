@@ -110,12 +110,12 @@ async movements()
   return;
 }
 
-
-
-  async stopGameLoop(gameId: number) {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
+async stopGameLoop() {
+  if (this.intervalId) {
+    clearInterval(this.intervalId);
+    this.intervalId = null;
   }
+  this.ball = null
+}
 
 }
