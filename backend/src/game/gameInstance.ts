@@ -44,7 +44,14 @@ export class GameInstance {
   async startGameLoop(playerA: string, playerB: string, server:Server) {
 
     this.intervalId = setInterval(async () => {
-      this.ball.updatePosition(800, 500, this.playerAPosition, this.playerBPosition);
+    const updateResult = this.ball.updatePosition(800, 500, this.playerAPosition, this.playerBPosition);
+
+    if (updateResult.ballMissed) {
+      console.log(`Un joueur a perdu un point`);
+      this.stopGameLoop();
+        // Générer un événement pour signaler qu'un joueur a raté la balle
+        server.emit('ballMissed', updateResult.playerIdMissed);
+    }
   
       this.movements();
   

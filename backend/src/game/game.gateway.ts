@@ -170,7 +170,7 @@ handleKeyUp(client: Socket, data: { key: string }) {
 }
 
 async handleDisconnect(client: Socket) {
-    console.log(`ici 1`);
+    //console.log(`ici 1`);
     const index = this.matchmakingQueue.indexOf(client.id);
     if (index !== -1) {
         this.matchmakingQueue.splice(index, 1);
@@ -178,7 +178,7 @@ async handleDisconnect(client: Socket) {
     } else {
         console.log(`Socket ${client.id} disconnected.`);
     }
-    console.log(`ici 2`);
+    //console.log(`ici 2`);
     let gameId: number | undefined;
     for (const [id, gameData] of this.gameData.entries()) {
         if (gameData.socketA === client.id || gameData.socketB === client.id) {

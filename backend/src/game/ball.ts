@@ -4,6 +4,10 @@ const PADDLE_HEIGHT = 100;
 const PADDLE_OFFSET_A = 10; // Distance from the left edge of the canvas to Player A's paddle
 const PADDLE_OFFSET_B = 30; 
 
+interface BallUpdateResult {
+  ballMissed: boolean;
+  playerIdMissed?: number;
+}
 
 export class Ball {
     x: number;
@@ -23,14 +27,21 @@ export class Ball {
       this.dy = -speed * Math.sin(angleInRadians); // Calculer la vitesse en y (négatif car l'axe y est inversé)
   }
 
-  updatePosition(width: number, height: number, playerAPos: { y: number }, playerBPos: { y: number }) {
+  updatePosition(width: number, height: number, playerAPos: { y: number }, playerBPos: { y: number }): BallUpdateResult {
     // Mettez à jour la position de la balle
     this.x += this.dx;
     this.y += this.dy;
 
     // Gestion des collisions avec les limites supérieure et inférieure
-    if (this.y <= 0 || this.y >= height) {
+    if (this.y <= 10 || this.y >= height - 10) {
         this.dy = -this.dy;
+    }
+
+    // Gestion des collisions avec les raquettes
+    if (this.x <= 0) { // Si la balle passe derrière le joueur A
+        return { ballMissed: true, playerIdMissed: 1 }; // Indique que la balle a été ratée par le joueur A
+    } else if (this.x >= width) { // Si la balle passe derrière le joueur B
+        return { ballMissed: true, playerIdMissed: 2 }; // Indique que la balle a été ratée par le joueur B
     }
 
     // Gestion des collisions avec les raquettes
@@ -52,5 +63,7 @@ export class Ball {
         this.dx = this.speed * -Math.cos(bounceAngle);
         this.dy = this.speed * -Math.sin(bounceAngle);
     }
+
+    return { ballMissed: false }; // Indique que la balle n'a pas été ratée
 }
 }
