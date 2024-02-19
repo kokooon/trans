@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { Ball } from './ball';
+import { Ball, BallUpdateResult } from './ball';
 
 export class GameInstance {
   gameId: number;
@@ -41,35 +41,34 @@ export class GameInstance {
     this.ball = new Ball(ballStartPosition.x, ballStartPosition.y, angle, speed); 
   }
 
-  async startGameLoop(playerA: string, playerB: string, server:Server) {
+  async startGameLoop(playerA: string, playerB: string, server: Server): Promise<BallUpdateResult> {
+    return new Promise((resolve, reject) => {
+        this.intervalId = setInterval(async () => {
+            const updateResult = this.ball.updatePosition(800, 500, this.playerAPosition, this.playerBPosition);
 
-    this.intervalId = setInterval(async () => {
-    const updateResult = this.ball.updatePosition(800, 500, this.playerAPosition, this.playerBPosition);
+            if (updateResult.ballMissed) {
+                console.log(`Un joueur a perdu un point`);
+                clearInterval(this.intervalId); // Arrête la boucle de jeu
+                resolve(updateResult); // Renvoie le résultat de la mise à jour de la balle
+            } else {
+                this.movements();
 
-    if (updateResult.ballMissed) {
-      console.log(`Un joueur a perdu un point`);
-      this.stopGameLoop();
-        // Générer un événement pour signaler qu'un joueur a raté la balle
-        server.emit('ballMissed', updateResult.playerIdMissed);
-    }
-  
-      this.movements();
-  
-      server.to(playerA).emit('gameState', {
-          playerAPosition: this.playerAPosition.y,
-          playerBPosition: this.playerBPosition.y,
-          ballPosition: this.ball,
-      });
-  
-      server.to(playerB).emit('gameState', {
-          playerAPosition: this.playerAPosition.y,
-          playerBPosition: this.playerBPosition.y,
-          ballPosition: this.ball,
-      });
-  
-      // Additional game logic...
-  }, 1000 / 100); // 100 FPS
+                server.to(playerA).emit('gameState', {
+                    playerAPosition: this.playerAPosition.y,
+                    playerBPosition: this.playerBPosition.y,
+                    ballPosition: this.ball,
+                });
+
+                server.to(playerB).emit('gameState', {
+                    playerAPosition: this.playerAPosition.y,
+                    playerBPosition: this.playerBPosition.y,
+                    ballPosition: this.ball,
+                });
+            }
+        }, 1000 / 100); // 100 FPS
+    });
 }
+
   
 async movements() 
 {

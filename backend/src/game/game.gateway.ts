@@ -52,7 +52,14 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                   this.server.to(userOneS).emit('game:created', newGame);
                   this.server.to(userTwoS).emit('game:created', newGame);
   
-                  newGame.gameinstance.startGameLoop(userOneS, userTwoS, this.server)
+                  const updateResult = await newGame.gameinstance.startGameLoop(userOneS, userTwoS, this.server);
+                  if (updateResult.ballMissed === true)
+                  {
+                    if (updateResult.playerIdMissed === 1)
+                        console.log('Joueur B a marque un point');
+                    else if (updateResult.playerIdMissed === 1)
+                        console.log('Joueur A a marque un point');
+                  }
               } catch (error) {
                   console.error('Error creating game:', error);
               }

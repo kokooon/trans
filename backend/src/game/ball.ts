@@ -4,7 +4,7 @@ const PADDLE_HEIGHT = 100;
 const PADDLE_OFFSET_A = 10; // Distance from the left edge of the canvas to Player A's paddle
 const PADDLE_OFFSET_B = 30; 
 
-interface BallUpdateResult {
+export interface BallUpdateResult {
   ballMissed: boolean;
   playerIdMissed?: number;
 }
