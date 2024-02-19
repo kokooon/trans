@@ -26,6 +26,11 @@ interface GameInstance {
   };
 }
 
+interface Scores {
+  A: number;
+  B: number;
+}
+
 interface GameData {
   game: Game;
   gameinstance: GameInstance;
@@ -36,6 +41,7 @@ function Game() {
   const { socket } = useSocket(); // Récupérer le socket depuis le contexte
   //const [user, setUser] = useState<any | null>(null);
   const [gameId, setGameId] = useState<number>(0);
+  const [scores, setScores] = useState<Scores>({ A: 0, B: 0 });
   const navigate = useNavigate();
   const [user, setUser] = useState<any | null>(null);
   const [matchmakingStatus, setMatchmakingStatus] = useState('pending');
@@ -79,6 +85,19 @@ function Game() {
       playFx(2);
       setMatchmakingStatus('searching');
     });
+    socket.on('update:B_scored', () => {
+      setScores(prevScores => ({
+        ...prevScores,
+        B: prevScores.B + 1 // Increment B's score by 1
+      }));
+    });
+  
+    socket.on('update:A_scored', () => {
+      setScores(prevScores => ({
+        ...prevScores,
+        A: prevScores.A + 1 // Increment A's score by 1
+      }));
+    });
     socket.on('game:created', (newGame: GameData) => {
       console.log('New game created:', newGame);
       // Assuming CanvasTutorial can accept a gameId prop
@@ -90,11 +109,13 @@ function Game() {
 
     return () => {
       // Nettoyage des écouteurs d'événements lors du démontage du composant
+      socket.off('update:A_scored');
+      socket.off('update:B_scored');
       socket.off('matchmaking:found');
       socket.off('matchmaking:searching');
       socket.off('game:created');
     };
-  }, [socket]);
+  }, [socket, scores]);
 
   const startMatchmaking = () => {
     setMatchmakingStatus('searching');
@@ -198,6 +219,10 @@ function Game() {
       )}
       {matchmakingStatus === 'found' && 
       <div className="relative w-800 h-500">
+          <div>
+            <p>Score A: {scores.A}</p>
+            <p>Score B: {scores.B}</p>
+        </div>
         <video autoPlay muted loop id="background-video"  style={{ position: 'absolute', width: '900px', height: '500px', zIndex: -1 }}>
         <source src="../../../../public/assets/space.mp4" type="video/mp4"/>
         </video>
