@@ -8,45 +8,49 @@ const PADDLE_OFFSET_B = 30;
 export class Ball {
     x: number;
     y: number;
-    dx: number; // Vitesse horizontale
-    dy: number; // Vitesse verticale
+    dx: number;
+    dy: number;
+    angle: number;
+    speed: number;
   
-    constructor(x: number, y: number, dx: number, dy: number) {
+    constructor(x: number, y: number, angle: number, speed: number) {
       this.x = x;
       this.y = y;
-      this.dx = dx;
-      this.dy = dy;
-    }
+      this.angle = angle;
+      this.speed = speed;
+      const angleInRadians = this.angle * (Math.PI / 180); // Convertir l'angle en radians
+      this.dx = speed * Math.cos(angleInRadians); // Calculer la vitesse en x
+      this.dy = -speed * Math.sin(angleInRadians); // Calculer la vitesse en y (négatif car l'axe y est inversé)
+  }
 
-    updatePosition(width: number, height: number, playerAPos: { y: number }, playerBPos: { y: number }) {
-      //console.log(`Before Update: Position (${this.x}, ${this.y}), Velocity (${this.dx}, ${this.dy})`);
+  updatePosition(width: number, height: number, playerAPos: { y: number }, playerBPos: { y: number }) {
+    // Mettez à jour la position de la balle
+    this.x += this.dx;
+    this.y += this.dy;
 
-      // Update ball position
-      this.x += this.dx;
-      this.y += this.dy;
-  
-      //console.log(`After Movement: Position (${this.x}, ${this.y}), Velocity (${this.dx}, ${this.dy})`);
-
-      // Collision detection with top and bottom boundaries
-      if (this.y <= 0 || this.y >= height) {
+    // Gestion des collisions avec les limites supérieure et inférieure
+    if (this.y <= 0 || this.y >= height) {
         this.dy = -this.dy;
-        //console.log(`Boundary Collision Detected - New Velocity: (${this.dx}, ${this.dy})`);
-      }
-
-      // Adjust the calculation for Player A's paddle collision
-      if (this.x <= PADDLE_OFFSET_A + PADDLE_WIDTH && this.y >= playerAPos.y && this.y <= playerAPos.y + PADDLE_HEIGHT) {
-        this.dx = Math.abs(this.dx);
-        //console.log(`Collision with Player A's paddle - New Velocity: (${this.dx}, ${this.dy})`);
-      }
-
-      // Adjust the calculation for Player B's paddle collision
-      // Note: We need to calculate the x position of Player B's paddle's left edge
-      const playerBLeftEdge = width - PADDLE_OFFSET_B - PADDLE_WIDTH;
-      if (this.x >= playerBLeftEdge && this.y >= playerBPos.y && this.y <= playerBPos.y + PADDLE_HEIGHT) {
-        this.dx = -Math.abs(this.dx);
-        //console.log(`Collision with Player B's paddle - New Velocity: (${this.dx}, ${this.dy})`);
-      }
-
-      //console.log(`After Collision Detection: Position (${this.x}, ${this.y}), Velocity (${this.dx}, ${this.dy})`);
     }
+
+    // Gestion des collisions avec les raquettes
+    if (this.x <= PADDLE_OFFSET_A + PADDLE_WIDTH && this.y >= playerAPos.y && this.y <= playerAPos.y + PADDLE_HEIGHT) {
+        // Calculez la position de collision relative sur la raquette A
+        const relativeIntersectY = (playerAPos.y + (PADDLE_HEIGHT / 2)) - this.y;
+        const normalizedRelativeIntersectionY = relativeIntersectY / (PADDLE_HEIGHT / 2);
+        const bounceAngle = normalizedRelativeIntersectionY * (Math.PI / 3); // Angle de rebond maximal de 60 degrés
+        this.dx = this.speed * Math.cos(bounceAngle);
+        this.dy = this.speed * -Math.sin(bounceAngle);
+    }
+
+    const playerBLeftEdge = width - PADDLE_OFFSET_B - PADDLE_WIDTH;
+    if (this.x >= playerBLeftEdge && this.y >= playerBPos.y && this.y <= playerBPos.y + PADDLE_HEIGHT) {
+        // Calculez la position de collision relative sur la raquette B
+        const relativeIntersectY = (playerBPos.y + (PADDLE_HEIGHT / 2)) - this.y;
+        const normalizedRelativeIntersectionY = relativeIntersectY / (PADDLE_HEIGHT / 2);
+        const bounceAngle = normalizedRelativeIntersectionY * (Math.PI / 3); // Angle de rebond maximal de 60 degrés
+        this.dx = this.speed * -Math.cos(bounceAngle);
+        this.dy = this.speed * -Math.sin(bounceAngle);
+    }
+}
 }

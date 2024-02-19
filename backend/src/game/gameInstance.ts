@@ -36,19 +36,18 @@ export class GameInstance {
       dy: 0, // Starts with horizontal movement; adjust as necessary
     };
 
-    this.ball = new Ball(ballStartPosition.x, ballStartPosition.y, ballVelocity.dx, ballVelocity.dy);
+    const angle = 30;
+    const speed = 2;
+    this.ball = new Ball(ballStartPosition.x, ballStartPosition.y, angle, speed); 
   }
 
   async startGameLoop(playerA: string, playerB: string, server:Server) {
 
     this.intervalId = setInterval(async () => {
-      // Update game state
       this.ball.updatePosition(800, 500, this.playerAPosition, this.playerBPosition);
   
-      // Handle player movements
       this.movements();
   
-      // Emit game state to clients
       server.to(playerA).emit('gameState', {
           playerAPosition: this.playerAPosition.y,
           playerBPosition: this.playerBPosition.y,
@@ -62,7 +61,7 @@ export class GameInstance {
       });
   
       // Additional game logic...
-  }, 1000 / 60); // 60 FPS
+  }, 1000 / 100); // 100 FPS
 }
   
 async movements() 
