@@ -61,17 +61,11 @@ export class GameService {
     await this.userService.save(user);
   }
 
-  async updatescore(userA: boolean, userB: boolean, gameId: number) {
+  async updatescore(scoreA: number, scoreB: number, gameId: number) {
     try {
         const game = await this.getGameById(gameId);
-        if (userA && !userB) {
-            game.scoreA++;
-        } else if (!userA && userB) {
-            game.scoreB++;
-        } else {
-            // Aucun joueur n'a marqué de point
-            console.log('Aucun joueur n\'a marqué de point');
-        }
+        game.scoreA = scoreA;
+        game.scoreB = scoreB;
         await this.GameRepository.save(game);
     } catch (error) {
         console.error('Erreur lors de la mise à jour du score:', error);

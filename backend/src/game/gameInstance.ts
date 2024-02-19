@@ -31,13 +31,9 @@ export class GameInstance {
       x: startSide === 'A' ? 35 : 765, // Adjusted for paddle width and game field
       y: startSide === 'A' ? playerAPosition.y + 50 : playerBPosition.y + 50,
     };
-    const ballVelocity = {
-      dx: startSide === 'A' ? 3 : -3, // Adjust velocity direction based on the side
-      dy: 0, // Starts with horizontal movement; adjust as necessary
-    };
 
-    const angle = 30;
-    const speed = 2;
+    const angle = 0;
+    const speed = 6;
     this.ball = new Ball(ballStartPosition.x, ballStartPosition.y, angle, speed); 
   }
 
@@ -48,8 +44,14 @@ export class GameInstance {
 
             if (updateResult.ballMissed) {
                 console.log(`Un joueur a perdu un point`);
-                clearInterval(this.intervalId); // Arrête la boucle de jeu
-                resolve(updateResult); // Renvoie le résultat de la mise à jour de la balle
+                clearInterval(this.intervalId);
+
+                this.playerAPosition.y = 200;
+                this.playerBPosition.y = 200;
+                const angle = 0;
+                const speed = 6;
+                this.resetBallPosition(angle, speed);
+                resolve(updateResult);
             } else {
                 this.movements();
 
@@ -69,6 +71,21 @@ export class GameInstance {
     });
 }
 
+resetBallPosition(angle: number, speed: number): void {
+  const startSide = Math.random() < 0.5 ? 'A' : 'B';
+  const ballStartPosition = {
+    x: startSide === 'A' ? 35 : 765,
+    y: startSide === 'A' ? this.playerAPosition.y + 50 : this.playerBPosition.y + 50,
+  };
+
+  this.ball.x = ballStartPosition.x;
+  this.ball.y =  ballStartPosition.y;
+  this.ball.angle = angle;
+  this.ball.speed = speed;
+  const angleInRadians = angle * (Math.PI / 180);
+  this.ball.dx = speed * Math.cos(angleInRadians);
+  this.ball.dy = -speed * Math.sin(angleInRadians); 
+}
   
 async movements() 
 {
@@ -79,34 +96,34 @@ async movements()
 
   // Calculate inertia for player A
   if (this.moveupA) {
-      this.inertiaA += 1;
+      this.inertiaA += 0.5;
   } else if (this.movedownA) {
-      this.inertiaA -= 1;
+      this.inertiaA -= 0.5;
   }
   if (this.moveupA === false && this.movedownA === false)
   {
     if (this.inertiaA < 0)
-      this.inertiaA += 0.5;
+      this.inertiaA += 0.25;
       if (this.inertiaA > 0)
-      this.inertiaA -= 0.5;
+      this.inertiaA -= 0.25;
   }
 
   // Calculate inertia for player B (same logic as player A)
   if (this.moveupB) {
-    this.inertiaB += 1;
+    this.inertiaB += 0.5;
   } else if (this.movedownB) {
-    this.inertiaB -= 1;
+    this.inertiaB -= 0.5;
   }
   if (this.moveupB === false && this.movedownB === false)
   {
   if (this.inertiaB < 0)
-    this.inertiaB += 0.5;
+    this.inertiaB += 0.25;
     if (this.inertiaB > 0)
-    this.inertiaB -= 0.5;
+    this.inertiaB -= 0.25;
   }
 
-  this.inertiaA = clamp(this.inertiaA, -10, 10);
-  this.inertiaB = clamp(this.inertiaB, -10, 10);
+  this.inertiaA = clamp(this.inertiaA, -5, 5);
+  this.inertiaB = clamp(this.inertiaB, -5, 5);
 
   // Déplacer les joueurs en fonction de l'inertie
   this.playerAPosition.y = clamp(this.playerAPosition.y - this.inertiaA, ymin, ymax)

@@ -51,25 +51,44 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                   
                   this.server.to(userOneS).emit('game:created', newGame);
                   this.server.to(userTwoS).emit('game:created', newGame);
-  
-                  const updateResult = await newGame.gameinstance.startGameLoop(userOneS, userTwoS, this.server);
-                  if (updateResult.ballMissed === true)
+                
+                  while (42)
                   {
-                    if (updateResult.playerIdMissed === 1)
+                    const updateResult = await newGame.gameinstance.startGameLoop(userOneS, userTwoS, this.server);
+                    if (updateResult.ballMissed === true)
                     {
-                        console.log('Joueur B a marque un point');
-                        this.gameService.updatescore(false, true, newGame.game.id);
-                        this.server.to(userOneS).emit('update:B_scored');
-                        this.server.to(userTwoS).emit('update:B_scored');
-                        
-                    }
-                    else if (updateResult.playerIdMissed === 2)
-                        this.gameService.updatescore(true, false, newGame.game.id);
-                        console.log('Joueur A a marque un point');
-                        this.server.to(userOneS).emit('update:A_scored');
-                        this.server.to(userTwoS).emit('update:A_scored');
+                        if (updateResult.playerIdMissed == 1)
+                        {
+                            console.log('Joueur B a marque un point');
+                            newGame.game.scoreB++;
+                            this.server.to(userOneS).emit('update:B_scored');
+                            this.server.to(userTwoS).emit('update:B_scored');
+                            if (newGame.game.scoreB >= 5)
+                            {
+                                await this.gameService.updatescore(newGame.game.scoreA, newGame.game.scoreB, newGame.game.id);
+                                this.server.to(userOneS).emit('win:B');
+                                this.server.to(userTwoS).emit('win:B');
+                                return;
+                            }
 
-                  }
+
+                        }
+                        else if (updateResult.playerIdMissed == 2)
+                        {
+                            console.log('Joueur A a marque un point');
+                            newGame.game.scoreA++;
+                            this.server.to(userOneS).emit('update:A_scored');
+                            this.server.to(userTwoS).emit('update:A_scored');
+                            if (newGame.game.scoreA >= 5)
+                            {
+                                await this.gameService.updatescore(newGame.game.scoreA, newGame.game.scoreB, newGame.game.id);
+                                this.server.to(userOneS).emit('win:A');
+                                this.server.to(userTwoS).emit('win:A');
+                                return;
+                            }
+                        }
+                    }
+                    }
               } catch (error) {
                   console.error('Error creating game:', error);
               }
