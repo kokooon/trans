@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchUserDetails, isTokenValid, isUserConnected } from "@/lib/components/utils/UtilsFetch";
 import { toggle2FA } from "@/lib/components/auth/2fa/2fa";
 //import { Button } from "@/lib/components/ui/button";
+import '../../styles/profile.css'
 
 
 const Settings = () => {
@@ -160,7 +161,10 @@ const Settings = () => {
       };
 
     return (
-        <div>
+        <div className="menugrid">
+            <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
+                <source src="https://assets.codepen.io/263256/menubg.mp4" />
+            </video>
             <UserNav/>
             <div className="flex flex-col items-center p-4">
                 {/* Photo de profil */}
