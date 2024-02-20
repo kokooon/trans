@@ -9,6 +9,17 @@ import { GameData } from './gameData';
 import { GameInstance } from './gameInstance';
 import { getSocketIdByUserId } from 'src/entities/socket.map';
 
+type Games = {
+  winner: string,
+  looser: string,
+  scoreWinner: number,
+  scoreLoser: number
+}
+
+type History = {
+  game: Games[]
+}
+
 @Injectable()
 export class GameService {
   constructor(
@@ -39,6 +50,50 @@ export class GameService {
 
     const gameData = new GameData(game, gameInstance);
     return gameData;
+}
+
+async findGamesByUserId(userId: number): Promise<History | null> {
+  const games = await this.GameRepository
+    .createQueryBuilder('game')
+    .where('game.userA = :userId OR game.userB = :userId', { userId })
+    .getMany();
+
+    if (games.length === 0) {
+      return null;
+    }
+
+  const history: History = { game: [] };
+
+  for (const game of games) {
+    // Determine winner and loser
+    let winnerId, loserId, scoreWinner, scoreLoser;
+    if (game.scoreA > game.scoreB) {
+      winnerId = game.userA;
+      loserId = game.userB;
+      scoreWinner = game.scoreA;
+      scoreLoser = game.scoreB;
+    } else {
+      winnerId = game.userB;
+      loserId = game.userA;
+      scoreWinner = game.scoreB;
+      scoreLoser = game.scoreA;
+    }
+
+    // Fetch pseudos for winner and loser
+    const winnerPseudo = await this.userService.findPseudoById(winnerId);
+    const loserPseudo = await this.userService.findPseudoById(loserId);
+
+    const newGame: Games = {
+      winner: winnerPseudo,
+      looser: loserPseudo, // Note the typo: it should be 'loser', not 'looser'
+      scoreWinner: scoreWinner,
+      scoreLoser: scoreLoser,
+    };
+
+    history.game.push(newGame);
+  }
+
+  return history;
 }
 
   async updateUserGameHistory(userId: number, gameId: number): Promise<void> {

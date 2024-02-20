@@ -5,13 +5,48 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSocket } from '../../components/utils/socketContext';
 import "../../styles/profile.css"
 
+type Games = {
+    winner: string,
+    looser: string,
+    scoreWinner: number,
+    scoreLoser: number
+  }
+
+type History = {
+	game: Games[]
+}
+
 const Profile = () => {
+    const [GameHistory, setGameHistory] = useState<History | null>(null);
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
     const { pseudo } = useParams();
     const { socket } = useSocket();
 
     useEffect(() => {
+        const fetchHistory = async () => {
+            console.log('inside fetch history');
+            if (pseudo) {
+                const user = await fetchUserDetailsByPseudo(pseudo);
+                console.log('user = ', user.id);
+                const response = await fetch(`http://127.0.0.1:3001/games/returnHistory/${user.id}`, {
+    		    method: 'GET',
+    		    headers: {
+      		    'Content-Type': 'application/json',
+    		    },
+    		    credentials: 'include',
+  		        });
+		        if (response.ok) {
+                    const data = await response.json();
+                    console.log('history = ', data);
+                    setGameHistory(data);
+                    GameHistory;
+                }
+                else {
+                    console.log('history empty');
+                }
+            }
+        }
         const checkToken = async () => {
             try {
                 const isValid = await isTokenValid();
@@ -41,6 +76,7 @@ const Profile = () => {
                 // Handle errors here
             }
         };
+        fetchHistory();
         checkToken();
     }, [navigate]);
 

@@ -101,17 +101,13 @@ const social = () => {
     const [chatContext, setChatContext] = useState<{ channelname: string, id: number, userIds: number }>({ channelname: 'null', id: 0, userIds: 0 });
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     const [currentView, setCurrentView] = useState('Notifications');
-    const [Lists, ] = useState<string[]>([]);
     const [user, setUser] = useState<any | null>(null);
     const [anchorElArray, setAnchorElArray] = useState<(HTMLElement | null)[]>([]);
     const [channelAnchorElArray, setChannelAnchorElArray] = useState(new Array(channelList.length).fill(null));
     const [memberAnchorElArray, setMemberAnchorElArray] = useState(new Array(channelMembersIds.length).fill(null)); 
     const [activeFriend, setActiveFriend] = useState<string | null>(null);
     const [activeChannel, setActiveChannel] = useState<string | null>(null);
-    // const [activeUser, setActiveUser] = useState<string | null>(null);
     const [isTyping, setIsTyping] = useState(false);
-    
-    Lists;
     const [blockInput, setBlockInput] = useState<string | null>(null); // Valeur de l'entrée de texte pour bloquer
     const [addInput, setaddInput] = useState(''); // Valeur de l'entrée de texte pour add
     const [ChannelName, setChannelName] = useState(''); // Valeur de l'entrée de texte pour cree channel
@@ -148,9 +144,7 @@ const social = () => {
           }
       };
       fetchData();
-      console.log('in useEffects');
       if (socket) {
-          console.log('socket exist');
           socket.on('new_message', (message: any) => {
               if (currentView === 'Friends' && (chatContext.userIds === message.senderId) || message.senderId === user[0].id) {
                 if (user[0].id === message.senderId){
@@ -165,7 +159,6 @@ const social = () => {
           });
 
 		  socket.on('new_channel_message', (message: any) => {
-            console.log('in new_channel_message listener = ', message.channelName, 'context = ', chatContext.id, 'messagechannel id = ', message.channelId);
             if (currentView === 'Channel' && chatContext.id === message.channelId) {
 				      fetchChannelChatHistory(message.channelName.toString());
             }
@@ -173,25 +166,21 @@ const social = () => {
         });
 
           socket.on('friendConnected', () => {
-            console.log('in friendConnected listener');
             if (currentView === 'Friends')
               getFriends();
         });
 
         socket.on('friendDisconnected', () => {
-          console.log('in friendDisconnected listener');
           if (currentView === 'Friends')
             getFriends();
         });
 
         socket.on('new_friend', () => {
-          console.log('new friend');
           if (currentView === 'Friends')
             getFriends();
         });
 
         socket.on('new_notification', () => {
-          console.log('new notification');
           if (currentView === 'Notifications') {
               getNotifications();
               console.log('omg wtf');
@@ -246,14 +235,12 @@ const social = () => {
 
   const getNotifications = async () => {
     setCurrentView('Notifications');
-    console.log('inside get notifs');
     const userData = await fetchUserDetails();
     try {
         const friendsRequestList = []; // Créez une nouvelle liste pour les amis
 
         for (let i = 0; i < userData[0].friendNotif.length; i++) {
             const friendId = userData[0].friendNotif[i];
-            console.log('my notifs = ', user[0].friendNotif[i]);
             const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
                 method: 'GET',
                 credentials: 'include',
