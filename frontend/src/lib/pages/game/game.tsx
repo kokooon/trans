@@ -41,6 +41,8 @@ function Game() {
   const { socket } = useSocket(); // Récupérer le socket depuis le contexte
   //const [user, setUser] = useState<any | null>(null);
   const [gameId, setGameId] = useState<number>(0);
+  const [userA, setuserA] = useState<string>();
+  const [userB, setuserB] = useState<string>();
   const [scores, setScores] = useState<Scores>({ A: 0, B: 0 });
   const navigate = useNavigate();
   const [user, setUser] = useState<any | null>(null);
@@ -101,9 +103,11 @@ function Game() {
     socket.on('game:created', (newGame: GameData) => {
       console.log('New game created:', newGame);
       // Assuming CanvasTutorial can accept a gameId prop
-      console.log('data = ', newGame);
+      console.log('data = ', newGame.game.userA);
+      console.log('data = ', newGame.game.userB);
+      //'getPseudo/:id'
+      getPseudo(newGame.game.userA, newGame.game.userB);
       setGameId(newGame.game.id); // Update local state or context with gameId
-
     });
 
 
@@ -126,6 +130,38 @@ function Game() {
       socket.emit('matchmaking:request');
     }
   };
+
+  const getPseudo  = async (userA: number, userB: number) => {
+    //'getPseudo/:id'
+    const response = await fetch(`http://127.0.0.1:3001/users/getPseudo/${userA}`, {
+      method: 'GET',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+      credentials: 'include', // if you're including credentials like cookies
+      });
+      if (response.ok) {
+        const pseudo = await response.json();
+        setuserA(pseudo);
+      }
+      else{
+        console.log('error while trying get pseudo')
+      }
+      const responsetwo = await fetch(`http://127.0.0.1:3001/users/getPseudo/${userB}`, {
+      method: 'GET',
+      headers: {
+      'Content-Type': 'application/json',
+      },
+      credentials: 'include', // if you're including credentials like cookies
+      });
+      if (responsetwo.ok) {
+        const pseudotwo = await responsetwo.json();
+        setuserB(pseudotwo);
+      }
+      else{
+        console.log('error while trying get pseudo')
+      }
+  }
 
   const handleLogout = async () => {
     try {
@@ -220,8 +256,8 @@ function Game() {
       {matchmakingStatus === 'found' && 
       <div className="relative w-800 h-500">
           <div>
-            <p>Score A: {scores.A}</p>
-            <p>Score B: {scores.B}</p>
+            <p>{userA}: {scores.A}</p>
+            <p>{userB}: {scores.B}</p>
         </div>
         <video autoPlay muted loop id="background-video"  style={{ position: 'absolute', width: '900px', height: '500px', zIndex: -1 }}>
         <source src="../../../../public/assets/space.mp4" type="video/mp4"/>

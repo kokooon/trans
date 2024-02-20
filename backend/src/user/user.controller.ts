@@ -19,6 +19,15 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+  @Get('getPseudo/:id')
+  async findPseudoByid(@Param('id') id: number, @Req() req, @Res() res): Promise<string> {
+    const pseudo = await this.userService.findPseudoById(id);
+    if (pseudo)
+    return res.status(201).json(pseudo);
+  else
+    return res.status(409).json({ error: 'can\'t find id' });
+  }
+
 	@Get('getSocket/:userId')
 	async findSocketById(@Param('userId') userId: number, @Req() req, @Res() res): Promise<string | void> {
     	const userSocket = getSocketIdByUserId(userId);
@@ -47,7 +56,6 @@ export class UserController {
 			return res.status(201).json(id);
 		else
 			return res.status(409).json({ error: 'can\'t find id' });
-
     }
 
     @Post('leaveChannel')

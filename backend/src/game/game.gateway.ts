@@ -47,7 +47,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
               try {
                   const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
                   this.gameData.set(newGame.game.id, newGame);
-                  console.log('data0 = ', newGame);
+                  //console.log('data0 = ', newGame);
                   
                   this.server.to(userOneS).emit('game:created', newGame);
                   this.server.to(userTwoS).emit('game:created', newGame);
