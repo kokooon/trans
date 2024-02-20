@@ -128,17 +128,21 @@ const Profile = () => {
         </div>
         <div className="bg-[#1e1a36]/70 p-4 text-sm font-semibold backdrop-blur-sm">
             <p>Match History</p>
+            {GameHistory && (
             <ul className="flex mt-4 flex-wrap items-center justify-start gap-2 gap-y-3">
+            {GameHistory.game.map((game) => (
                 <li className="match-item">
                     <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar"/>
-                    <span className="username">joberle</span>
-                    <span className="score player1">5</span>
+                    <span className="username">{game.winner}</span>
+                    <span className="score player1">{game.scoreWinner}</span>
                     <span className="score-separator">-</span> 
-                    <span className="score player2">3</span> 
-                    <span className="username">joberle</span>
+                    <span className="score player2">{game.scoreLoser}</span> 
+                    <span className="username">{game.looser}</span>
                     <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar"/>
                 </li>
+            ))}
             </ul>
+            )}
         </div>
     </section>
 </div>

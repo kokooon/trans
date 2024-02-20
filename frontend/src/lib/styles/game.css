@@ -38,9 +38,9 @@ body {
 .videobg {
   display: block;
   grid-area: stack;
-  height: 110vh;
+  height: 100vh;
   mix-blend-mode: hard-light;
-  width: 110vw;
+  width: 100vw;
   object-fit: cover;
 }
 

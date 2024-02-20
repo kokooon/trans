@@ -30,8 +30,11 @@
     height: 100vh;
     overflow: hidden;
     width: 100vw;
-    min-height: 110vh; /* ou une valeur appropriée pour contenir la vidéo et les autres éléments */
-    position: relative;
+  }
+
+  ul {
+    max-height: 300px; 
+    overflow-y: auto;
   }
 
 
