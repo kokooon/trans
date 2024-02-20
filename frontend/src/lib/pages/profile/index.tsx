@@ -108,8 +108,11 @@ const Profile = () => {
       };
 
     return (
-        <div className="page">
-        <div className="center min-h-screen flex flex-col">
+        <div className="menugrid">
+            <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
+                <source src="https://assets.codepen.io/263256/menubg.mp4" />
+            </video>
+        <div className="min-h-screen flex flex-col">
         <div className="absolute top-10 right-0"><UserNav/></div>
         <div className="center flex items-center justify-center min-h-screen text-[#9e9cb6]">
     <section className="w-full max-w-[430px] relative bg-[#231f39]/60 rounded-[6px] shadow-[0px_15px_39px_16px_rgba(52,45,91,0.65)] backdrop-blur-sm mx-2 overflow-hidden">

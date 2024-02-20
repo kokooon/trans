@@ -1,34 +1,38 @@
 /* styles.css */
 
+:root {
+    --bg:         #112;
+    --txt-base:   #3ca;
+    --txt-hover:  #dff;
+    --btn-border-base: #f44;
+    --btn-border-hover: #fa6;
+    --btn-bg-1: rgba(255,170,102,0.05);
+    --btn-bg-2: rgba(255,170,102,0.15);
+    --btn-bg-active-1: rgba(200,200,200,0.05);
+    --btn-bg-active-2: rgba(200,200,200,0.15);
+  }
 
-.page  {
-    background-image: url('https://static.pexels.com/photos/414171/pexels-photo-414171.jpeg');
-  background-size:cover;
-        -webkit-animation: slidein 100s;
-        animation: slidein 100s;
+.videobg {
+    position: absolute;
+    display: block;
+    grid-area: stack;
+    height: 110vh;
+    mix-blend-mode: hard-light;
+    width: 110vw;
+    object-fit: cover;
+    z-index: -1;
+  }
 
-        -webkit-animation-fill-mode: forwards;
-        animation-fill-mode: forwards;
-
-        -webkit-animation-iteration-count: infinite;
-        animation-iteration-count: infinite;
-
-        -webkit-animation-direction: alternate;
-        animation-direction: alternate;
-        
-}
-
-@-webkit-keyframes slidein {
-from {background-position: top; background-size:3000px; }
-to {background-position: -100px 0px;background-size:2750px;}
-}
-
-@keyframes slidein {
-from {background-position: top;background-size:3000px; }
-to {background-position: -100px 0px;background-size:2750px;}
-
-}
-
+  .menugrid {
+    align-items: start;
+    display: grid;
+    grid-template-areas: "stack";
+    height: 100vh;
+    overflow: hidden;
+    width: 100vw;
+    min-height: 110vh; /* ou une valeur appropriée pour contenir la vidéo et les autres éléments */
+    position: relative;
+  }
 
 
 .container {
