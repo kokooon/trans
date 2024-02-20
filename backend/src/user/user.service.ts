@@ -19,6 +19,14 @@ export class UserService {
     private readonly myConfigService: MyConfigService,
   ) {}
 
+    async addGameNotif(userId: number, recipientId: number) {
+        console.log('in service');
+        const user = await this.findById(recipientId); 
+        user.GameNotifs.push(userId);
+        await this.userRepository.save(user);
+        return ;
+    }
+
   async getFriends(userId: number): Promise<number[]> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
@@ -278,6 +286,7 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
         user.History = [];
         user.banlist = [];
         user.channels = [];
+        user.GameNotifs = [];
         const savedUser = await this.userRepository.save(user);
         return savedUser;
     } catch (error) {

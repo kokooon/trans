@@ -43,5 +43,8 @@ export class User {
 
   @Column('simple-array', { nullable: true })
   channels: number[];
+
+  @Column('simple-array', { nullable: true })
+  GameNotifs: number[];
   //Channels
 }

@@ -19,6 +19,13 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+  @Post('gameNotif')
+  async addInvit(@Req() req, @Res() res) {
+		console.log('in invite');
+		await this.userService.addGameNotif(req.body.userId, req.body.inviteRecipientId)
+		return res.status(201).json();
+  }
+
   @Get('getPseudo/:id')
   async findPseudoByid(@Param('id') id: number, @Req() req, @Res() res): Promise<string> {
     const pseudo = await this.userService.findPseudoById(id);

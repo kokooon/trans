@@ -888,8 +888,25 @@ const handleadd = async () => {
   setaddInput('');
 };
 
+const handleInvite  = async (friendId: number) => {
+	try {
+		const response = await fetch('http://127.0.0.1:3001/users/gameNotif', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ inviteRecipientId: friendId, userId: user[0].id }),
+      });
+      if (!response.ok) {
+          throw new Error('La réponse du réseau n’était pas correcte');
+      }
+	}catch (error){
+		console.log('unable to add gameNotif');
+	}
+}
+
 const handleBlock  = async (friendId: number) => {
-	console.log('input = ', blockInput);
   try {
       const response = await fetch('http://127.0.0.1:3001/users/Block', {
           method: 'POST',
@@ -1299,7 +1316,7 @@ const Ban  = async (Banid: number, channelname: string, channelid: number) => {
 								<MenuItem style={{ color: 'black' }} onClick={() => navigate(`/profile/${member.pseudo}`)}>Profile</MenuItem>
 								{(user[0].id !== member.id )&& (
           						<>
-        						<MenuItem>invite game</MenuItem>
+        						<MenuItem onClick={() => {handleInvite(member.id);}}>invite game</MenuItem>
         						<MenuItem onClick={() => {handleBlock(member.id);}}>Block</MenuItem>
 								</>
 								)}

@@ -28,7 +28,6 @@ const Profile = () => {
             console.log('inside fetch history');
             if (pseudo) {
                 const user = await fetchUserDetailsByPseudo(pseudo);
-                console.log('user = ', user.id);
                 const response = await fetch(`http://127.0.0.1:3001/games/returnHistory/${user.id}`, {
     		    method: 'GET',
     		    headers: {
