@@ -96,6 +96,7 @@ const social = () => {
     const [friendsList, setFriendsList] = useState<Friend[]>([]); 
     const [blockedList, setblockedList] = useState<Friend[]>([]);
     const [friendsRequestList, setFriendsRequestList] = useState<Friend[]>([]);
+	const [gameInvit, setGameInvit] = useState<Friend[]>([]);
     const { socket } = useSocket();
     const [inputMessage, setInputMessage] = useState('');
     const [chatContext, setChatContext] = useState<{ channelname: string, id: number, userIds: number }>({ channelname: 'null', id: 0, userIds: 0 });
@@ -238,7 +239,6 @@ const social = () => {
     const userData = await fetchUserDetails();
     try {
         const friendsRequestList = []; // Créez une nouvelle liste pour les amis
-
         for (let i = 0; i < userData[0].friendNotif.length; i++) {
             const friendId = userData[0].friendNotif[i];
             const response = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
@@ -253,6 +253,23 @@ const social = () => {
             }
         }
         setFriendsRequestList(friendsRequestList);
+		const gameinvit: any[] = [];
+		for (let i = 0; i < userData[0].GameNotifs.length; i++) {
+    		const friendId = userData[0].GameNotifs[i];
+    		const responsetwo = await fetch(`http://127.0.0.1:3001/users/friends/${friendId}`, {
+        	method: 'GET',
+       		credentials: 'include',
+    	});
+    	if (responsetwo.ok) {
+        	const responseData = await responsetwo.json();
+        	gameinvit.push(responseData); // Make sure the variable name matches the declaration
+   		} else {
+        console.error('Get friends failed for friendId:', friendId);
+    	}
+	}
+		setGameInvit(gameinvit); // Make sure this function or variable name is correctly defined
+		console.log('game invit = ', gameinvit);
+		gameInvit;
     } catch (error) {
         console.error('Error during get notifs:', error);
     }
