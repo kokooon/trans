@@ -10,6 +10,8 @@ type Games = {
     looser: string,
     scoreWinner: number,
     scoreLoser: number
+    AvatarWin: string;
+    AvatarLoose: string;
   }
 
 type History = {
@@ -132,13 +134,13 @@ const Profile = () => {
             <ul className="flex mt-4 flex-wrap items-center justify-start gap-2 gap-y-3">
             {GameHistory.game.map((game) => (
                 <li className="match-item">
-                    <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar"/>
+                    <img src={game && game.AvatarWin ? game.AvatarWin || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar"/>
                     <span className="username">{game.winner}</span>
                     <span className="score player1">{game.scoreWinner}</span>
-                    <span className="score-separator">-</span> 
+                    <span className="score-separator"></span> 
                     <span className="score player2">{game.scoreLoser}</span> 
                     <span className="username">{game.looser}</span>
-                    <img src={user && user.avatar ? user.avatar || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar"/>
+                    <img src={game && game.AvatarLoose ? game.AvatarLoose || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar"/>
                 </li>
             ))}
             </ul>

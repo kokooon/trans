@@ -13,7 +13,10 @@ type Games = {
   winner: string,
   looser: string,
   scoreWinner: number,
-  scoreLoser: number
+  scoreLoser: number,
+  AvatarWin: string,
+  AvatarLoose: string
+
 }
 
 type History = {
@@ -82,12 +85,16 @@ async findGamesByUserId(userId: number): Promise<History | null> {
     // Fetch pseudos for winner and loser
     const winnerPseudo = await this.userService.findPseudoById(winnerId);
     const loserPseudo = await this.userService.findPseudoById(loserId);
+    const avatarWin = await this.userService.getAvatar(winnerPseudo);
+    const avatarLoose = await this.userService.getAvatar(loserPseudo);
 
     const newGame: Games = {
       winner: winnerPseudo,
       looser: loserPseudo, // Note the typo: it should be 'loser', not 'looser'
       scoreWinner: scoreWinner,
       scoreLoser: scoreLoser,
+      AvatarWin: avatarWin,
+      AvatarLoose: avatarLoose,
     };
 
     history.game.push(newGame);

@@ -16,4 +16,10 @@ export class Game {
 
   @Column()
   scoreB: number;
+
+  @Column({ nullable: true })
+  AvatarWin: string;
+
+  @Column({ nullable: true })
+  AvatarLoose: string;
 }
