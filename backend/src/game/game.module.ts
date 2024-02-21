@@ -15,7 +15,7 @@ import { GameController } from './game.controller';
     UserModule, // Import UserModule here
   ],
   controllers: [GameController],
-  providers: [GameService, GameGateway], // UserService is no longer directly provided here
+  providers: [GameService], // UserService is no longer directly provided here
   exports: [GameService],
 })
 export class GameModule {}
