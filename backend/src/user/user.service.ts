@@ -255,6 +255,17 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
     return this.userRepository.findOne({ where: { id: userId } });
   }
 
+  async findLevelandExpbyId(userId: number): Promise<{ level: number, exp: number } | undefined> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (user) {
+        const level = user.level;
+        const exp = user.exp;
+        return { level, exp };
+    } else {
+        return undefined;
+    }
+  }
+
   async checkById(userId: number): Promise<boolean> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     return !!user; // Convert to boolean
@@ -287,6 +298,8 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
         user.banlist = [];
         user.channels = [];
         user.GameNotifs = [];
+        user.level = 0;
+        user.exp = 0;
         const savedUser = await this.userRepository.save(user);
         return savedUser;
     } catch (error) {
@@ -371,4 +384,5 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
     // Extract and return just the IDs from the User entities
     return users.map(user => user.id);
   }
+
 }

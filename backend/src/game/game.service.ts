@@ -116,6 +116,27 @@ async findGamesByUserId(userId: number): Promise<History | null> {
     await this.userService.save(user);
   }
 
+  async gain_exp(userId: number, exp: number): Promise<void> {
+    const user = await this.userService.findById(userId);
+    if (!user) {
+      throw new NotFoundException(`User with ID ${userId} not found`);
+    }
+    let newExp = user.exp + exp;
+    if (newExp >= 100) {
+        if (user.level === 20) {
+            newExp = 100;
+        } else {
+            user.level += 1;
+            newExp -= 100;
+            user.exp = newExp;
+            await this.userService.save(user);
+        }
+    } else {
+        user.exp = newExp;
+        await this.userService.save(user);
+    }
+}
+
   async updatescore(scoreA: number, scoreB: number, gameId: number) {
     try {
         const game = await this.getGameById(gameId);

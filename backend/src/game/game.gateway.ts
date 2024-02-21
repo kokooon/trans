@@ -68,6 +68,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                 await this.gameService.updatescore(newGame.game.scoreA, newGame.game.scoreB, newGame.game.id);
                                 this.server.to(userOneS).emit('win:B');
                                 this.server.to(userTwoS).emit('win:B');
+                                this.gameService.gain_exp(userIdOne, 10);
+                                this.gameService.gain_exp(userIdTwo, 20);
                                 return;
                             }
 
@@ -84,6 +86,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                                 await this.gameService.updatescore(newGame.game.scoreA, newGame.game.scoreB, newGame.game.id);
                                 this.server.to(userOneS).emit('win:A');
                                 this.server.to(userTwoS).emit('win:A');
+                                this.gameService.gain_exp(userIdOne, 20);
+                                this.gameService.gain_exp(userIdTwo, 10);
                                 return;
                             }
                         }

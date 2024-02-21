@@ -26,6 +26,19 @@ export class UserController {
 		return res.status(201).json();
   }
 
+
+  @Get(':userId/level-exp')
+  async getUserLevelAndExp(@Param('userId') userId: number): Promise<{ level: number, exp: number } | undefined> {
+      try {
+          const levelAndExp = await this.userService.findLevelandExpbyId(userId);
+          return levelAndExp;
+      } catch (error) {
+          // Gérer l'erreur de manière appropriée (journalisation, renvoi d'une réponse d'erreur, etc.)
+          console.error('Une erreur s\'est produite lors de la recherche du niveau et de l\'expérience de l\'utilisateur:', error);
+          return undefined; // Ou renvoyez une réponse d'erreur plus appropriée selon le contexte
+      }
+  }
+
   @Get('getPseudo/:id')
   async findPseudoByid(@Param('id') id: number, @Req() req, @Res() res): Promise<string> {
     const pseudo = await this.userService.findPseudoById(id);

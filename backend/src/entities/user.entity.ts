@@ -17,6 +17,12 @@ export class User {
   @Column({ nullable: true })
   email: string;
 
+  @Column({ default: 0 })
+  level: number;
+
+  @Column({ default: 0 })
+  exp: number;
+
   @Column({ type: 'text', nullable: true })
   avatar: string;
 
