@@ -94,3 +94,18 @@
 .player2 {
     color: rgb(0, 0, 0); /* Couleur rouge pour le score du joueur 2 */
 }
+
+.progress-container {
+  width: 200px; /* Largeur désirée */
+  height: 15px; /* Hauteur désirée */
+  border-radius: 4px;
+  overflow: hidden; /* Pour empêcher le débordement des éléments enfants */
+  transform: translateX(56%);
+}
+
+.xp-progress {
+  width: 100%; /* La barre de progression occupe toute la largeur du conteneur */
+  height: 100%;
+  background-color: rgba(75, 75, 250, 0.3);
+  border-radius: 4px;
+}

@@ -298,8 +298,8 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
         user.banlist = [];
         user.channels = [];
         user.GameNotifs = [];
-        user.level = 0;
-        user.exp = 0;
+        user.level = 1;
+        user.exp = 1;
         const savedUser = await this.userRepository.save(user);
         return savedUser;
     } catch (error) {

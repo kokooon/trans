@@ -63,6 +63,7 @@ const Profile = () => {
                     const profilData = await fetchUserDetailsByPseudo(pseudo);
                     if (profilData)
                         setUser(profilData);
+                    console.log(profilData);
                 }
 
                 if (userData[0].is2FAEnabled !== false) {
@@ -123,7 +124,9 @@ const Profile = () => {
         </a>
         <h1 className="text-xl font-bold text-center">{user && user.pseudo ? user.pseudo : 'Unknown User'}</h1>
         <small className="block my-1 text-center">{user && user.pseudo_42 ? user.pseudo_42 : 'Unknown User'}</small>
-        <p className="mt-5 text-center">Level 42</p>
+        <p className="mt-5 text-center">Level {user && user.level ? user.level : 'Unknown Level'}</p>
+        <div className="progress-container mt-5 text-center"><progress className="xp-progress" value={user && user.exp ? user.exp : 0} max={100}></progress></div>
+        <p className="mt-5 text-sm text-center">XP: {user && user.exp ? user.exp : 0}/{100}</p>
         <div className="flex items-center justify-center gap-2 w-[80%] mx-auto mt-5 mb-10">
             <button className="flex-1 border border-[#231f39] rounded-[4px] py-3 text-white bg-[#231f39] transition-all duration-150 ease-in hover:bg-[#472e99]" onClick={handleadd}>Add Friend</button>
             <button className="flex-1 border border-[#231f39] text-[#ffffff] rounded-[4px] py-3 transition-all duration-150 ease-in hover:bg-[#472e99]  hover:text-white">Invite Game</button>
