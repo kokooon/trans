@@ -61,7 +61,6 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
   handleGameState = (gameState: any) => {
     const { playerAPosition, playerBPosition, ballPosition } = gameState;
     this.setState({ playerAPosition, playerBPosition, ballPosition });
-    console.log('ball pos = ', ballPosition);
     this.draw(); // Redessiner le canvas avec les nouvelles positions
   };
 

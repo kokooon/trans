@@ -8,12 +8,14 @@ import Settings from '../pages/settings/settings';
 import Social from '../pages/social/social';
 import TwoFa from '../pages/2fa/TwoFa';
 import Game from '../pages/game/game';
+import GameInvit from '../pages/game/gameInvit';
 
 const Routings = () => {
   return (
     <Suspense>
       <Routes>
         {/* Routes publiques */}
+        <Route path="/gameInvit" element={<GameInvit />} />
         <Route path="/" element={<Game />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile/:pseudo" element={<Profile />} />

@@ -171,6 +171,11 @@ const social = () => {
               getFriends();
         });
 
+		socket.on('gameInvite', () => {
+				console.log('in gameInvit in social');
+			  navigate('/gameInvit');
+		  });
+
         socket.on('friendDisconnected', () => {
           if (currentView === 'Friends')
             getFriends();
@@ -202,6 +207,7 @@ const social = () => {
 
           // Clean up the listener
           return () => {
+			socket.off('gameInvite')
             socket.off('refreshChannelList');
             socket.off('channelMembersListChange');
             socket.off('friendConnected');
@@ -209,7 +215,7 @@ const social = () => {
             socket.off('friendDisconnected');
             socket.off('new_friend');
             socket.off('new_notification');
-			      socket.off('new_channel_message');
+			socket.off('new_channel_message');
           };
         }
       }, [socket, chatHistory, friendsList, friendsRequestList, lastMessages, channelMembersIds, channelList]);
@@ -439,7 +445,17 @@ const getChannel = async () => {
     fetchLastChannelMessage(List);
 }
 
-
+const handleAcceptGame = async (friend: number, index: number) => {
+	friend; //id number 1
+	user[0].id //id number 2
+	index;
+	const data = {
+		AcceptId: user[0].id,
+		branlix2000: friend,
+	  }
+	if (socket)
+		socket.emit('matchmaking:Invitation', data);
+}
 
 const handleAccept = async (friend: string, index: number) => {
   console.log('param of accept = ', friend);
@@ -1162,7 +1178,18 @@ const Ban  = async (Banid: number, channelname: string, channelid: number) => {
                         </Menu>
                         </div>
                     ))}
-                  
+                    {gameInvit.map((invite, index) => (
+                        <div key={index}>
+                        <Conversation name={invite.pseudo} info="Veux-tu jouer avec moi ?" onClick={handleClick(index, 'notification')}>
+                        <Avatar src={invite.avatar}/>
+                        </Conversation>
+                        <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
+                        <MenuItem style={{ color: 'black' }} onClick={() => navigate(`/profile/${invite.pseudo}`)}>Profile</MenuItem>
+                        <MenuItem style={{ color: 'green' }} onClick={() => handleAcceptGame(invite.id, index)}>Accepter</MenuItem>
+                        <MenuItem style={{ color: 'red' }} onClick={() => handleDecline(invite.pseudo, index)}>Supprimer</MenuItem>
+                        </Menu>
+                        </div>
+                    ))}
                 </ConversationList>
               )}
               {currentView === 'Friends' && (

@@ -1,4 +1,4 @@
-import { WebSocketGateway, OnGatewayConnection, SubscribeMessage, WebSocketServer, OnGatewayDisconnect } from '@nestjs/websockets';
+import { WebSocketGateway, OnGatewayConnection, SubscribeMessage, WebSocketServer, OnGatewayDisconnect, MessageBody } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GameService } from './game.service';
 import { addUserSocketPair, getSocketIdByUserId, removeUserSocketPair } from '../entities/socket.map';
@@ -17,6 +17,85 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket, ...args: any[]) {
   }  
   
+  @SubscribeMessage('matchmaking:Invitation')
+  async handleInvitationGame(@MessageBody() data: any, client: Socket): Promise<void> {
+
+    const userOneS = getSocketIdByUserId(data.AcceptId);
+    const userTwoS = getSocketIdByUserId(data.branlix2000);
+    const userIdOne = data.AcceptId;
+    const userIdTwo = data.branlix2000;
+    if (userOneS === undefined || userTwoS === undefined)
+    {
+        return;
+    }
+    let gameId: number | undefined;
+    for (const [id, gameData] of this.gameData.entries()) {
+        if (gameData.socketA === client.id || gameData.socketB === client.id) {
+            gameId = id;
+            return ;
+        }
+    }
+    this.server.to(userOneS).emit('gameInvite');
+    this.server.to(userTwoS).emit('gameInvite');
+    
+        if (userIdOne && userIdTwo) {
+        try {
+            const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
+            this.gameData.set(newGame.game.id, newGame);
+            //console.log('data0 = ', newGame);
+            
+            this.server.to(userOneS).emit('game:createdS', newGame);
+            this.server.to(userTwoS).emit('game:createdS', newGame);
+            
+            while (42)
+            {
+                const updateResult = await newGame.gameinstance.startGameLoop(userOneS, userTwoS, this.server);
+                if (updateResult.ballMissed === true)
+                {
+                    if (updateResult.playerIdMissed == 1)
+                    {
+                        console.log('Joueur B a marque un point');
+                        newGame.game.scoreB++;
+                        this.server.to(userOneS).emit('update:B_scored');
+                        this.server.to(userTwoS).emit('update:B_scored');
+                        if (newGame.game.scoreB >= 5)
+                        {
+                            await this.gameService.updatescore(newGame.game.scoreA, newGame.game.scoreB, newGame.game.id);
+                            this.server.to(userOneS).emit('win:B');
+                            this.server.to(userTwoS).emit('win:B');
+                            this.gameService.gain_exp(userIdOne, 10);
+                            this.gameService.gain_exp(userIdTwo, 20);
+                            return;
+                        }
+
+
+                    }
+                    else if (updateResult.playerIdMissed == 2)
+                    {
+                        console.log('Joueur A a marque un point');
+                        newGame.game.scoreA++;
+                        this.server.to(userOneS).emit('update:A_scored');
+                        this.server.to(userTwoS).emit('update:A_scored');
+                        if (newGame.game.scoreA >= 5)
+                        {
+                            await this.gameService.updatescore(newGame.game.scoreA, newGame.game.scoreB, newGame.game.id);
+                            this.server.to(userOneS).emit('win:A');
+                            this.server.to(userTwoS).emit('win:A');
+                            this.gameService.gain_exp(userIdOne, 20);
+                            this.gameService.gain_exp(userIdTwo, 10);
+                            return;
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error creating game:', error);
+        }
+    } else {
+        console.error('User IDs not found for players:', userIdOne, userIdTwo);
+    }
+  }
+
   @SubscribeMessage('matchmaking:request')
   async handleMatchmaking(client: Socket): Promise<void> {
       console.log('Matchmaking request received from', client.id);
@@ -211,6 +290,7 @@ handleKeyUp(client: Socket, data: { key: string }) {
 
 async handleDisconnect(client: Socket) {
     //console.log(`ici 1`);
+
     const index = this.matchmakingQueue.indexOf(client.id);
     if (index !== -1) {
         this.matchmakingQueue.splice(index, 1);
@@ -240,7 +320,7 @@ async handleDisconnect(client: Socket) {
                     this.server.to(otherUserId).emit('opponentLeft');
                     console.log(`Event 'opponentLeft' sent to user ${otherUserId}.`);
                 }
-
+                console.log()
                 gameInstance.stopGameLoop();
                 console.log(`Game loop stopped for user ${client.id}.`);
             }
