@@ -3,6 +3,7 @@ import { UserNav } from '@/lib/components/ui/user-nav';
 import { fetchUserDetails, fetchUserDetailsByPseudo, isTokenValid, isUserConnected } from '@/lib/components/utils/UtilsFetch';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSocket } from '../../components/utils/socketContext';
+import Notification from '@/lib/components/utils/notif';
 import "../../styles/profile.css"
 
 type Games = {
@@ -112,6 +113,7 @@ const Profile = () => {
 
     return (
         <div className="menugrid">
+            <Notification message="Test" type="success" />
             <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
                 <source src="https://assets.codepen.io/263256/menubg.mp4" />
             </video>

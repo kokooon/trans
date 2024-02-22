@@ -234,11 +234,11 @@ function Game() {
 
   return (
     <div className="menugrid">
-      <audio id="audioElement" preload="auto" src="../../../../public/assets/music.mp3"></audio>
-      <audio id="space" preload="auto" src="../../../../public/assets/apollo.mp3"></audio>
-      <audio id="fx" preload="auto" src="../../../../public/assets/fx.wav"></audio>
-      <audio id="look" preload="auto" src="../../../../public/assets/look.mp3"></audio>
-      <audio id="find" preload="auto" src="../../../../public/assets/find.mp3"></audio>
+      <audio id="audioElement" preload="auto" src="assets/music.mp3"></audio>
+      <audio id="space" preload="auto" src="assets/apollo.mp3"></audio>
+      <audio id="fx" preload="auto" src="assets/fx.wav"></audio>
+      <audio id="look" preload="auto" src="assets/look.mp3"></audio>
+      <audio id="find" preload="auto" src="assets/find.mp3"></audio>
       <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
         <source src="https://assets.codepen.io/263256/menubg.mp4" />
       </video>

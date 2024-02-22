@@ -1,0 +1,47 @@
+.notification {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: #34D399; /* Utilisez votre couleur verte */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    opacity: 0.75;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: opacity 0.5s ease;
+  }
+  
+  .success {
+    background-color: #4caf50;
+    color: rgb(0, 0, 0);
+  }
+  
+  .error {
+    background-color: #f44336;
+    color: rgb(0, 0, 0);
+  }
+  
+  .warning {
+    background-color: #ff7220;
+    color: rgb(0, 0, 0);
+  }
+  
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+  
+  @keyframes fillBar {
+    from { width: 10%; }
+    to { width: 0%; }
+  }
+  
+  .progress-bar {
+    animation: fillBar 3s linear forwards;
+  }
+  
