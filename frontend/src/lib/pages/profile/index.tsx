@@ -147,11 +147,11 @@ const Profile = () => {
             {GameHistory.game.map((game) => (
                 <li className="match-item">
                     <img src={game && game.AvatarWin ? game.AvatarWin || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar" onClick={() => navigate(`/profile/${game.winner}`)} style={{ cursor: 'pointer' }}/>
-                    <span className="username">{game.winner}</span>
+                    <span className="username">{game.winner.substring(0, 8)}</span>
                     <span className="score player1">{game.scoreWinner}</span>
                     <span className="score-separator"></span> 
                     <span className="score player2">{game.scoreLoser}</span> 
-                    <span className="username">{game.looser}</span>
+                    <span className="username">{game.looser.substring(0, 8)}</span>
                     <img src={game && game.AvatarLoose ? game.AvatarLoose || 'placeholder_url' : 'placeholder_url'} alt="" className="avatar" onClick={() => navigate(`/profile/${game.looser}`)} style={{ cursor: 'pointer' }}/>
                 </li>
             ))}
