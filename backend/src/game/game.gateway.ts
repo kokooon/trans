@@ -324,6 +324,7 @@ async handleDisconnect(client: Socket) {
                 gameInstance.stopGameLoop();
                 console.log(`Game loop stopped for user ${client.id}.`);
             }
+            this.gameService.deleteGame(gameId);
             this.gameData.delete(gameId);
             console.log(`GameData removed for user ${client.id}.`);
         }

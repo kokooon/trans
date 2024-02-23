@@ -103,6 +103,16 @@ async findGamesByUserId(userId: number): Promise<History | null> {
   return history;
 }
 
+  async deleteGame(gameId: number) : Promise<void>{
+    const game = await this.GameRepository.findOne({ where: { id: gameId } });
+    if (game) {
+        await this.GameRepository.remove(game);
+        console.log(`Game with ID ${gameId} deleted successfully.`);
+    } else {
+        console.log(`Game with ID ${gameId} not found.`);
+    }
+  }
+
   async updateUserGameHistory(userId: number, gameId: number): Promise<void> {
     // Utilisez le service UserService pour obtenir l'utilisateur
     const user = await this.userService.findById(userId);
