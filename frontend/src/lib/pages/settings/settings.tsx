@@ -64,7 +64,7 @@ const Settings = () => {
         } else if (!is2FAEnabled) { //si cookie valid et 2fa activer afficher qrcode //marche pas a fix
           console.log("2fa enabled");
           try {
-            const response = await fetch('http://127.0.0.1:3001/auth/enable-2fa', {
+            const response = await fetch('http://10.13.1.7:3001/auth/enable-2fa', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ const Settings = () => {
                 });
                 const data = await uploadResponse.json();
                 // Post the secure URL to your backend
-                const backendResponse = await fetch('http://127.0.0.1:3001/users/changeAvatar', {
+                const backendResponse = await fetch('http://10.13.1.7:3001/users/changeAvatar', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ const Settings = () => {
     
     const handleNameSubmit = async () => {
         try {
-            const response = await fetch('http://127.0.0.1:3001/users/changePseudo', {
+            const response = await fetch('http://10.13.1.7:3001/users/changePseudo', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

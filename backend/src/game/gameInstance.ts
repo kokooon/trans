@@ -43,7 +43,6 @@ export class GameInstance {
             const updateResult = this.ball.updatePosition(800, 500, this.playerAPosition, this.playerBPosition);
 
             if (updateResult.ballMissed) {
-                console.log(`Un joueur a perdu un point`);
                 clearInterval(this.intervalId);
 
                 this.playerAPosition.y = 200;
@@ -67,7 +66,7 @@ export class GameInstance {
                     ballPosition: this.ball,
                 });
             }
-        }, 1000 / 100); // 100 FPS
+        }, 1000 / 30); // 100 FPS
     });
 }
 

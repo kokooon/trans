@@ -14,7 +14,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     super({
       clientID: publicapiKey,
       clientSecret: apiKey,
-      callbackURL: 'http://127.0.0.1:3001/auth/42/callback',
+      callbackURL: 'http://10.13.1.7:3001/auth/42/callback',
     });
   }
 

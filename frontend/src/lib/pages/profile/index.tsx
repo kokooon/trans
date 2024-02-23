@@ -30,7 +30,7 @@ const Profile = () => {
         const fetchHistory = async () => {
             if (pseudo) {
                 const user = await fetchUserDetailsByPseudo(pseudo);
-                const response = await fetch(`http://127.0.0.1:3001/games/returnHistory/${user.id}`, {
+                const response = await fetch(`http://10.13.1.7:3001/games/returnHistory/${user.id}`, {
     		    method: 'GET',
     		    headers: {
       		    'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ const Profile = () => {
     const handleadd = async () => {
         try {
             const userData = await fetchUserDetails();
-          const response = await fetch('http://127.0.0.1:3001/users/FriendRequest', {
+          const response = await fetch('http://10.13.1.7:3001/users/FriendRequest', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

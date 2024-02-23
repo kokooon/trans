@@ -37,7 +37,7 @@ function UserAv() {
 
 const handleLogout = async () => {
   try {
-    const response = await fetch('http://127.0.0.1:3001/users/logout', {
+    const response = await fetch('http://10.13.1.7:3001/users/logout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

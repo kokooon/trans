@@ -152,7 +152,7 @@ function Game() {
   };
 
   const handleWin = (winner: string) => {
-    setWinner(winner === 'Joueur A' ? (userA ? userA : 'Joueur A') : (userB ? userB : 'Joueur B'));
+    setWinner(winner === 'A' ? (userA ? userA : 'Joueur A') : (userB ? userB : 'Joueur B'));
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
@@ -166,7 +166,7 @@ function Game() {
 
   const getPseudo  = async (userA: number, userB: number) => {
     //'getPseudo/:id'
-    const response = await fetch(`http://127.0.0.1:3001/users/getPseudo/${userA}`, {
+    const response = await fetch(`http://10.13.1.7:3001/users/getPseudo/${userA}`, {
       method: 'GET',
       headers: {
       'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ function Game() {
       else{
         console.log('error while trying get pseudo')
       }
-      const responsetwo = await fetch(`http://127.0.0.1:3001/users/getPseudo/${userB}`, {
+      const responsetwo = await fetch(`http://10.13.1.7:3001/users/getPseudo/${userB}`, {
       method: 'GET',
       headers: {
       'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ function Game() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:3001/users/logout', {
+      const response = await fetch('http://10.13.1.7:3001/users/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

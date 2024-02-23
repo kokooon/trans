@@ -8,7 +8,7 @@ import { getAllSocketIds } from './entities/socket.map';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://127.0.0.1:3000', // The URL of your front-end application
+    origin: 'http://10.13.1.7:3000', // The URL of your front-end application
     methods: ['GET', 'POST'], // Allowed HTTP request methods for CORS preflight requests
     credentials: true, // Indicates whether the request can include user credentials like cookies, HTTP authentication or client side SSL certificates
   },

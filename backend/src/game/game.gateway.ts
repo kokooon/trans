@@ -134,7 +134,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     {
                         if (updateResult.playerIdMissed == 1)
                         {
-                            console.log('Joueur B a marque un point');
                             newGame.game.scoreB++;
                             this.server.to(userOneS).emit('update:B_scored');
                             this.server.to(userTwoS).emit('update:B_scored');
@@ -152,7 +151,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                         }
                         else if (updateResult.playerIdMissed == 2)
                         {
-                            console.log('Joueur A a marque un point');
                             newGame.game.scoreA++;
                             this.server.to(userOneS).emit('update:A_scored');
                             this.server.to(userTwoS).emit('update:A_scored');
@@ -181,7 +179,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   
   @SubscribeMessage('keydown')
   async handleKeyDown(client: Socket, data: { key: string }) {
-      console.log('Key down:', data);
       const userId = getUserIdBySocketId(client.id);
       if (!userId) {
           console.error('User ID not found for client:', client.id);
@@ -235,6 +232,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('stopGameLoop')
   deletegame(client: Socket, gameId: number){
       try {
+        const index = this.matchmakingQueue.indexOf(client.id);
+        if (index !== -1) {
+            this.matchmakingQueue.splice(index, 1);
+            console.log(`Socket ${client.id} disconnected and removed from matchmaking queue.`);
+        } else {
+            console.log(`Socket ${client.id} disconnected.`);
+        }
           const userId = getUserIdBySocketId(client.id);
           if (!userId) {
               console.error('User ID not found for client:', client.id);
@@ -256,7 +260,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                           this.server.to(otherUserId).emit('opponentLeft');
                           console.log(`Event 'opponentLeft' sent to user ${otherUserId}.`);
                       }
-                      console.log();
                       gameInstance.stopGameLoop();
                       console.log(`Game loop stopped for user ${client.id}.`);
                   }
@@ -273,7 +276,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 @SubscribeMessage('keyup')
 handleKeyUp(client: Socket, data: { key: string }) {
-    console.log('Key down:', data);
     const userId = getUserIdBySocketId(client.id);
     if (!userId) {
         console.error('User ID not found for client:', client.id);

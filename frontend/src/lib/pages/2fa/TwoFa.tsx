@@ -37,7 +37,7 @@ const TwoFa = () => {
     const handleValidationClick = async () => {
         //GET secret with user id (in user[0].id)
         try {
-          const response = await fetch('http://127.0.0.1:3001/auth/verify-2fa', {
+          const response = await fetch('http://10.13.1.7:3001/auth/verify-2fa', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

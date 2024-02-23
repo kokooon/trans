@@ -148,7 +148,7 @@ function GameInvit() {
   const getPseudo  = async (userA: number, userB: number) => {
     //'getPseudo/:id'
     console.log('userA = ', userA, 'userB = ', userB);
-    const response = await fetch(`http://127.0.0.1:3001/users/getPseudo/${userA}`, {
+    const response = await fetch(`http://10.13.1.7:3001/users/getPseudo/${userA}`, {
       method: 'GET',
       headers: {
       'Content-Type': 'application/json',
@@ -163,7 +163,7 @@ function GameInvit() {
       else{
         console.log('error while trying get pseudo')
       }
-      const responsetwo = await fetch(`http://127.0.0.1:3001/users/getPseudo/${userB}`, {
+      const responsetwo = await fetch(`http://10.13.1.7:3001/users/getPseudo/${userB}`, {
       method: 'GET',
       headers: {
       'Content-Type': 'application/json',
