@@ -20,10 +20,13 @@ export class UserService {
   ) {}
 
     async addGameNotif(userId: number, recipientId: number) {
-        console.log('in service');
-        const user = await this.findById(recipientId); 
-        user.GameNotifs.push(userId);
-        await this.userRepository.save(user);
+        const user = await this.findById(recipientId);
+        const friendIdsAsNumbers = user.GameNotifs.map(Number); 
+        if (!friendIdsAsNumbers.includes(userId))
+        {
+          user.GameNotifs.push(userId);
+          await this.userRepository.save(user);
+        }
         return ;
     }
 
