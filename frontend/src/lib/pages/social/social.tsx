@@ -207,7 +207,7 @@ const social = () => {
 
           // Clean up the listener
           return () => {
-			socket.off('gameInvite')
+			      socket.off('gameInvite')
             socket.off('refreshChannelList');
             socket.off('channelMembersListChange');
             socket.off('friendConnected');

@@ -28,7 +28,6 @@ const Profile = () => {
 
     useEffect(() => {
         const fetchHistory = async () => {
-            console.log('inside fetch history');
             if (pseudo) {
                 const user = await fetchUserDetailsByPseudo(pseudo);
                 const response = await fetch(`http://127.0.0.1:3001/games/returnHistory/${user.id}`, {
@@ -40,7 +39,6 @@ const Profile = () => {
   		        });
 		        if (response.ok) {
                     const data = await response.json();
-                    console.log('history = ', data);
                     setGameHistory(data);
                     GameHistory;
                 }
@@ -81,6 +79,15 @@ const Profile = () => {
         };
         fetchHistory();
         checkToken();
+        if (socket) {
+            socket.on('gameInvite', () => {
+                console.log('in gameInvit in social');
+              navigate('/gameInvit');
+          });
+                return () => {
+                    socket.off('gameInvite')
+                }
+            }
     }, [navigate]);
 
     const handleadd = async () => {

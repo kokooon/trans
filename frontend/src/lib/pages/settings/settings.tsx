@@ -5,9 +5,10 @@ import { fetchUserDetails, isTokenValid, isUserConnected } from "@/lib/component
 import { toggle2FA } from "@/lib/components/auth/2fa/2fa";
 //import { Button } from "@/lib/components/ui/button";
 import '../../styles/profile.css'
-
+import { useSocket } from '../../components/utils/socketContext';
 
 const Settings = () => {
+    const { socket } = useSocket();
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
     const [username, ] = useState<string>(''); 
@@ -42,6 +43,15 @@ const Settings = () => {
         checkConnected();
       };
       checkToken();
+      if (socket) {
+        socket.on('gameInvite', () => {
+            console.log('in gameInvit in social');
+          navigate('/gameInvit');
+      });
+            return () => {
+                socket.off('gameInvite')
+            }
+        }
     }, [navigate]);
 
       const handleQrCode = async () => {

@@ -9,13 +9,9 @@ import { useSocket } from '../../components/utils/socketContext';
 
 const Home = () => {
   const navigate = useNavigate();
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   useEffect(() => {
-    // Placeholder for future socket event listeners
-    // Example: socket.on('gameEvent', handleGameEvent);
-
-    // Placeholder for future token validation logic
     const checkToken = async () => {
       try {
           const isValid = await isTokenValid();
@@ -38,12 +34,15 @@ const Home = () => {
       }
   };
   checkToken();
-
-    // Clean up function for removing event listeners specific to the Home component
-    return () => {
-      // Example: socket.off('gameEvent', handleGameEvent);
-      // This will remove the 'gameEvent' listener when the Home component unmounts
-    };
+  if (socket) {
+    socket.on('gameInvite', () => {
+        console.log('in gameInvit in social');
+      navigate('/gameInvit');
+  });
+        return () => {
+            socket.off('gameInvite')
+        }
+    }
   }, [navigate, socket]);
 
   return (
