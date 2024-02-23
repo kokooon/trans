@@ -50,6 +50,7 @@ function Game() {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [winner, setWinner] = useState('');
+  const [bg, setBg] = useState<boolean>(false);
 
   useEffect(() => {
     playAudio(1);
@@ -62,8 +63,10 @@ function Game() {
             return;
         }
         const userData = await fetchUserDetails();
-        if (userData)
+        if (userData){
           setUser(userData);
+          setBg(userData[0].bg);
+        }
         if (userData[0].is2FAEnabled !== false) {
             const isConnected = await isUserConnected();
             console.log(isConnected);
@@ -139,7 +142,7 @@ function Game() {
       socket.off('win:A');
       socket.off('win:B');
     };
-  }, [socket, scores]);
+  }, [socket, scores, bg]);
 
   const startMatchmaking = () => {
     setMatchmakingStatus('searching');
@@ -166,7 +169,7 @@ function Game() {
 
   const getPseudo  = async (userA: number, userB: number) => {
     //'getPseudo/:id'
-    const response = await fetch(`http://10.13.1.7:3001/users/getPseudo/${userA}`, {
+    const response = await fetch(`http://10.13.1.5:3001/users/getPseudo/${userA}`, {
       method: 'GET',
       headers: {
       'Content-Type': 'application/json',
@@ -180,7 +183,7 @@ function Game() {
       else{
         console.log('error while trying get pseudo')
       }
-      const responsetwo = await fetch(`http://10.13.1.7:3001/users/getPseudo/${userB}`, {
+      const responsetwo = await fetch(`http://10.13.1.5:3001/users/getPseudo/${userB}`, {
       method: 'GET',
       headers: {
       'Content-Type': 'application/json',
@@ -198,7 +201,7 @@ function Game() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://10.13.1.7:3001/users/logout', {
+      const response = await fetch('http://10.13.1.5:3001/users/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -265,6 +268,30 @@ function Game() {
     }
   }
 
+  const toggleTheme = async () => {
+    try {
+      const response = await fetch('http://10.13.1.5:3001/users/toggleBg', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user[0].id }), // Envoyez l'ID de l'utilisateur
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser((prevUser: any| null) => ({
+          ...prevUser,
+          bg: data.change,
+        }));
+        setBg(data.change);
+      } else {
+        console.error('Erreur lors de la bascule du thème:', response.status);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la bascule du thème:', error);
+    }
+  };
+
   return (
     <div className="menugrid">
       <audio id="audioElement" preload="auto" src="assets/music.mp3"></audio>
@@ -272,9 +299,16 @@ function Game() {
       <audio id="fx" preload="auto" src="assets/fx.wav"></audio>
       <audio id="look" preload="auto" src="assets/look.mp3"></audio>
       <audio id="find" preload="auto" src="assets/find.mp3"></audio>
-      <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
-        <source src="https://assets.codepen.io/263256/menubg.mp4" />
-      </video>
+      {bg === false &&  
+            <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
+                <source src="https://assets.codepen.io/263256/menubg.mp4" />
+            </video>
+            }
+            {bg === true &&  
+            <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
+                <source src="/assets/backroom.mp4" />
+            </video>
+            }
       <nav className="nav">
       {matchmakingStatus === 'searching' &&<div className="loader"> <p>Recherche d'un adversaire...</p></div>}
       {matchmakingStatus !== 'found' && (
@@ -283,6 +317,7 @@ function Game() {
         <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={() => navigate(`/profile/${user[0].pseudo}`)}><p>Profile</p></a>
         <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={() => navigate('/social')}><p>Social</p></a>
         <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={() => navigate('/settings')}><p>Settings</p></a>
+        <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={() => toggleTheme()}><p>theme</p></a>
         <a  className="nav-link" onMouseEnter={() => playFx(1)} onMouseLeave={stopFx} onClick={handleLogout}><p>Exit</p></a>
       </div>
       )}
@@ -292,9 +327,11 @@ function Game() {
             <p>{userA}: {scores.A}</p>
             <p>{userB}: {scores.B}</p>
         </div>
-        <video autoPlay muted loop id="background-video"  style={{ position: 'absolute', width: '900px', height: '500px', zIndex: -1 }}>
-        <source src="../../../../public/assets/space.mp4" type="video/mp4"/>
-        </video>
+        {bg === false && 
+          <video autoPlay muted loop id="background-video"  style={{ position: 'absolute', width: '900px', height: '500px', zIndex: -1 }}>
+          <source src="../../../../public/assets/space.mp4" type="video/mp4"/>
+          </video>
+        }
         <CanvasTutorial socket={socket} gameId={gameId}/>
       </div>
       }

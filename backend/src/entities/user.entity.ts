@@ -27,6 +27,9 @@ export class User {
   avatar: string;
 
   @Column({ default: false })
+  bg: boolean;
+
+  @Column({ default: false })
   is2FAEnabled: boolean;
 
   @Column({ default: false })

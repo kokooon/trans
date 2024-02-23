@@ -247,7 +247,7 @@ const social = () => {
         const friendsRequestList = []; // Créez une nouvelle liste pour les amis
         for (let i = 0; i < userData[0].friendNotif.length; i++) {
             const friendId = userData[0].friendNotif[i];
-            const response = await fetch(`http://10.13.1.7:3001/users/friends/${friendId}`, {
+            const response = await fetch(`http://10.13.1.5:3001/users/friends/${friendId}`, {
                 method: 'GET',
                 credentials: 'include',
             });
@@ -262,7 +262,7 @@ const social = () => {
 		const gameinvit: any[] = [];
 		for (let i = 0; i < userData[0].GameNotifs.length; i++) {
     		const friendId = userData[0].GameNotifs[i];
-    		const responsetwo = await fetch(`http://10.13.1.7:3001/users/friends/${friendId}`, {
+    		const responsetwo = await fetch(`http://10.13.1.5:3001/users/friends/${friendId}`, {
         	method: 'GET',
        		credentials: 'include',
     	});
@@ -284,7 +284,7 @@ const social = () => {
 const getChannelMembersId  = async (channelId: number) => {
 	let ChannelMembers = [];
 	try {
-		const response = await fetch(`http://10.13.1.7:3001/channels/returnMembers/${channelId}`, {
+		const response = await fetch(`http://10.13.1.5:3001/channels/returnMembers/${channelId}`, {
     		method: 'GET',
     		headers: {
       		'Content-Type': 'application/json',
@@ -294,14 +294,14 @@ const getChannelMembersId  = async (channelId: number) => {
 		if (response.ok){
 			const membersIds = await response.json(); // === number[]
 			for (const friendId of membersIds) {
-				const responsetwo = await fetch(`http://10.13.1.7:3001/users/friends/${friendId}`, {
+				const responsetwo = await fetch(`http://10.13.1.5:3001/users/friends/${friendId}`, {
               	method: 'GET',
               	credentials: 'include',
           		});
           		if (responsetwo.ok) {
             		const memberData = await responsetwo.json();
 					//returnMemberStatus/:userId/:channelId
-					const responsethree = await fetch(`http://10.13.1.7:3001/channels/returnMemberStatus/${friendId}/${channelId}`, {
+					const responsethree = await fetch(`http://10.13.1.5:3001/channels/returnMemberStatus/${friendId}/${channelId}`, {
 						method: 'GET',
 						credentials: 'include',
 					});
@@ -339,7 +339,7 @@ const getFriends  = async () => {
     const newFriendsList = []; // Créez une nouvelle liste pour les amis
       for (let i = 0; i < userData[0].friends.length; i++) {
           const friendId = userData[0].friends[i];
-          const response = await fetch(`http://10.13.1.7:3001/users/friends/${friendId}`, {
+          const response = await fetch(`http://10.13.1.5:3001/users/friends/${friendId}`, {
               method: 'GET',
               credentials: 'include',
           });
@@ -364,7 +364,7 @@ const getBlock  = async () => {
       const List = []; // Créez une nouvelle liste pour les amis
       for (let i = 0; i < userData[0].banlist.length; i++) {
           const friendId = userData[0].banlist[i];
-          const response = await fetch(`http://10.13.1.7:3001/users/friends/${friendId}`, {
+          const response = await fetch(`http://10.13.1.5:3001/users/friends/${friendId}`, {
               method: 'GET',
               credentials: 'include',
           });
@@ -386,7 +386,7 @@ const fetchLastChannelMessage = async (channels: Channel[]) => {
 	let blockedUsers;
 	for (const channel of channels) {
     	try {
-				const responsefor = await fetch(`http://10.13.1.7:3001/users/getBlocked/${user[0].id}`, {  //get banlist;
+				const responsefor = await fetch(`http://10.13.1.5:3001/users/getBlocked/${user[0].id}`, {  //get banlist;
     			method: 'GET',
     			headers: {
       				'Content-Type': 'application/json',
@@ -402,7 +402,7 @@ const fetchLastChannelMessage = async (channels: Channel[]) => {
 				else {
 					console.log('reponse not ok');
 				}
-				const response = await fetch(`http://10.13.1.7:3001/chatHistory/history/channel/${channel.id}/${blockedUsers}?lastOnly=true`, {
+				const response = await fetch(`http://10.13.1.5:3001/chatHistory/history/channel/${channel.id}/${blockedUsers}?lastOnly=true`, {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json',
@@ -432,7 +432,7 @@ const getChannel = async () => {
   const List = [];
   for (let i = 0; i < userData[0].channels.length; i++) {
       const channelId = userData[0].channels[i];
-      const response = await fetch(`http://10.13.1.7:3001/channels/lastMessage/${channelId}`, {
+      const response = await fetch(`http://10.13.1.5:3001/channels/lastMessage/${channelId}`, {
               method: 'GET',
               credentials: 'include',
           });
@@ -448,7 +448,7 @@ const getChannel = async () => {
 const handleDeclineGame = async (friend: number, index: number) => {
     index;
     try {
-      const response = await fetch('http://10.13.1.7:3001/users/removeGameNotif', {
+      const response = await fetch('http://10.13.1.5:3001/users/removeGameNotif', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -473,7 +473,7 @@ const handleAcceptGame = async (friend: number, index: number) => {
 		branlix2000: friend,
 	  }
     try {
-    const response = await fetch('http://10.13.1.7:3001/users/removeGameNotif', {
+    const response = await fetch('http://10.13.1.5:3001/users/removeGameNotif', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -495,7 +495,7 @@ const handleAcceptGame = async (friend: number, index: number) => {
 const handleAccept = async (friend: string, index: number) => {
   console.log('param of accept = ', friend);
   try {
-      const response = await fetch('http://10.13.1.7:3001/users/AcceptFriend', {
+      const response = await fetch('http://10.13.1.5:3001/users/AcceptFriend', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -522,7 +522,7 @@ const handleAccept = async (friend: string, index: number) => {
 
 const handleDecline = async (friend: string, index: number) => {
   try {
-      const response = await fetch('http://10.13.1.7:3001/users/RefuseFriend', {
+      const response = await fetch('http://10.13.1.5:3001/users/RefuseFriend', {
           method: 'POST',
           headers: {
              'Content-Type': 'application/json',
@@ -546,7 +546,7 @@ const fetchLastMessage = async (friends: Friend[]) => {
 	for (const friend of friends) {
     	try {
         // Logic to get last messages
-        	const response = await fetch(`http://10.13.1.7:3001/chatHistory/history/${user[0].id}/${friend.id}?lastOnly=true`, {
+        	const response = await fetch(`http://10.13.1.5:3001/chatHistory/history/${user[0].id}/${friend.id}?lastOnly=true`, {
             	method: 'GET',
             	headers: {
                 	'Content-Type': 'application/json',
@@ -575,7 +575,7 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
   try {
         const userId = Number(user[0].id);
   		setChatContext({ channelname: 'null', id: 0, userIds: friendId });
-  		const chatHistoryResponse = await fetch(`http://10.13.1.7:3001/chatHistory/history/${userId}/${friendId}`, {
+  		const chatHistoryResponse = await fetch(`http://10.13.1.5:3001/chatHistory/history/${userId}/${friendId}`, {
     	method: 'GET',
     	headers: {
       	'Content-Type': 'application/json',
@@ -595,7 +595,7 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
 
   const isUserMutedInChannel = async (channelId: number, userId: number) => {
 	try {
-	  const response = await fetch(`http://10.13.1.7:3001/channels/isMuted/${channelId}/${userId}`, {
+	  const response = await fetch(`http://10.13.1.5:3001/channels/isMuted/${channelId}/${userId}`, {
 		method: 'GET',
 		headers: {
 		  'Content-Type': 'application/json',
@@ -623,7 +623,7 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
       		return; // Exit the function to prevent sending the message
     	}
 		try {
-		const response = await fetch(`http://10.13.1.7:3001/channels/returnMembers/${chatContext.id}`, {
+		const response = await fetch(`http://10.13.1.5:3001/channels/returnMembers/${chatContext.id}`, {
     	method: 'GET',
     	headers: {
       	'Content-Type': 'application/json',
@@ -663,7 +663,7 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
 }
     try {
 
-        const response = await fetch('http://10.13.1.7:3001/chatHistory/newPrivateMessage', {
+        const response = await fetch('http://10.13.1.5:3001/chatHistory/newPrivateMessage', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -694,7 +694,7 @@ const fetchFriendChatHistory  = async (friendId: number) =>  {
 const fetchChannelChatHistory = async (channelName: string) => {
 	let blockedUsers;
   try {
-	const response = await fetch(`http://10.13.1.7:3001/channels/findChannelByName/${channelName}`, {
+	const response = await fetch(`http://10.13.1.5:3001/channels/findChannelByName/${channelName}`, {
 	method: 'GET',
 	headers: {
 	'Content-Type': 'application/json',
@@ -704,7 +704,7 @@ const fetchChannelChatHistory = async (channelName: string) => {
 	if (response.ok) {
 		const channel = await response.json();
 		setChatContext({ channelname: channelName, id: channel.id, userIds: 0 });
-		const responsefor = await fetch(`http://10.13.1.7:3001/users/getBlocked/${user[0].id}`, {  //get banlist;
+		const responsefor = await fetch(`http://10.13.1.5:3001/users/getBlocked/${user[0].id}`, {  //get banlist;
 		method: 'GET',
 		headers: {
 			  'Content-Type': 'application/json',
@@ -720,7 +720,7 @@ const fetchChannelChatHistory = async (channelName: string) => {
 		else {
 			console.log('reponse not ok');
 		}
-		const chatHistoryResponse = await fetch(`http://10.13.1.7:3001/chatHistory/history/channel/${channel.id}/${blockedUsers}`, {
+		const chatHistoryResponse = await fetch(`http://10.13.1.5:3001/chatHistory/history/channel/${channel.id}/${blockedUsers}`, {
 		method: 'GET',
 		headers: {
 		  'Content-Type': 'application/json',
@@ -747,7 +747,7 @@ const fetchChannelChatHistory = async (channelName: string) => {
 	let allUsersIds;
   try {
     if (channelVisibility === 'public'){
-		const responsethree = await fetch ('http://10.13.1.7:3001/users/allIds', {
+		const responsethree = await fetch ('http://10.13.1.5:3001/users/allIds', {
 			method: 'GET',
       headers: {
       'Content-Type': 'application/json',
@@ -772,7 +772,7 @@ const fetchChannelChatHistory = async (channelName: string) => {
       console.log("need a name for the channel");
       return ;
     }
-    const response = await fetch('http://10.13.1.7:3001/channels/create', {
+    const response = await fetch('http://10.13.1.5:3001/channels/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -789,7 +789,7 @@ const fetchChannelChatHistory = async (channelName: string) => {
         }
     }
     const newChannel = await response.json();
-    	const responsetwo = await fetch('http://10.13.1.7:3001/users/channel/AddInUser', {
+    	const responsetwo = await fetch('http://10.13.1.5:3001/users/channel/AddInUser', {
       	method: 'POST',
       	headers: {
         'Content-Type': 'application/json',
@@ -813,7 +813,7 @@ const fetchChannelChatHistory = async (channelName: string) => {
 const handleJoinChannel  = async () => {
   let channelId;
   try {
-    const response = await fetch(`http://10.13.1.7:3001/channels/findChannelByName/${joinChannel}`, {
+    const response = await fetch(`http://10.13.1.5:3001/channels/findChannelByName/${joinChannel}`, {
       method: 'POST',  // Changez la méthode pour POST
       headers: {
         'Content-Type': 'application/json',
@@ -823,7 +823,7 @@ const handleJoinChannel  = async () => {
     });
       if (response.ok){
           const responseData = await response.json();
-          const responsefive = await fetch(`http://10.13.1.7:3001/channels/isBanned/${responseData.id}/${user[0].id}`, {
+          const responsefive = await fetch(`http://10.13.1.5:3001/channels/isBanned/${responseData.id}/${user[0].id}`, {
               method: 'GET',
               headers: {
               'Content-Type': 'application/json',
@@ -844,7 +844,7 @@ const handleJoinChannel  = async () => {
                   console.log("wrong password or password missing1")
                   return;
               }
-          const responsetwo = await fetch('http://10.13.1.7:3001/users/channel/AddInUser', {
+          const responsetwo = await fetch('http://10.13.1.5:3001/users/channel/AddInUser', {
           method: 'POST',
           headers: {
           'Content-Type': 'application/json',
@@ -857,7 +857,7 @@ const handleJoinChannel  = async () => {
 			        return ;
           }
           channelId = responseData.id;
-          const responsethree = await fetch(`http://10.13.1.7:3001/channels/addUserId/${user[0].id}`, {
+          const responsethree = await fetch(`http://10.13.1.5:3001/channels/addUserId/${user[0].id}`, {
           method: 'POST',
           headers: {
           'Content-Type': 'application/json',
@@ -875,7 +875,7 @@ const handleJoinChannel  = async () => {
                   return ;
               }
               else {
-                  const responsetwo = await fetch('http://10.13.1.7:3001/users/channel/AddInUser', {
+                  const responsetwo = await fetch('http://10.13.1.5:3001/users/channel/AddInUser', {
                   method: 'POST',
                   headers: {
                   'Content-Type': 'application/json',
@@ -887,7 +887,7 @@ const handleJoinChannel  = async () => {
                       throw new Error(`Network response was not ok: ${response.statusText}`);
                   }
                   try {
-                      const responsefor = await fetch(`http://10.13.1.7:3001/channels/addUserId/${user[0].id}`, {
+                      const responsefor = await fetch(`http://10.13.1.5:3001/channels/addUserId/${user[0].id}`, {
                       method: 'POST',
                       headers: {
                       'Content-Type': 'application/json',
@@ -930,7 +930,7 @@ const handleJoinChannel  = async () => {
 
 const handleadd = async () => {
   try {
-    const response = await fetch('http://10.13.1.7:3001/users/FriendRequest', {
+    const response = await fetch('http://10.13.1.5:3001/users/FriendRequest', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -958,7 +958,7 @@ const handleadd = async () => {
 
 const handleInvite  = async (friendId: number) => {
 	try {
-		const response = await fetch('http://10.13.1.7:3001/users/gameNotif', {
+		const response = await fetch('http://10.13.1.5:3001/users/gameNotif', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -976,7 +976,7 @@ const handleInvite  = async (friendId: number) => {
 
 const handleBlock  = async (friendId: number) => {
   try {
-      const response = await fetch('http://10.13.1.7:3001/users/Block', {
+      const response = await fetch('http://10.13.1.5:3001/users/Block', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -1004,7 +1004,7 @@ const handleBlock  = async (friendId: number) => {
 
 const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
   try {
-      const response = await fetch(`http://10.13.1.7:3001/users/social/unblock`, {
+      const response = await fetch(`http://10.13.1.5:3001/users/social/unblock`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -1025,7 +1025,7 @@ const handleUnblock  = async (unblockPseudo: string, friendId: number) => {
 //setAsAdmin(member.id)
 const setAsAdmin  = async (newadmin: number, channelName: string, channelId: number) => {
 	try {
-		const response = await fetch(`http://10.13.1.7:3001/channels/setAsAdmin`, {
+		const response = await fetch(`http://10.13.1.5:3001/channels/setAsAdmin`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -1057,7 +1057,7 @@ const setAsAdmin  = async (newadmin: number, channelName: string, channelId: num
 //Kick(member.id, activeChannel, activeChannelId)
 const Kick  = async (kickid: number, channelname: string, channelid: number) => {
 	try {
-		const response = await fetch(`http://10.13.1.7:3001/channels/kick`, {
+		const response = await fetch(`http://10.13.1.5:3001/channels/kick`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -1071,7 +1071,7 @@ const Kick  = async (kickid: number, channelname: string, channelid: number) => 
 	  else{
 			console.log('failed to set as admin');
 	  }
-    const responsetwo = await fetch('http://10.13.1.7:3001/users/leaveChannel', {
+    const responsetwo = await fetch('http://10.13.1.5:3001/users/leaveChannel', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -1102,7 +1102,7 @@ const Kick  = async (kickid: number, channelname: string, channelid: number) => 
 
 const handleDeletePassword  = async (channel: Channel) => {
 	try {
-		const response = await fetch(`http://10.13.1.7:3001/channels/deletePassword`, {
+		const response = await fetch(`http://10.13.1.5:3001/channels/deletePassword`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -1123,7 +1123,7 @@ const Mute  = async (banid: number, channelname: string, channelid: number) => {
 	channelname;
 	channelid;
 	try {
-		const response = await fetch('http://10.13.1.7:3001/channels/mute', {
+		const response = await fetch('http://10.13.1.5:3001/channels/mute', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -1144,7 +1144,7 @@ const Mute  = async (banid: number, channelname: string, channelid: number) => {
 
 const Ban  = async (Banid: number, channelname: string, channelid: number) => {
 	try {
-		const response = await fetch('http://10.13.1.7:3001/channels/Ban', {
+		const response = await fetch('http://10.13.1.5:3001/channels/Ban', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -1158,7 +1158,7 @@ const Ban  = async (Banid: number, channelname: string, channelid: number) => {
 	  else{
 			console.log('failed to set as admin');
 	  }
-    const responsetwo = await fetch('http://10.13.1.7:3001/users/leaveChannel', {
+    const responsetwo = await fetch('http://10.13.1.5:3001/users/leaveChannel', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

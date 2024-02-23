@@ -169,9 +169,16 @@ const Settings = () => {
 
     return (
         <div className="menugrid">
+            {user && user[0].bg === false &&  
             <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
                 <source src="https://assets.codepen.io/263256/menubg.mp4" />
             </video>
+            }
+            {user && user[0].bg === true &&  
+            <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
+                <source src="/assets/backroom.mp4" />
+            </video>
+            }
             <UserNav/>
             <div className="flex flex-col items-center p-4">
                 {/* Photo de profil */}

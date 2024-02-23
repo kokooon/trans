@@ -5,7 +5,7 @@
 
 export async function fetchUserDetailsByPseudo(pseudo: string) {
    try {
-     const response = await fetch(`http://10.13.1.7:3001/users/${pseudo}`);
+     const response = await fetch(`http://10.13.1.5:3001/users/${pseudo}`);
     
      if (!response.ok) {
        throw new Error('Failed to fetch user details');
@@ -21,7 +21,7 @@ export async function fetchUserDetailsByPseudo(pseudo: string) {
 
 export async function fetchUserDetails() {
   try {
-      const response = await fetch(`http://10.13.1.7:3001/users/cookie`, {
+      const response = await fetch(`http://10.13.1.5:3001/users/cookie`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export async function fetchUserDetails() {
 
 // export async function fetchAvatarByPseudo(pseudo: string) {
 //   try {
-//     const response = await fetch(`http://10.13.1.7:3001/users/${pseudo}/avatar`);
+//     const response = await fetch(`http://10.13.1.5:3001/users/${pseudo}/avatar`);
     
 //     if (!response.ok) {
 //       throw new Error('Failed to fetch user avatar');
@@ -68,7 +68,7 @@ export async function fetchUserDetails() {
 
 export async function isTokenValid(): Promise<boolean> {
   try {
-    const response = await fetch(`http://10.13.1.7:3001/users/check`, {
+    const response = await fetch(`http://10.13.1.5:3001/users/check`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ export async function isTokenValid(): Promise<boolean> {
 
   export async function isUserConnected(): Promise<boolean> {
     try {
-      const response = await fetch(`http://10.13.1.7:3001/users/check_conection`, {
+      const response = await fetch(`http://10.13.1.5:3001/users/check_conection`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

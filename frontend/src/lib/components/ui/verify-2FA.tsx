@@ -12,7 +12,7 @@ const VerificationPage: React.FC<VerificationPageProps> = ({ onSubmit }) => {
 
     try {
       // Effectuez la requête POST avec la fonction fetch
-      const response = await fetch('http://10.13.1.7:3001/auth/verify-2fa', {
+      const response = await fetch('http://10.13.1.5:3001/auth/verify-2fa', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

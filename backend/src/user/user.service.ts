@@ -309,6 +309,7 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
         user.GameNotifs = [];
         user.level = 1;
         user.exp = 1;
+        user.bg = false;
         const savedUser = await this.userRepository.save(user);
         return savedUser;
     } catch (error) {
@@ -369,6 +370,13 @@ async isUserBanned(userId: number, friendId: number): Promise<boolean> {
       console.error('Error adding secret:', error);
       throw new Error('Failed to add secret');
     }
+  }
+
+  async changeBg(userId: number): Promise<Boolean> {
+    const user = await this.findById(userId);
+    user.bg = !user.bg;
+    await this.userRepository.save(user);
+    return user.bg;
   }
 
   async updateConnectionCount(userId: number, newCount: number): Promise<void> {

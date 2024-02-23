@@ -33,7 +33,7 @@ export class GameInstance {
     };
 
     const angle = 0;
-    const speed = 6;
+    const speed = 18;
     this.ball = new Ball(ballStartPosition.x, ballStartPosition.y, angle, speed); 
   }
 
@@ -48,7 +48,7 @@ export class GameInstance {
                 this.playerAPosition.y = 200;
                 this.playerBPosition.y = 200;
                 const angle = 0;
-                const speed = 6;
+                const speed = 18;
                 this.resetBallPosition(angle, speed);
                 resolve(updateResult);
             } else {
@@ -95,34 +95,34 @@ async movements()
 
   // Calculate inertia for player A
   if (this.moveupA) {
-      this.inertiaA += 0.5;
+      this.inertiaA += 5;
   } else if (this.movedownA) {
-      this.inertiaA -= 0.5;
+      this.inertiaA -= 5;
   }
   if (this.moveupA === false && this.movedownA === false)
   {
     if (this.inertiaA < 0)
-      this.inertiaA += 0.25;
+      this.inertiaA += 2.5;
       if (this.inertiaA > 0)
-      this.inertiaA -= 0.25;
+      this.inertiaA -= 2.5;
   }
 
   // Calculate inertia for player B (same logic as player A)
   if (this.moveupB) {
-    this.inertiaB += 0.5;
+    this.inertiaB += 5;
   } else if (this.movedownB) {
-    this.inertiaB -= 0.5;
+    this.inertiaB -= 5;
   }
   if (this.moveupB === false && this.movedownB === false)
   {
   if (this.inertiaB < 0)
-    this.inertiaB += 0.25;
+    this.inertiaB += 2.5;
     if (this.inertiaB > 0)
-    this.inertiaB -= 0.25;
+    this.inertiaB -= 2.5;
   }
 
-  this.inertiaA = clamp(this.inertiaA, -5, 5);
-  this.inertiaB = clamp(this.inertiaB, -5, 5);
+  this.inertiaA = clamp(this.inertiaA, -20, 20);
+  this.inertiaB = clamp(this.inertiaB, -20, 20);
 
   // Déplacer les joueurs en fonction de l'inertie
   this.playerAPosition.y = clamp(this.playerAPosition.y - this.inertiaA, ymin, ymax)

@@ -15,7 +15,7 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   async fortyTwoLogin(@Req() req, @Res() res) {
     console.log('Reached /auth/42 endpoint');
-    res.redirect('http://10.13.1.7:3000/private');
+    res.redirect('http://10.13.1.5:3000/private');
     // Ce point de terminaison redirigera l'utilisateur vers la stratégie 42 pour l'authentification
   }
 
@@ -32,16 +32,16 @@ export class AuthController {
       if (user && user.connectionCount === 0) {
         console.log('i pass here for settings');
         res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
-        return res.redirect('http://10.13.1.7:3000/settings');
+        return res.redirect('http://10.13.1.5:3000/settings');
       }
       if (user.is2FAEnabled) {
         console.log('i pass here for 2fa');
         res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
-        return res.redirect('http://10.13.1.7:3000/2fa');
+        return res.redirect('http://10.13.1.5:3000/2fa');
       }
       res.cookie('jwt', jwtToken, { httpOnly: true, path: '/' });
       // Redirect the user to the desired page
-      res.redirect('http://10.13.1.7:3000/');
+      res.redirect('http://10.13.1.5:3000/');
     } catch (error) {
       console.error('Error processing user details:', error);
       res.status(500).send('Internal Server Error');

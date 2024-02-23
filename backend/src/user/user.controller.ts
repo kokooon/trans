@@ -547,4 +547,31 @@ export class UserController {
     }
   }
 
+  @Post('toggleBg')
+  async toggleBackground(@Req() req, @Res() res) {
+    try {
+      console.log('in tioggle bg');
+      const userId = req.body.userId;
+      if (!userId) {
+        return res.status(400).send('userId not provided');
+      }
+      const user = await this.userService.findById(userId);
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+
+      // Toggle the value of user.bg
+      const change = await this.userService.changeBg(userId);
+
+      return res.status(200).json({ change });
+
+    } catch (error) {
+      console.error('Error toggling background:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Failed to toggle background',
+      });
+    }
+  }
+
 }

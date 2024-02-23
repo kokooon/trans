@@ -3,7 +3,6 @@ import { UserNav } from '@/lib/components/ui/user-nav';
 import { fetchUserDetails, fetchUserDetailsByPseudo, isTokenValid, isUserConnected } from '@/lib/components/utils/UtilsFetch';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSocket } from '../../components/utils/socketContext';
-import Notification from '@/lib/components/utils/notif';
 import "../../styles/profile.css"
 
 type Games = {
@@ -30,7 +29,7 @@ const Profile = () => {
         const fetchHistory = async () => {
             if (pseudo) {
                 const user = await fetchUserDetailsByPseudo(pseudo);
-                const response = await fetch(`http://10.13.1.7:3001/games/returnHistory/${user.id}`, {
+                const response = await fetch(`http://10.13.1.5:3001/games/returnHistory/${user.id}`, {
     		    method: 'GET',
     		    headers: {
       		    'Content-Type': 'application/json',
@@ -93,7 +92,7 @@ const Profile = () => {
     const handleadd = async () => {
         try {
             const userData = await fetchUserDetails();
-          const response = await fetch('http://10.13.1.7:3001/users/FriendRequest', {
+          const response = await fetch('http://10.13.1.5:3001/users/FriendRequest', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -120,10 +119,16 @@ const Profile = () => {
 
     return (
         <div className="menugrid">
-            <Notification message="Test" type="success" />
+            {user && user.bg === false &&  
             <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
                 <source src="https://assets.codepen.io/263256/menubg.mp4" />
             </video>
+            }
+            {user && user.bg === true &&  
+            <video aria-hidden="true" role="presentation" className="videobg" preload="metadata" autoPlay loop muted>
+                <source src="/assets/backroom.mp4" />
+            </video>
+            }
         <div className="min-h-screen flex flex-col">
         <div className="absolute top-10 right-0"><UserNav/></div>
         <div className="center flex items-center justify-center min-h-screen text-[#9e9cb6]">
