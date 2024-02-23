@@ -232,6 +232,45 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
   }
   
+  @SubscribeMessage('stopGameLoop')
+  deletegame(client: Socket, gameId: number){
+      try {
+          const userId = getUserIdBySocketId(client.id);
+          if (!userId) {
+              console.error('User ID not found for client:', client.id);
+              return;
+          }
+          for (const [id, gameData] of this.gameData.entries()) {
+              if (gameData.socketA === client.id || gameData.socketB === client.id) {
+                  gameId = id;
+                  break;
+              }
+          }
+          if (gameId !== undefined) {
+              const gameData = this.gameData.get(gameId);
+              if (gameData) {
+                  const gameInstance = gameData.gameinstance;
+                  if (gameInstance) {
+                      const otherUserId = gameData.socketA === client.id ? gameData.socketB : gameData.socketA;
+                      if (otherUserId) {
+                          this.server.to(otherUserId).emit('opponentLeft');
+                          console.log(`Event 'opponentLeft' sent to user ${otherUserId}.`);
+                      }
+                      console.log();
+                      gameInstance.stopGameLoop();
+                      console.log(`Game loop stopped for user ${client.id}.`);
+                  }
+                  this.gameService.deleteGame(gameId);
+                  this.gameData.delete(gameId);
+                  console.log(`GameData removed for user ${client.id}.`);
+              }
+          }
+      } catch (error) {
+          console.error('Error:', error);
+      }
+  }
+  
+
 @SubscribeMessage('keyup')
 handleKeyUp(client: Socket, data: { key: string }) {
     console.log('Key down:', data);
