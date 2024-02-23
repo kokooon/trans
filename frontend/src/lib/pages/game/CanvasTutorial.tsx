@@ -55,8 +55,6 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
     // Removed the redundant emit using this.state.gameId
     console.log('Component is unmounting, gameId:', gameId);
   }
-  
-  
 
   handleGameState = (gameState: any) => {
     const { playerAPosition, playerBPosition, ballPosition } = gameState;
@@ -67,11 +65,13 @@ class CanvasTutorial extends Component<CanvasTutorialProps, CanvasTutorialState>
   handleGameCreated = (gameData: any) => {
     // Mettre à jour les positions des joueurs et de la balle avec les données reçues
     const { playerA, playerB, ball } = gameData;
-    this.setState({
-      playerAPosition: playerA.y,
-      playerBPosition: playerB.y,
-      ballPosition: { x: ball.x, y: ball.y },
-    });
+    if (playerA && playerB && ball) {
+      this.setState({
+        playerAPosition: playerA.y,
+        playerBPosition: playerB.y,
+        ballPosition: { x: ball.x, y: ball.y },
+      });
+    }
   };
 
   draw() {

@@ -46,6 +46,10 @@ function GameInvit() {
   const [scores, setScores] = useState<Scores>({ A: 0, B: 0 });
   const navigate = useNavigate();
   const [user, setUser] = useState<any | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [winner, setWinner] = useState('');
+
     user;
   useEffect(() => {
     playAudio(1);
@@ -92,9 +96,19 @@ function GameInvit() {
     });
 
     socket.on('opponentLeft', () => {
-        console.log('in oppponent left front');
-        navigate('/');
-      });
+      if (!showAlert) {
+        setAlertMessage("Votre adversaire a quitté la partie.");
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          window.location.reload();
+        }, 2000);
+      }
+    });
+
+    socket.on('win:A', () => handleWin('Joueur A'));
+
+    socket.on('win:B', () => handleWin('Joueur B'));
 
     socket.on('game:createdS', (newGame: GameData) => {
       console.log('New game created:', newGame);
@@ -113,8 +127,23 @@ function GameInvit() {
       socket.off('update:A_scored');
       socket.off('update:B_scored');
       socket.off('game:created');
+      socket.off('win:A');
+      socket.off('win:B');
     };
   }, [socket, scores]);
+
+  const handleWin = (winner: string) => {
+    setWinner(winner === 'A' ? (userA ? userA : 'Joueur A') : (userB ? userB : 'Joueur B'));
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+      handleRedirect();
+    }, 3000); // 3s
+  };
+
+  const handleRedirect = () => {
+    window.location.reload();
+  };
 
   const getPseudo  = async (userA: number, userB: number) => {
     //'getPseudo/:id'
@@ -219,6 +248,11 @@ return (
         <CanvasTutorial socket={socket} gameId={gameId}/>
       </div>
       </nav>
+      {showAlert && (
+        <div className="alert" onClick={handleRedirect}>
+          <p>{winner ? `${winner} a gagné !` : alertMessage}</p>
+        </div>
+      )}
     </div>
   );
 }
