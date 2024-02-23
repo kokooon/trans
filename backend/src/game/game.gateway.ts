@@ -42,7 +42,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         try {
             const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
             this.gameData.set(newGame.game.id, newGame);
-            //console.log('data0 = ', newGame);
             
             this.server.to(userOneS).emit('game:createdS', newGame);
             this.server.to(userTwoS).emit('game:createdS', newGame);
@@ -54,7 +53,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                 {
                     if (updateResult.playerIdMissed == 1)
                     {
-                        console.log('Joueur B a marque un point');
                         newGame.game.scoreB++;
                         this.server.to(userOneS).emit('update:B_scored');
                         this.server.to(userTwoS).emit('update:B_scored');
@@ -72,7 +70,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
                     }
                     else if (updateResult.playerIdMissed == 2)
                     {
-                        console.log('Joueur A a marque un point');
                         newGame.game.scoreA++;
                         this.server.to(userOneS).emit('update:A_scored');
                         this.server.to(userTwoS).emit('update:A_scored');
@@ -126,7 +123,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
               try {
                   const newGame = await this.gameService.createGame(userIdOne, userIdTwo);
                   this.gameData.set(newGame.game.id, newGame);
-                  //console.log('data0 = ', newGame);
                   
                   this.server.to(userOneS).emit('game:created', newGame);
                   this.server.to(userTwoS).emit('game:created', newGame);
@@ -289,7 +285,6 @@ handleKeyUp(client: Socket, data: { key: string }) {
 }
 
 async handleDisconnect(client: Socket) {
-    //console.log(`ici 1`);
 
     const index = this.matchmakingQueue.indexOf(client.id);
     if (index !== -1) {
@@ -298,7 +293,7 @@ async handleDisconnect(client: Socket) {
     } else {
         console.log(`Socket ${client.id} disconnected.`);
     }
-    //console.log(`ici 2`);
+
     let gameId: number | undefined;
     for (const [id, gameData] of this.gameData.entries()) {
         if (gameData.socketA === client.id || gameData.socketB === client.id) {
