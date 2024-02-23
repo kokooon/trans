@@ -152,7 +152,7 @@ function Game() {
   };
 
   const handleWin = (winner: string) => {
-    setWinner(winner === 'A' ? (userA ? userA : 'Joueur A') : (userB ? userB : 'Joueur B'));
+    setWinner(winner === 'Joueur A' ? (userA ? userA : 'Joueur A') : (userB ? userB : 'Joueur B'));
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);

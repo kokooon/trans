@@ -106,7 +106,8 @@ async findGamesByUserId(userId: number): Promise<History | null> {
   async deleteGame(gameId: number) : Promise<void>{
     const game = await this.GameRepository.findOne({ where: { id: gameId } });
     if (game) {
-        await this.GameRepository.remove(game);
+        if (game.scoreA !== 5 && game.scoreB !== 5)
+          await this.GameRepository.remove(game);
         console.log(`Game with ID ${gameId} deleted successfully.`);
     } else {
         console.log(`Game with ID ${gameId} not found.`);
