@@ -207,7 +207,7 @@ const social = () => {
 
           // Clean up the listener
           return () => {
-			      socket.off('gameInvite')
+			socket.off('gameInvite')
             socket.off('refreshChannelList');
             socket.off('channelMembersListChange');
             socket.off('friendConnected');
@@ -462,7 +462,6 @@ const handleDeclineGame = async (friend: number, index: number) => {
     }catch (error){
 		console.log('unable to add gameNotif');
     }
-    getNotifications();
 }
 
 const handleAcceptGame = async (friend: number, index: number) => {
@@ -1310,6 +1309,7 @@ const Ban  = async (Banid: number, channelname: string, channelid: number) => {
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
                         <MenuItem style={{ color: 'black' }} onClick={() => navigate(`/profile/${user.pseudo}`)}>Profile</MenuItem>
                         <MenuItem style={{ color: 'red' }} onClick={() => handleBlock(user.id)}>Bloquer</MenuItem>
+                        <MenuItem onClick={() => {handleInvite(user.id);}}>invite game</MenuItem>
                         </Menu>
                         </div>
                     ))}
