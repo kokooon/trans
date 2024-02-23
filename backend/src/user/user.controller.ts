@@ -19,9 +19,14 @@ export class UserController {
     private readonly authService: AuthService,
   ) {}
 
+  @Post('removeGameNotif')
+  async removeInvit(@Req() req, @Res() res) {
+		await this.userService.removeGameNotif(req.body.userId, req.body.inviteRecipientId)
+		return res.status(201).json();
+  }
+
   @Post('gameNotif')
   async addInvit(@Req() req, @Res() res) {
-		console.log('in invite');
 		await this.userService.addGameNotif(req.body.userId, req.body.inviteRecipientId)
 		return res.status(201).json();
   }

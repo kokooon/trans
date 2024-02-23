@@ -19,6 +19,12 @@ export class UserService {
     private readonly myConfigService: MyConfigService,
   ) {}
 
+    async removeGameNotif(userId: number, removeId: number) {
+        const user = await this.findById(userId);
+        user.GameNotifs = user.GameNotifs.filter(id => Number(id) != removeId);
+        await this.userRepository.save(user);
+    }
+
     async addGameNotif(userId: number, recipientId: number) {
         const user = await this.findById(recipientId);
         const friendIdsAsNumbers = user.GameNotifs.map(Number); 

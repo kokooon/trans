@@ -453,6 +453,21 @@ const handleAcceptGame = async (friend: number, index: number) => {
 		AcceptId: user[0].id,
 		branlix2000: friend,
 	  }
+    try {
+    const response = await fetch('http://127.0.0.1:3001/users/removeGameNotif', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Inclure les cookies avec la requête
+          body: JSON.stringify({ inviteRecipientId: friend, userId: user[0].id }),
+      });
+      if (!response.ok) {
+          throw new Error('La réponse du réseau n’était pas correcte');
+      }
+	}catch (error){
+		console.log('unable to add gameNotif');
+	}
 	if (socket)
 		socket.emit('matchmaking:Invitation', data);
 }
