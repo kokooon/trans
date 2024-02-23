@@ -462,6 +462,7 @@ const handleDeclineGame = async (friend: number, index: number) => {
     }catch (error){
 		console.log('unable to add gameNotif');
     }
+    getNotifications();
 }
 
 const handleAcceptGame = async (friend: number, index: number) => {
@@ -489,6 +490,7 @@ const handleAcceptGame = async (friend: number, index: number) => {
 	}
 	if (socket)
 		socket.emit('matchmaking:Invitation', data);
+  getNotifications();
 }
 
 const handleAccept = async (friend: string, index: number) => {
