@@ -6,8 +6,11 @@ import { toggle2FA } from "@/lib/components/auth/2fa/2fa";
 //import { Button } from "@/lib/components/ui/button";
 import '../../styles/profile.css'
 import { useSocket } from '../../components/utils/socketContext';
+import { useUser } from "@/lib/components/utils/UserContext";
 
 const Settings = () => {
+    const { setPseudo } = useUser();
+    const [localPseudo, setLocalPseudo] = useState("");
     const { socket } = useSocket();
     const navigate = useNavigate();
     const [user, setUser] = useState<any | null>(null);
@@ -130,40 +133,34 @@ const Settings = () => {
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        handleChangePseudo(event);
+        setLocalPseudo(event.target.value);
     };
     
-    const handleChangePseudo = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleNameSubmit = async () => {
         try {
-            console.log('front username = ', username)
-            // Envoyer le nouveau pseudo au backend
             const response = await fetch('http://127.0.0.1:3001/users/changePseudo', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Inclure des en-têtes supplémentaires si nécessaire, comme pour l'authentification
                 },
-                credentials: 'include', // Inclure les cookies avec la requête
-                body: JSON.stringify({ newPseudo: event.target.value }),
+                credentials: 'include',
+                body: JSON.stringify({ newPseudo: localPseudo }),
             });
-    
-            if (!response.ok) {
-                throw new Error('La réponse du réseau n’était pas correcte');
+
+            if (response.ok) {
+                // Update the global pseudo in the context after successful backend update
+                setPseudo(localPseudo);
+                // Optionally, show a success notification
+            } else {
+                // Handle response error (e.g., show an error notification)
+                throw new Error('Failed to update pseudo');
             }
-    
-            // Gérer ici la mise à jour réussie du pseudo
-            // Vous pourriez vouloir afficher une notification ou mettre à jour l'interface utilisateur
         } catch (error) {
-            console.error('Erreur lors de la mise à jour du pseudo :', error);
-            // Gérer l'erreur ici, comme afficher une notification à l'utilisateur
+            console.error('Error:', error);
+            // Handle error (e.g., show an error notification)
         }
     };
 
-    const handleNameSubmit = () => {
-        // Logique pour mettre à jour le nom de l'utilisateur
-        setShowNotification(true);
-        setTimeout(() => setShowNotification(false), 3000);
-    };
 
     const toggle2FAHandler = () => {
         toggle2FA(is2FAEnabled, setIs2FAEnabled);
