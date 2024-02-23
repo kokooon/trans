@@ -47,6 +47,9 @@ function Game() {
   const navigate = useNavigate();
   const [user, setUser] = useState<any | null>(null);
   const [matchmakingStatus, setMatchmakingStatus] = useState('pending');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [winner, setWinner] = useState('');
 
   useEffect(() => {
     playAudio(1);
@@ -90,14 +93,14 @@ function Game() {
     socket.on('update:B_scored', () => {
       setScores(prevScores => ({
         ...prevScores,
-        B: prevScores.B + 1 // Increment B's score by 1
+        B: prevScores.B + 1
       }));
     });
   
     socket.on('update:A_scored', () => {
       setScores(prevScores => ({
         ...prevScores,
-        A: prevScores.A + 1 // Increment A's score by 1
+        A: prevScores.A + 1
       }));
     });
     socket.on('game:created', (newGame: GameData) => {
@@ -110,6 +113,20 @@ function Game() {
       setGameId(newGame.game.id); // Update local state or context with gameId
     });
 
+    socket.on('opponentLeft', () => {
+      if (!showAlert) {
+        setAlertMessage("Votre adversaire a quitté la partie.");
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+          window.location.reload();
+        }, 2000);
+      }
+    });
+
+    socket.on('win:A', () => handleWin('Joueur A'));
+
+    socket.on('win:B', () => handleWin('Joueur B'));
 
     return () => {
       // Nettoyage des écouteurs d'événements lors du démontage du composant
@@ -118,6 +135,9 @@ function Game() {
       socket.off('matchmaking:found');
       socket.off('matchmaking:searching');
       socket.off('game:created');
+      socket.off('opponentLeft');
+      socket.off('win:A');
+      socket.off('win:B');
     };
   }, [socket, scores]);
 
@@ -129,6 +149,19 @@ function Game() {
       //const data = { user };
       socket.emit('matchmaking:request');
     }
+  };
+
+  const handleWin = (winner: string) => {
+    setWinner(winner === 'A' ? (userA ? userA : 'Joueur A') : (userB ? userB : 'Joueur B'));
+    setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+      handleRedirect();
+    }, 3000); // 3s
+  };
+
+  const handleRedirect = () => {
+    window.location.reload();
   };
 
   const getPseudo  = async (userA: number, userB: number) => {
@@ -266,6 +299,11 @@ function Game() {
       </div>
       }
       </nav>
+      {showAlert && (
+        <div className="alert" onClick={handleRedirect}>
+          <p>{winner ? `${winner} a gagné !` : alertMessage}</p>
+        </div>
+      )}
     </div>
   );
 }
