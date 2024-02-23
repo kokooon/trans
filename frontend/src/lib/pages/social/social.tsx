@@ -445,6 +445,25 @@ const getChannel = async () => {
     fetchLastChannelMessage(List);
 }
 
+const handleDeclineGame = async (friend: number, index: number) => {
+    index;
+    try {
+      const response = await fetch('http://127.0.0.1:3001/users/removeGameNotif', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Inclure les cookies avec la requête
+        body: JSON.stringify({ inviteRecipientId: friend, userId: user[0].id }),
+    });
+    if (!response.ok) {
+        throw new Error('La réponse du réseau n’était pas correcte');
+      } 
+    }catch (error){
+		console.log('unable to add gameNotif');
+    }
+}
+
 const handleAcceptGame = async (friend: number, index: number) => {
 	friend; //id number 1
 	user[0].id //id number 2
@@ -1201,7 +1220,7 @@ const Ban  = async (Banid: number, channelname: string, channelid: number) => {
                         <Menu anchorEl={anchorElArray[index]} open={Boolean(anchorElArray[index])} onClose={() => {const newAnchorElArray = [...anchorElArray]; newAnchorElArray[index] = null; setAnchorElArray(newAnchorElArray);}}>
                         <MenuItem style={{ color: 'black' }} onClick={() => navigate(`/profile/${invite.pseudo}`)}>Profile</MenuItem>
                         <MenuItem style={{ color: 'green' }} onClick={() => handleAcceptGame(invite.id, index)}>Accepter</MenuItem>
-                        <MenuItem style={{ color: 'red' }} onClick={() => handleDecline(invite.pseudo, index)}>Supprimer</MenuItem>
+                        <MenuItem style={{ color: 'red' }} onClick={() => handleDeclineGame(invite.id, index)}>Supprimer</MenuItem>
                         </Menu>
                         </div>
                     ))}
